@@ -11,7 +11,7 @@ exports.up = async function(knex)
     table.increments('id');
 
     table.uuid('uuid').unique().notNullable();
-    table.text('content').index('content');
+    table.text('content').index();
 
     table.date('created_at').index().defaultTo(knex.fn.now());
     table.date('updated_at').index();
