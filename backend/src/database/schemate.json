@@ -1,0 +1,8 @@
+{
+  "knexPath": "db-connection.ts",
+  "modules": {
+    "bits": {
+      "migrationsDir": "migrations/bits/"
+    }
+  }
+}
