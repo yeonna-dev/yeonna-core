@@ -1,6 +1,9 @@
 {
   "knexPath": "connection.js",
   "modules": {
+    "users": {
+      "migrationsDir": "migrations/users/"
+    },
     "bits": {
       "migrationsDir": "migrations/bits/"
     }
