@@ -1,13 +1,13 @@
 interface User
 {
   uuid: string;
-  discordID: string;
+  discordID?: string | null;
 }
 
 interface DiscordGuild
 {
   discordID: string;
-  creditsName: string;
+  pointsName: string;
   collectiblesName: string;
 }
 
@@ -28,5 +28,5 @@ interface Obtainable
   userUUID: string;
   discordGuildID: string;
   amount: number;
-  isCollectible: boolean;
+  isCollectible?: boolean;
 }
