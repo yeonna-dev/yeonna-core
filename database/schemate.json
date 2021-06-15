@@ -6,6 +6,12 @@
     },
     "bits": {
       "migrationsDir": "migrations/bits/"
+    },
+    "economy": {
+      "migrationsDir": "migrations/economy/"
+    },
+    "discord": {
+      "migrationsDir": "migrations/discord/"
     }
   }
 }
