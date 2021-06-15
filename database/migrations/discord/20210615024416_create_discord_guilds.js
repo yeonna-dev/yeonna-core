@@ -11,7 +11,7 @@ exports.up = async function(knex)
     table.increments('id');
 
     table.uuid('discord_id').unique().notNullable();
-    table.string('credits_name').index();
+    table.string('points_name').index();
     table.string('collectibles_name').index();
 
     table.date('created_at').index().defaultTo(knex.fn.now());
