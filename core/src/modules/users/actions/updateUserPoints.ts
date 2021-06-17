@@ -24,5 +24,5 @@ export async function updateUserPoints({
     return;
   }
 
-  await ObtainableService.updatePoints(user, overwrite ? amount : amount + points);
+  await ObtainableService.updatePoints(user, overwrite ? amount : points + Math.abs(amount));
 }
