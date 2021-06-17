@@ -18,7 +18,7 @@ export async function updatePoints(message: Message, params: string, overwrite?:
   const amount = parseFloat(value);
 
   /* Check if the given value is a valid number. */
-  if(! value || isNaN(amount) || ! /^[+-]?\d+(\.\d+)?$/g.test(value))
+  if(! value || isNaN(amount) || ! /^\d+(\.\d+)?$/g.test(value))
     return message.channel.send('Please include the amount.');
 
   message.channel.startTyping();
