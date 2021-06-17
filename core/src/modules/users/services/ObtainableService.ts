@@ -1,6 +1,6 @@
 import { supabase } from '../../../common/supabase-client';
 
-const obtainables = supabase.from<ObtainableRecord>('obtainables');
+const obtainables = () => supabase.from<ObtainableRecord>('obtainables');
 enum Columns
 {
   user_uuid = 'user_uuid',
@@ -27,7 +27,7 @@ export const ObtainableService = new class
       is_collectible: false,
     };
 
-    const { data, error } = await obtainables.insert(insertData);
+    const { data, error } = await obtainables().insert(insertData);
     if(error)
       throw error;
 
@@ -43,7 +43,7 @@ export const ObtainableService = new class
   /* Gets the points of the user with the given UUID. */
   async getPoints(userUUID: string): Promise<number | undefined>
   {
-    const { data, error } = await obtainables
+    const { data, error } = await obtainables()
       .select()
       .filter(Columns.user_uuid, 'eq', userUUID);
 
@@ -57,7 +57,7 @@ export const ObtainableService = new class
 
   async updatePoints(userUUID: string, amount: number): Promise<void>
   {
-    const { error } = await obtainables
+    const { error } = await obtainables()
       .update({ [Columns.amount]: amount })
       .match({ [Columns.user_uuid]: userUUID });
 

@@ -1,7 +1,7 @@
 import { supabase } from '../../../common/supabase-client';
 import { v4 as generateUUID } from 'uuid';
 
-const users = supabase.from<UserRecord>('users');
+const users = () => supabase.from<UserRecord>('users');
 enum Columns
 {
   uuid = 'uuid',
@@ -22,7 +22,7 @@ export const UsersService = new class
       discord_id: discordID,
     };
 
-    const { data, error } = await users.insert(user);
+    const { data, error } = await users().insert(user);
     if(error)
       throw error;
 
@@ -38,7 +38,7 @@ export const UsersService = new class
   /* Gets the user with the given Discord ID. */
   async getByDiscordID(discordID: string): Promise<User | undefined>
   {
-    const { data, error } = await users
+    const { data, error } = await users()
       .select()
       .filter(Columns.discord_id, 'eq', discordID);
 
