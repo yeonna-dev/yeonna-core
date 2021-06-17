@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { Command, parseParamsToArray } from 'comtroller';
 
-import { getDiscordUserPoints } from '../../../../core/src';
+import { getUserPoints } from '../../../../core/src';
 import { getIdFromMention } from '../helpers/getIdFromMention';
 
 export const points: Command =
@@ -10,19 +10,25 @@ export const points: Command =
   aliases: [ 'p' ],
   run: async ({ message, params }: { message: Message, params: string }) =>
   {
-    let [ user ] = parseParamsToArray(params);
-    user = user || message.author.id;
-    user = getIdFromMention(user);
+    let [ discordUser ] = parseParamsToArray(params);
+    discordUser = discordUser || message.author.id;
+    discordUser = getIdFromMention(discordUser);
+
+    message.channel.startTyping();
 
     try
     {
-      const points = await getDiscordUserPoints(user);
+      const points = await getUserPoints(discordUser);
       // TODO: Update message
       message.channel.send(points?.toString() || 0);
     }
     catch(error)
     {
       message.channel.send(0);
+    }
+    finally
+    {
+      message.channel.stopTyping(true);
     }
   },
 };
