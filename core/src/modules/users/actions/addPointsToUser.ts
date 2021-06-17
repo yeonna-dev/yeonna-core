@@ -1,34 +1,49 @@
-import { UsersService } from '../services/UsersService';
 import { ObtainableService } from '../services/ObtainableService'
+import { UsersService } from '../services/UsersService';
 
-export async function addPointsToUser(
-  userDiscordID: string,
-  discordGuildID: string,
+import { UserNotFound } from '../../../common/errors';
+
+export async function addPointsToUser({
+  user,
+  amount,
+  discordGuildID,
+}: {
+  user: string,
   amount: number,
-): Promise<void>
+  discordGuildID?: string
+}): Promise<void>
 {
-  let userUUID;
-
-  /* Check if the user with the given Discord ID is already created. */
-  const user = await UsersService.getByDiscordID(userDiscordID);
-  if(! user)
+  /* Get the user with the given identifier, whether the identifier is a user UUID or Discord ID. */
+  let userObject = await UsersService.findByUUID(user);
+  if(! userObject)
   {
-    /* Create the user record if not yet existing. */
-    userUUID = await UsersService.create({ discordID: userDiscordID });
-    if(! userUUID)
-      throw new Error('User not saved');
+    userObject = await UsersService.findByDiscordID(user);
+    if(! userObject)
+    {
+      const userUUID = await UsersService.create({ discordID: user });
+      if(! user)
+        throw new Error('User not saved');
+
+      user = userUUID;
+    }
+    else
+      user = userObject.uuid;
   }
-  else
-    userUUID = user.uuid;
+
+  if(userObject)
+    user = userObject.uuid;
+
+  if(! user)
+    throw new UserNotFound();
 
   /* Check if the user's obtainable record is already created. */
-  const points = await ObtainableService.getPoints(userUUID);
+  const points = await ObtainableService.getPoints(user);
   if(! points)
   {
     /* Create the obtainable record. */
-    await ObtainableService.addPoints({ userUUID, discordGuildID, amount })
+    await ObtainableService.addPoints({ userUUID: user, discordGuildID, amount })
     return;
   }
 
-  await ObtainableService.updatePoints(userUUID, amount + points);
+  await ObtainableService.updatePoints(user, amount + points);
 }

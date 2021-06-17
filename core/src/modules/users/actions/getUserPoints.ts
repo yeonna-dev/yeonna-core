@@ -1,11 +1,18 @@
-import { ObtainableService } from '../services/ObtainableService';
 import { UsersService } from '../services/UsersService';
+import { ObtainableService } from '../services/ObtainableService';
 
-export async function getDiscordUserPoints(userDiscordID: string)
+import { UserNotFound } from '../../../common/errors';
+
+export async function getUserPoints(user: string)
 {
-  const user = await UsersService.getByDiscordID(userDiscordID);
-  if(! user)
-    throw new Error('User not found');
+  /* Get the user with the given identifier, whether the identifier is a user UUID or Discord ID. */
+  let userObject = await UsersService.findByUUID(user);
+  if(! userObject)
+  {
+    userObject = await UsersService.findByDiscordID(user);
+    if(! userObject)
+      throw new UserNotFound();
+  }
 
-  return ObtainableService.getPoints(user.uuid);
+  return ObtainableService.getPoints(userObject.uuid);
 }

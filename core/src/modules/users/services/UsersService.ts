@@ -14,7 +14,7 @@ enum Columns
 export const UsersService = new class
 {
   /* Creates a user record. */
-  async create({ discordID }: { discordID?: string } = {}): Promise<string>
+  async create({ discordID }: { discordID?: string | null } = {}): Promise<string>
   {
     const user =
     {
@@ -35,15 +35,21 @@ export const UsersService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  /* Gets the user with the given Discord ID. */
-  async getByDiscordID(discordID: string): Promise<User | undefined>
+  private async find(identifier: string, filterColumn: keyof UserRecord): Promise<User | undefined>
   {
     const { data, error } = await users()
       .select()
-      .filter(Columns.discord_id, 'eq', discordID);
+      .filter(filterColumn, 'eq', identifier);
 
     if(error)
+    {
+      /* Error with code `22P02` means the given identifier is not a UUID,
+        so it might be a Discord ID. */
+      if(error.code === '22P02')
+        return;
+
       throw error;
+    }
 
     const user = data?.pop();
     if(! user)
@@ -53,5 +59,20 @@ export const UsersService = new class
       uuid: user.uuid,
       discordID: user.discord_id,
     });
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async findByUUID(uuid: string)
+  {
+    return this.find(uuid, Columns.uuid);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  /* Gets the user with the given Discord ID. */
+  async findByDiscordID(discordID: string)
+  {
+    return this.find(discordID, Columns.discord_id);
   }
 }

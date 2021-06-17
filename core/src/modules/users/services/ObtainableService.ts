@@ -16,16 +16,18 @@ export const ObtainableService = new class
 {
   /* Creates an obtainable record */
   async addPoints(
-    { userUUID, discordGuildID, amount = 0 }: { userUUID: string, discordGuildID: string, amount: number },
+    { userUUID, discordGuildID, amount = 0 }: { userUUID: string, discordGuildID?: string, amount: number },
   ): Promise<Boolean>
   {
     const insertData: ObtainableRecord =
     {
       user_uuid: userUUID,
-      discord_guild_id: discordGuildID,
       amount: amount,
       is_collectible: false,
     };
+
+    if(discordGuildID)
+      insertData.discord_guild_id = discordGuildID;
 
     const { data, error } = await obtainables().insert(insertData);
     if(error)
