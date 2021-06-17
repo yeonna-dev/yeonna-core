@@ -1,2 +1,3 @@
-export * from './addPointsToUser';
+export * from './findUserID';
 export * from './getUserPoints';
+export * from './updateUserPoints';
