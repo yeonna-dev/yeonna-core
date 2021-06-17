@@ -22,7 +22,7 @@ export const ObtainableService = new class
     const insertData: ObtainableRecord =
     {
       user_uuid: userUUID,
-      amount: amount,
+      amount,
       is_collectible: false,
     };
 
