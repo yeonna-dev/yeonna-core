@@ -5,5 +5,5 @@ import { updatePoints } from '../actions/updatePoints';
 export const addpoints: Command =
 {
   name: 'addpoints',
-  run: ({ message, params }) => updatePoints(message, params),
+  run: ({ message, params }) => updatePoints({ message, params }),
 };

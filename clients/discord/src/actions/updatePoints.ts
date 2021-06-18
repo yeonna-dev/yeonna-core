@@ -5,21 +5,43 @@ import { updateUserPoints } from '../../../../core/src';
 
 import { getIdFromMention } from '../helpers/getIdFromMention';
 
-export async function updatePoints(message: Message, params: string, overwrite?: boolean)
+export async function updatePoints({
+  message,
+  params,
+  daily,
+  overwrite,
+}: {
+  message: Message,
+  params: string,
+  daily?: number,
+  overwrite?: boolean
+})
 {
   if(! message.guild)
     return message.channel.send('This command can only be used in a guild.');
 
-  let [ user, value ] = parseParamsToArray(params);
-  if(! user)
-    return message.channel.send('Add points to who?');
+  let user, amount;
+  if(daily)
+  {
+    user = message.author.id;
+    amount = daily;
+  }
+  else
+  {
+    const [ userString, amountString ] = parseParamsToArray(params);
+    if(! user)
+      return message.channel.send(overwrite
+        ? 'Set points of who?'
+        : 'Add points to who?'
+      );
 
-  user = getIdFromMention(user);
-  const amount = parseFloat(value);
+    user = getIdFromMention(userString);
+    amount = parseFloat(amountString);
 
-  /* Check if the given value is a valid number. */
-  if(! value || isNaN(amount) || ! /^\d+(\.\d+)?$/g.test(value))
-    return message.channel.send('Please include the amount.');
+    /* Check if the given value is a valid number. */
+    if(! amountString || isNaN(amount) || ! /^\d+(\.\d+)?$/g.test(amountString))
+      return message.channel.send('Please include the amount.');
+  }
 
   message.channel.startTyping();
 
@@ -46,8 +68,8 @@ export async function updatePoints(message: Message, params: string, overwrite?:
     await updateUserPoints({ user, amount, discordGuildID: message.guild.id, overwrite });
     // TODO: Update message
     message.channel.send(overwrite
-      ? `Set points of ${member.displayName} to ${value}`
-      : `Added ${value} to ${member.displayName}.`
+      ? `Set points of ${member.displayName} to ${amount}`
+      : `Added ${amount} to ${member.displayName}.`
     );
   }
   catch(error)
