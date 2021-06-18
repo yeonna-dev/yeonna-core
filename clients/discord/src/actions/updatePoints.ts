@@ -29,7 +29,7 @@ export async function updatePoints({
   else
   {
     const [ userString, amountString ] = parseParamsToArray(params);
-    if(! user)
+    if(! userString)
       return message.channel.send(overwrite
         ? 'Set points of who?'
         : 'Add points to who?'

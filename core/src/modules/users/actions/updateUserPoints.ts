@@ -13,7 +13,7 @@ export async function updateUserPoints({
   discordGuildID?: string
 }): Promise<void>
 {
-  user = await findUserID(user);
+  user = await findUserID(user, true);
 
   /* Check if the user's obtainable record is already created. */
   const points = await ObtainableService.getPoints(user);
