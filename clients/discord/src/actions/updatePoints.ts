@@ -9,12 +9,12 @@ export async function updatePoints({
   message,
   params,
   daily,
-  overwrite,
+  add,
 }: {
   message: Message,
   params: string,
   daily?: number,
-  overwrite?: boolean
+  add?: boolean
 })
 {
   if(! message.guild)
@@ -30,9 +30,9 @@ export async function updatePoints({
   {
     const [ userString, amountString ] = parseParamsToArray(params);
     if(! userString)
-      return message.channel.send(overwrite
-        ? 'Set points of who?'
-        : 'Add points to who?'
+      return message.channel.send(add
+        ? 'Add points to who?'
+        : 'Set points of who?'
       );
 
     user = getIdFromMention(userString);
@@ -65,11 +65,12 @@ export async function updatePoints({
 
   try
   {
-    await updateUserPoints({ user, amount, discordGuildID: message.guild.id, overwrite });
+    await updateUserPoints({ user, amount, discordGuildID: message.guild.id, add });
+
     // TODO: Update message
-    message.channel.send(overwrite
-      ? `Set points of ${member.displayName} to ${amount}`
-      : `Added ${amount} to ${member.displayName}.`
+    message.channel.send(add
+      ? `Added ${amount} points to ${member.displayName}.`
+      : `Set points of ${member.displayName} to ${amount}`
     );
   }
   catch(error)
