@@ -3,8 +3,12 @@ import { parseParamsToArray } from 'comtroller';
 
 import { updateUserPoints } from '../../../../core/src';
 
-import { getIdFromMention } from '../helpers/getIdFromMention';
+import { findGuildMember } from './findGuildMember';
 
+import { getIdFromMention } from '../helpers/getIdFromMention';
+import { isNumber } from '../helpers/isNumber';
+
+// TODO: Update responses
 export async function updatePoints({
   message,
   params,
@@ -25,6 +29,7 @@ export async function updatePoints({
   {
     user = message.author.id;
     amount = daily;
+    add = true;
   }
   else
   {
@@ -35,28 +40,17 @@ export async function updatePoints({
         : 'Set points of who?'
       );
 
+    /* Check if the given value is a valid number. */
+    if(isNumber(amountString))
+      return message.channel.send('Please include the amount.');
+
     user = getIdFromMention(userString);
     amount = parseFloat(amountString);
-
-    /* Check if the given value is a valid number. */
-    if(! amountString || isNaN(amount) || ! /^\d+(\.\d+)?$/g.test(amountString))
-      return message.channel.send('Please include the amount.');
   }
 
   message.channel.startTyping();
 
-  let member;
-  try
-  {
-    member = await message.guild.members.fetch(user);
-  }
-  catch(error)
-  {
-    /* Error code `10013` is when the given user is an unknown user. */
-    if(error.code !== 10013)
-      console.error(error);
-  }
-
+  const member = await findGuildMember(message, user);
   if(! member)
   {
     message.channel.stopTyping(true);
@@ -66,8 +60,6 @@ export async function updatePoints({
   try
   {
     await updateUserPoints({ user, amount, discordGuildID: message.guild.id, add });
-
-    // TODO: Update message
     message.channel.send(add
       ? `Added ${amount} points to ${member.displayName}.`
       : `Set points of ${member.displayName} to ${amount}`
