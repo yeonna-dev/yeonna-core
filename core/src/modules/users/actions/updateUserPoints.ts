@@ -4,16 +4,19 @@ import { findUserID } from '.';
 export async function updateUserPoints({
   user,
   amount,
-  overwrite,
+  add,
+  subtract,
   discordGuildID,
 }: {
   user: string,
   amount: number,
-  overwrite?: boolean,
+  add?: boolean,
+  subtract?: boolean,
   discordGuildID?: string
 }): Promise<void>
 {
   user = await findUserID(user, true);
+  amount = Math.abs(amount);
 
   /* Check if the user's obtainable record is already created. */
   const points = await ObtainableService.getPoints(user);
@@ -24,5 +27,10 @@ export async function updateUserPoints({
     return;
   }
 
-  await ObtainableService.updatePoints(user, overwrite ? amount : points + Math.abs(amount));
+  await ObtainableService.updatePoints(
+    user,
+    add
+      ? points + amount : subtract
+      ? points - amount : amount
+  );
 }
