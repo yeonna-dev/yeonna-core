@@ -1,5 +1,4 @@
 import { findUserByID } from './findUserByID';
-import { updateUserPoints } from './updateUserPoints';
 
 import { ObtainableService } from '../services/ObtainableService';
 
@@ -9,6 +8,7 @@ export async function transferUserPoints(
   fromUserID: string,
   toUserID: string,
   amount: number,
+  discordGuildID?: string,
 ): Promise<void>
 {
   amount = Math.abs(amount);
@@ -26,10 +26,13 @@ export async function transferUserPoints(
 
   /* Get the points of user to add points to (target user). */
   const target = await findUserByID(toUserID, true);
-  const targetPoints = await ObtainableService.getPoints(target) || 0;
 
   /* Add points to the target user. */
-  await ObtainableService.updatePoints(target, targetPoints + amount);
+  const targetPoints = await ObtainableService.getPoints(target);
+  if(! targetPoints)
+    await ObtainableService.addPoints({ userUUID: target, discordGuildID, amount });
+  else
+    await ObtainableService.updatePoints(target, targetPoints + amount);
 
   /* Subtract points from the source user. */
   await ObtainableService.updatePoints(source, sourcePoints - amount);
