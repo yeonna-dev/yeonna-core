@@ -7,3 +7,11 @@ export class UserNotFound extends Error
     super('User not found');
   }
 }
+
+export class NotEnoughPoints extends Error
+{
+  constructor()
+  {
+    super('Not enough points');
+  }
+}
