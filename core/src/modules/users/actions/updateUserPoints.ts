@@ -1,5 +1,5 @@
 import { ObtainableService } from '../services/ObtainableService'
-import { findUserID } from '.';
+import { findUserByID } from '.';
 
 export async function updateUserPoints({
   user,
@@ -15,7 +15,7 @@ export async function updateUserPoints({
   discordGuildID?: string
 }): Promise<void>
 {
-  user = await findUserID(user, true);
+  user = await findUserByID(user, true);
   amount = Math.abs(amount);
 
   /* Check if the user's obtainable record is already created. */

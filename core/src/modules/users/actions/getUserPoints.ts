@@ -1,9 +1,9 @@
 import { ObtainableService } from '../services/ObtainableService';
 
-import { findUserID } from './findUserID';
+import { findUserByID } from './findUserByID';
 
 export async function getUserPoints(user: string)
 {
-  user = await findUserID(user);
+  user = await findUserByID(user);
   return ObtainableService.getPoints(user);
 }

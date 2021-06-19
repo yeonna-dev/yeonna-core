@@ -1,7 +1,7 @@
 import { UserNotFound } from '../../../common/errors';
 import { UsersService } from '../services/UsersService';
 
-export async function findUserID(user: string, createIfNotExisting?: boolean)
+export async function findUserByID(user: string, createIfNotExisting?: boolean)
 {
   /* Get the user with the given identifier, whether the identifier is a user UUID or Discord ID. */
   let userObject = await UsersService.findByUUID(user);
