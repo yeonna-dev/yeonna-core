@@ -2,7 +2,7 @@ import { supabase } from '../../../common/supabase-client';
 import { v4 as generateUUID } from 'uuid';
 
 const users = () => supabase.from<UserRecord>('users');
-enum Columns
+export enum UsersFields
 {
   uuid = 'uuid',
   discord_id = 'discord_id',
@@ -35,11 +35,19 @@ export const UsersService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  private async find(identifier: string, filterColumn: keyof UserRecord): Promise<User | undefined>
+  private async find(
+    identifier: string | string[],
+    filterColumn: keyof UserRecord,
+  ): Promise<User | User[] | undefined>
   {
-    const { data, error } = await users()
-      .select()
-      .filter(filterColumn, 'eq', identifier);
+    let query = users()
+      .select();
+
+    const { data, error } = await (
+      Array.isArray(identifier)
+        ? query.in(filterColumn, identifier)
+        : query.filter(filterColumn, 'eq', identifier)
+    );
 
     if(error)
     {
@@ -50,6 +58,12 @@ export const UsersService = new class
 
       throw error;
     }
+
+    if(Array.isArray(identifier))
+      return data?.map(user => ({
+        uuid: user[UsersFields.uuid],
+        discordID: user[UsersFields.discord_id],
+      }));
 
     const user = data?.pop();
     if(! user)
@@ -63,9 +77,9 @@ export const UsersService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async findByUUID(uuid: string)
+  async findByUUID(uuid: string | string[])
   {
-    return this.find(uuid, Columns.uuid);
+    return this.find(uuid, UsersFields.uuid);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -73,6 +87,6 @@ export const UsersService = new class
   /* Gets the user with the given Discord ID. */
   async findByDiscordID(discordID: string)
   {
-    return this.find(discordID, Columns.discord_id);
+    return this.find(discordID, UsersFields.discord_id);
   }
 }

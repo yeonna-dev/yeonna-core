@@ -1,10 +1,12 @@
 import 'mocha';
+import assert from 'assert';
 
 import
 {
   updateUserPoints,
   getUserPoints,
   transferUserPoints,
+  getTopPoints,
 } from '../../src';
 
 import { assertThrowsAsync } from '../helpers/assertThrowsAsync';
@@ -31,7 +33,7 @@ describe('User Points', () =>
   );
 
   it('should transfer the points of a user to another', async () =>
-    await transferUserPoints(user, receiverUser, 1000)
+    await transferUserPoints(user, receiverUser, 1)
   );
 
   it('should throw a NotEnoughPoints error', async () =>
@@ -44,4 +46,12 @@ describe('User Points', () =>
       new NotEnoughPoints(),
     )
   );
+
+  it('should get the top user points', async () =>
+  {
+    const count = 5;
+    const topUsers = await getTopPoints(count, discordGuildID);
+    assert.strictEqual(topUsers.length, count);
+    assert.strictEqual(topUsers.every(user => user.userUUID && user.points), true);
+  });
 });

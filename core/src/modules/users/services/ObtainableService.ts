@@ -1,7 +1,7 @@
 import { supabase } from '../../../common/supabase-client';
 
 const obtainables = () => supabase.from<ObtainableRecord>('obtainables');
-enum Columns
+export enum ObtainableFields
 {
   user_uuid = 'user_uuid',
   discord_guild_id = 'discord_guild_id',
@@ -47,7 +47,7 @@ export const ObtainableService = new class
   {
     const { data, error } = await obtainables()
       .select()
-      .filter(Columns.user_uuid, 'eq', userUUID);
+      .filter(ObtainableFields.user_uuid, 'eq', userUUID);
 
     if(error)
       throw error;
@@ -60,10 +60,29 @@ export const ObtainableService = new class
   async updatePoints(userUUID: string, amount: number): Promise<void>
   {
     const { error } = await obtainables()
-      .update({ [Columns.amount]: amount })
-      .match({ [Columns.user_uuid]: userUUID });
+      .update({ [ObtainableFields.amount]: amount })
+      .match({ [ObtainableFields.user_uuid]: userUUID });
 
     if(error)
       throw error;
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async getTop(count: number, discordGuildID?: string)
+  {
+    const query = obtainables()
+      .select()
+      .order(ObtainableFields.amount, { ascending: false })
+      .limit(count)
+
+    if(discordGuildID)
+      query.filter(ObtainableFields.discord_guild_id, 'eq', discordGuildID);
+
+    const { data, error } = await query;
+    if(error)
+      throw error;
+
+    return data;
   }
 }
