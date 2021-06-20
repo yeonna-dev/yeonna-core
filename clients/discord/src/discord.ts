@@ -2,7 +2,9 @@ require('dotenv').config();
 
 import { Client } from 'discord.js';
 import { Comtroller } from 'comtroller';
+
 import { loadCommands } from './commands';
+import { Log } from './utilities/logger';
 
 (async () =>
 {
@@ -15,14 +17,15 @@ import { loadCommands } from './commands';
   const discordBot = new Client();
   discordBot.login(process.env.BOT_TOKEN);
 
-  // TODO: Change log message.
-  discordBot.on('ready', () => console.log(`Discord bot connected as ${discordBot.user?.tag}`));
+  discordBot.on('ready', () => Log.info(`Discord bot connected as ${discordBot.user?.tag}`, true));
 
   discordBot.on('message', message =>
   {
     if(message.author.bot)
       return;
 
-    comtroller.run(message.content, { message });
+    const command = comtroller.run(message.content, { message });
+    if(command)
+      Log.command(message);
   });
 })();

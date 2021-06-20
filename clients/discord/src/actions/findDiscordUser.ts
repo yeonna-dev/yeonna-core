@@ -1,4 +1,5 @@
 import { Message } from 'discord.js';
+import { Log } from '../utilities/logger';
 
 export async function findDiscordUser(message: Message, userDiscordID: string, asMember?: boolean)
 {
@@ -13,7 +14,7 @@ export async function findDiscordUser(message: Message, userDiscordID: string, a
     /* Error code `10013` is when the given user is an unknown user. */
     /* Error code `10007` is when the user is not a member of the server. */
     if(error.code !== 10013 && error.code !== 10007)
-      console.error(error);
+      Log.error(error);
   }
 
   if(asMember)
@@ -27,7 +28,7 @@ export async function findDiscordUser(message: Message, userDiscordID: string, a
   catch(error)
   {
     if(error.code !== 10013)
-      console.error(error);
+      Log.error(error);
   }
 
   return user;

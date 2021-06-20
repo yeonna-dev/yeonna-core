@@ -11,7 +11,9 @@
   "license": "MIT",
   "dependencies": {
     "comtroller": "link:/media/esfox/Drive/dev/comtroller",
-    "discord.js": "^12.5.3"
+    "discord.js": "^12.5.3",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
     "@types/node": "^15.12.2",

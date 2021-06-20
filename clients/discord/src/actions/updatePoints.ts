@@ -8,6 +8,8 @@ import { findDiscordUser } from './findDiscordUser';
 import { getIdFromMention } from '../helpers/getIdFromMention';
 import { isNumber } from '../helpers/isNumber';
 
+import { Log } from '../utilities/logger';
+
 // TODO: Update responses
 export async function updatePoints({
   message,
@@ -67,7 +69,7 @@ export async function updatePoints({
   }
   catch(error)
   {
-    console.error(error);
+    Log.error(error);
     message.channel.send('Could not add points.');
   }
   finally

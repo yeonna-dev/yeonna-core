@@ -8,6 +8,8 @@ import { findDiscordUser } from '../actions/findDiscordUser';
 import { getIdFromMention } from '../helpers/getIdFromMention';
 import { isNumber } from '../helpers/isNumber';
 
+import { Log } from '../utilities/logger';
+
 // TODO: Update responses
 export const give: Command =
 {
@@ -51,7 +53,7 @@ export const give: Command =
         message.channel.send('Not enough points.');
       else
       {
-        console.error(error);
+        Log.error(error);
         message.channel.send('Could not transfer points.');
       }
     }
