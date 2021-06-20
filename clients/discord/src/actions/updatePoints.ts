@@ -1,9 +1,9 @@
-import { Message } from 'discord.js';
+import { GuildMember, Message } from 'discord.js';
 import { parseParamsToArray } from 'comtroller';
 
 import { updateUserPoints } from '../../../../core/src';
 
-import { findGuildMember } from './findGuildMember';
+import { findDiscordUser } from './findDiscordUser';
 
 import { getIdFromMention } from '../helpers/getIdFromMention';
 import { isNumber } from '../helpers/isNumber';
@@ -50,8 +50,8 @@ export async function updatePoints({
 
   message.channel.startTyping();
 
-  const member = await findGuildMember(message, user);
-  if(! member)
+  const member = await findDiscordUser(message, user, true);
+  if(! member || ! (member instanceof GuildMember))
   {
     message.channel.stopTyping(true);
     return message.channel.send('User is not a member of this server.');

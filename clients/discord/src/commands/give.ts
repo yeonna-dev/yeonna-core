@@ -1,9 +1,9 @@
-import { Message } from 'discord.js';
+import { GuildMember, Message } from 'discord.js';
 import { Command, parseParamsToArray } from 'comtroller';
 
 import { transferUserPoints, NotEnoughPoints } from '../../../../core/src';
 
-import { findGuildMember } from '../actions/findGuildMember';
+import { findDiscordUser } from '../actions/findDiscordUser';
 
 import { getIdFromMention } from '../helpers/getIdFromMention';
 import { isNumber } from '../helpers/isNumber';
@@ -31,8 +31,8 @@ export const give: Command =
 
     /* Check if the receiver is a valid guild member. */
     user = getIdFromMention(user);
-    const member = await findGuildMember(message, user);
-    if(! member)
+    const member = await findDiscordUser(message, user, true);
+    if(! member || ! (member instanceof GuildMember))
     {
       message.channel.stopTyping(true);
       return message.channel.send('User is not a member of this server.');
