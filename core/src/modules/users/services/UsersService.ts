@@ -14,11 +14,17 @@ export enum UsersFields
 export const UsersService = new class
 {
   /* Creates a user record. */
-  async create({ discordID }: { discordID?: string | null } = {}): Promise<string>
+  async create({
+    userUUID,
+    discordID,
+  } : {
+    userUUID?: string,
+    discordID?: string,
+  } = {}): Promise<string>
   {
     const user =
     {
-      uuid: generateUUID(),
+      uuid: userUUID || generateUUID(),
       discord_id: discordID,
     };
 
@@ -85,7 +91,7 @@ export const UsersService = new class
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   /* Gets the user with the given Discord ID. */
-  async findByDiscordID(discordID: string)
+  async findByDiscordID(discordID: string | string[])
   {
     return this.find(discordID, UsersFields.discord_id);
   }

@@ -50,17 +50,34 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  /* Gets the points of the user with the given UUID. */
-  async getPoints(userUUID: string): Promise<number | undefined>
+  private async getObtainable(userUUID: string, isCollectible?: boolean)
   {
-    const { data, error } = await obtainables()
+    const query = obtainables()
       .select()
       .filter(ObtainableFields.user_uuid, 'eq', userUUID);
 
+    if(isCollectible)
+      query.filter(ObtainableFields.is_collectible, 'eq', true);
+
+    const { data, error } = await query;
     if(error)
       throw error;
 
     return data?.pop()?.amount;
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async getPoints(userUUID: string): Promise<number | undefined>
+  {
+    return this.getObtainable(userUUID);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async getCollectibles(userUUID: string)
+  {
+    return this.getObtainable(userUUID, true);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

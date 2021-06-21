@@ -2,8 +2,14 @@ import { ObtainableService } from '../services/ObtainableService';
 
 import { findUserByID } from './findUserByID';
 
-export async function getUserPoints(user: string)
+export async function getUserPoints({
+  userUUID,
+  discordID,
+} : {
+  userUUID?: string,
+  discordID?: string,
+})
 {
-  user = await findUserByID(user);
-  return ObtainableService.getPoints(user);
+  const user = await findUserByID({ discordID, userUUID });
+  return user ? ObtainableService.getPoints(user) : 0;
 }

@@ -4,17 +4,26 @@ import { ObtainableService } from '../services/ObtainableService';
 
 import { NotEnoughPoints } from '../../../common/errors';
 
-export async function transferUserPoints(
-  fromUserID: string,
-  toUserID: string,
+export async function transferUserPoints({
+  fromUserUUID,
+  fromDiscordUserID,
+  toUserUUID,
+  toDiscordUserID,
+  amount,
+  discordGuildID,
+} : {
+  fromUserUUID?: string,
+  fromDiscordUserID?: string,
+  toUserUUID?: string,
+  toDiscordUserID?: string,
   amount: number,
   discordGuildID?: string,
-): Promise<void>
+}): Promise<void>
 {
   amount = Math.abs(amount);
 
   /* Get the points of the user to get points from (source user) */
-  const source = await findUserByID(fromUserID);
+  const source = await findUserByID({ discordID: fromDiscordUserID, userUUID: fromUserUUID });
   if(! source)
     throw new NotEnoughPoints();
 
@@ -25,12 +34,19 @@ export async function transferUserPoints(
     throw new NotEnoughPoints();
 
   /* Get the points of user to add points to (target user). */
-  const target = await findUserByID(toUserID, true);
+  const target = await findUserByID({
+    discordID: toDiscordUserID,
+    userUUID: toUserUUID,
+    createIfNotExisting: true,
+  });
+
+  if(! target)
+    throw new Error('Cannot transfer points');
 
   /* Add points to the target user. */
   const targetPoints = await ObtainableService.getPoints(target);
   if(! targetPoints)
-    await ObtainableService.createObtainable({ userUUID: target, discordGuildID, amount });
+    await ObtainableService.createObtainable({ userUUID: target, amount, discordGuildID });
   else
     await ObtainableService.updatePoints(target, targetPoints + amount);
 

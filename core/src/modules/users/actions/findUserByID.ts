@@ -1,31 +1,39 @@
-import { UserNotFound } from '../../../common/errors';
 import { UsersService } from '../services/UsersService';
 
-export async function findUserByID(user: string, createIfNotExisting?: boolean)
+export async function findUserByID({
+  userUUID,
+  discordID,
+  createIfNotExisting,
+} : {
+  userUUID?: string,
+  discordID?: string,
+  createIfNotExisting?: boolean
+})
 {
-  /* Get the user with the given identifier, whether the identifier is a user UUID or Discord ID. */
-  let userObject = await UsersService.findByUUID(user);
-  if(! userObject)
+  /* Get the user/s with the given user UUID/s or Discord ID/s. */
+  let result;
+  if(discordID)
+    result = await UsersService.findByDiscordID(discordID);
+  else if(userUUID)
+    result = await UsersService.findByUUID(userUUID);
+
+  if(! result && createIfNotExisting)
   {
-    userObject = await UsersService.findByDiscordID(user);
-    if(! userObject)
-    {
-      if(! createIfNotExisting)
-        throw new UserNotFound();
+    const createdUserUUID = await UsersService.create({ userUUID, discordID });
+    if(! createdUserUUID)
+      throw new Error('User not saved');
 
-      const userUUID = await UsersService.create({ discordID: user });
-      if(! user)
-        throw new Error('User not saved');
-
-      user = userUUID;
-    }
+    return createdUserUUID;
   }
 
-  if(userObject)
-    user = userObject.uuid;
+  if(! result)
+    return;
 
-  if(! user)
-    throw new UserNotFound();
+  if(! Array.isArray(result))
+    return result.uuid;
 
-  return user;
+  if(result.length === 0)
+    return;
+
+  return result.pop()?.uuid;
 }

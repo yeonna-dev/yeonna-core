@@ -2,35 +2,39 @@ import { ObtainableService } from '../services/ObtainableService'
 import { findUserByID } from '.';
 
 export async function updateUserPoints({
-  user,
+  userUUID,
+  discordID,
   amount,
   add,
   subtract,
   discordGuildID,
 }: {
-  user: string,
+  userUUID?: string,
+  discordID?: string,
   amount: number,
   add?: boolean,
   subtract?: boolean,
   discordGuildID?: string
 }): Promise<void>
 {
-  user = await findUserByID(user, true);
-  amount = Math.abs(amount);
-
-  /* Check if the user's obtainable record is already created. */
-  const points = await ObtainableService.getPoints(user);
-  if(points === undefined)
+  if(! userUUID)
   {
-    /* Create the obtainable record. */
-    await ObtainableService.createObtainable({ userUUID: user, discordGuildID, amount })
-    return;
+    userUUID = await findUserByID({ userUUID, discordID, createIfNotExisting: true });
+    if(! userUUID)
+      throw new Error('Cannot update user points');
   }
 
-  await ObtainableService.updatePoints(
-    user,
-    add
-      ? points + amount : subtract
-      ? points - amount : amount
-  );
+  /* Check if the user's obtainable record is already created. */
+  const points = await ObtainableService.getPoints(userUUID);
+
+  /* Create the obtainable record if not existing. */
+  if(points === undefined)
+    await ObtainableService.createObtainable({ userUUID: userUUID, discordGuildID, amount })
+  else
+    await ObtainableService.updatePoints(
+      userUUID,
+      add
+        ? points + amount : subtract
+        ? points - amount : amount
+    );
 }
