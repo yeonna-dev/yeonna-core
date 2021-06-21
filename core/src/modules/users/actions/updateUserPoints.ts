@@ -23,7 +23,7 @@ export async function updateUserPoints({
   if(points === undefined)
   {
     /* Create the obtainable record. */
-    await ObtainableService.addPoints({ userUUID: user, discordGuildID, amount })
+    await ObtainableService.createObtainable({ userUUID: user, discordGuildID, amount })
     return;
   }
 

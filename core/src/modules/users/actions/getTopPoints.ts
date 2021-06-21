@@ -11,7 +11,7 @@ type TopPoints =
 export async function getTopPoints(count: number, discordGuildID?: string): Promise<TopPoints[]>
 {
   /* Get top points. */
-  const top = await ObtainableService.getTop(count, discordGuildID);
+  const top = await ObtainableService.getTop({ count, discordGuildID });
   if(! top)
     return [];
 

@@ -30,7 +30,7 @@ export async function transferUserPoints(
   /* Add points to the target user. */
   const targetPoints = await ObtainableService.getPoints(target);
   if(! targetPoints)
-    await ObtainableService.addPoints({ userUUID: target, discordGuildID, amount });
+    await ObtainableService.createObtainable({ userUUID: target, discordGuildID, amount });
   else
     await ObtainableService.updatePoints(target, targetPoints + amount);
 

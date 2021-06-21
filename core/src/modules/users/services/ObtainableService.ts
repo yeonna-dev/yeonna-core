@@ -15,15 +15,23 @@ export enum ObtainableFields
 export const ObtainableService = new class
 {
   /* Creates an obtainable record */
-  async addPoints(
-    { userUUID, discordGuildID, amount = 0 }: { userUUID: string, discordGuildID?: string, amount: number },
-  ): Promise<Boolean>
+  async createObtainable({
+    userUUID,
+    amount = 0,
+    isCollectible,
+    discordGuildID,
+  } : {
+    userUUID: string,
+    amount: number,
+    isCollectible?: boolean,
+    discordGuildID?: string,
+  }): Promise<Boolean>
   {
     const insertData: ObtainableRecord =
     {
       user_uuid: userUUID,
       amount,
-      is_collectible: false,
+      is_collectible: isCollectible,
     };
 
     if(discordGuildID)
@@ -69,12 +77,23 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async getTop(count: number, discordGuildID?: string)
+  async getTop({
+    count,
+    collectible,
+    discordGuildID,
+  } : {
+    count: number,
+    collectible?: boolean,
+    discordGuildID?: string,
+  })
   {
     const query = obtainables()
       .select()
       .order(ObtainableFields.amount, { ascending: false })
       .limit(count)
+
+    if(collectible)
+      query.filter(ObtainableFields.is_collectible, 'eq', true);
 
     if(discordGuildID)
       query.filter(ObtainableFields.discord_guild_id, 'eq', discordGuildID);
