@@ -25,7 +25,7 @@ export async function updateUserPoints({
   }
 
   /* Check if the user's obtainable record is already created. */
-  const points = await ObtainableService.getPoints(userUUID);
+  const points = await ObtainableService.getPoints({ userUUID });
 
   /* Create the obtainable record if not existing. */
   if(points === undefined)

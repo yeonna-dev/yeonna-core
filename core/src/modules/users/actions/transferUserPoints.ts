@@ -27,7 +27,7 @@ export async function transferUserPoints({
   if(! source)
     throw new NotEnoughPoints();
 
-  const sourcePoints = await ObtainableService.getPoints(source) || 0;
+  const sourcePoints = await ObtainableService.getPoints({ userUUID: source }) || 0;
 
   /* Check if the source user has less points than the given amount. */
   if(! sourcePoints || sourcePoints < amount)
@@ -44,7 +44,7 @@ export async function transferUserPoints({
     throw new Error('Cannot transfer points');
 
   /* Add points to the target user. */
-  const targetPoints = await ObtainableService.getPoints(target);
+  const targetPoints = await ObtainableService.getPoints({ userUUID: target });
   if(! targetPoints)
     await ObtainableService.createObtainable({ userUUID: target, amount, discordGuildID });
   else

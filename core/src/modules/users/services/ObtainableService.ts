@@ -1,4 +1,5 @@
 import { supabase } from '../../../common/supabase-client';
+import { findUserByID } from '../actions';
 
 const obtainables = () => supabase.from<ObtainableRecord>('obtainables');
 export enum ObtainableFields
@@ -50,8 +51,22 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  private async getObtainable(userUUID: string, isCollectible?: boolean)
+  private async getObtainable({
+    userUUID,
+    discordID,
+    isCollectible,
+  } : {
+    userUUID?: string,
+    discordID?: string,
+    isCollectible?: boolean,
+  })
   {
+    if(! userUUID && discordID)
+      userUUID = await findUserByID({ discordID, createIfNotExisting: true });
+
+    if(! userUUID)
+      return 0;
+
     const query = obtainables()
       .select()
       .filter(ObtainableFields.user_uuid, 'eq', userUUID);
@@ -68,16 +83,28 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async getPoints(userUUID: string): Promise<number | undefined>
+  async getPoints({
+    userUUID,
+    discordID,
+  } : {
+    userUUID?: string,
+    discordID?: string,
+  }): Promise<number | undefined>
   {
-    return this.getObtainable(userUUID);
+    return this.getObtainable({ userUUID, discordID });
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async getCollectibles(userUUID: string)
+  async getCollectibles({
+    userUUID,
+    discordID,
+  } : {
+    userUUID?: string,
+    discordID?: string,
+  })
   {
-    return this.getObtainable(userUUID, true);
+    return this.getObtainable({ userUUID, discordID, isCollectible: true });
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
