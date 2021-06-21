@@ -17,7 +17,7 @@ describe('User Points', () =>
 {
   const user1 = 'ba0c9d72-f1b6-4f67-8ce0-8ba718694386';
   const user2 = '80914576-99fe-4871-94ae-4b4e872a9a8b';
-  const amount = 2000;
+  const amount = 100;
   const discordGuildID = '504135117296500746';
 
   it('should get the points of a user', async () =>
@@ -33,7 +33,7 @@ describe('User Points', () =>
   );
 
   it('should transfer the points of a user to another', async () =>
-    await transferUserPoints({ fromUserUUID: user1, toUserUUID: user2, amount: 1, discordGuildID })
+    await transferUserPoints({ fromUserUUID: user1, toUserUUID: user2, amount, discordGuildID })
   );
 
   it('should throw a NotEnoughPoints error', async () =>
@@ -55,6 +55,9 @@ describe('User Points', () =>
   it('should get the top user points', async () =>
   {
     const topUsers = await getTopPoints(10, discordGuildID);
-    assert.strictEqual(topUsers.every(user => user.userUUID && user.points), true);
+    assert.strictEqual(
+      topUsers.every(user => user.userUUID && typeof user.points === 'number'),
+      true,
+    );
   });
 });

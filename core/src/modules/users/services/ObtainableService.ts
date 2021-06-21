@@ -1,5 +1,4 @@
 import { supabase } from '../../../common/supabase-client';
-import { findUserByID } from '../actions';
 
 const obtainables = () => supabase.from<ObtainableRecord>('obtainables');
 export enum ObtainableFields
@@ -51,30 +50,13 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  private async getObtainable({
-    userUUID,
-    discordID,
-    isCollectible,
-  } : {
-    userUUID?: string,
-    discordID?: string,
-    isCollectible?: boolean,
-  })
+  async getObtainable(userUUID: string, isCollectible?: boolean)
   {
-    if(! userUUID && discordID)
-      userUUID = await findUserByID({ discordID, createIfNotExisting: true });
-
-    if(! userUUID)
-      return 0;
-
-    const query = obtainables()
+    const { data, error } = await obtainables()
       .select()
-      .filter(ObtainableFields.user_uuid, 'eq', userUUID);
+      .eq(ObtainableFields.user_uuid, userUUID)
+      .is(ObtainableFields.is_collectible, isCollectible ? true : false);
 
-    if(isCollectible)
-      query.filter(ObtainableFields.is_collectible, 'eq', true);
-
-    const { data, error } = await query;
     if(error)
       throw error;
 
@@ -83,37 +65,12 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async getPoints({
-    userUUID,
-    discordID,
-  } : {
-    userUUID?: string,
-    discordID?: string,
-  }): Promise<number | undefined>
-  {
-    return this.getObtainable({ userUUID, discordID });
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  async getCollectibles({
-    userUUID,
-    discordID,
-  } : {
-    userUUID?: string,
-    discordID?: string,
-  })
-  {
-    return this.getObtainable({ userUUID, discordID, isCollectible: true });
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  async updatePoints(userUUID: string, amount: number): Promise<void>
+  async updateObtainables(userUUID: string, amount: number, isCollectible?: boolean): Promise<void>
   {
     const { error } = await obtainables()
       .update({ [ObtainableFields.amount]: amount })
-      .match({ [ObtainableFields.user_uuid]: userUUID });
+      .match({ [ObtainableFields.user_uuid]: userUUID })
+      .is(ObtainableFields.is_collectible, isCollectible ? true : false);
 
     if(error)
       throw error;
@@ -123,24 +80,22 @@ export const ObtainableService = new class
 
   async getTop({
     count,
-    collectible,
+    isCollectible,
     discordGuildID,
   } : {
     count: number,
-    collectible?: boolean,
+    isCollectible?: boolean,
     discordGuildID?: string,
   })
   {
     const query = obtainables()
       .select()
       .order(ObtainableFields.amount, { ascending: false })
-      .limit(count)
-
-    if(collectible)
-      query.filter(ObtainableFields.is_collectible, 'eq', true);
+      .is(ObtainableFields.is_collectible, isCollectible ? true : false)
+      .limit(count);
 
     if(discordGuildID)
-      query.filter(ObtainableFields.discord_guild_id, 'eq', discordGuildID);
+      query.eq(ObtainableFields.discord_guild_id, discordGuildID);
 
     const { data, error } = await query;
     if(error)

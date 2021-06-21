@@ -1,6 +1,6 @@
-import { ObtainableService } from '../services/ObtainableService';
+import { getObtainables } from './getObtainables';
 
 export async function getUserPoints({ userUUID, discordID } : { userUUID?: string, discordID?: string })
 {
-  return ObtainableService.getPoints({ userUUID, discordID });
+  return getObtainables({ userUUID, discordID });
 }
