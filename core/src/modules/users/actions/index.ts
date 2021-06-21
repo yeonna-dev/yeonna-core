@@ -1,13 +1,8 @@
 export * from './findUserByID';
 
-/* Points */
-export * from './getUserPoints';
-export * from './updateUserPoints';
-export * from './transferUserPoints';
-export * from './getTopPoints';
+/* Obtainables */
+export * from './getObtainables';
+export * from './updateObtainables';
+export * from './transferObtainables';
+export * from './getTopObtainables';
 
-/* Collectibles */
-export * from './getUserCollectibles';
-export * from './updateUserCollectibles';
-export * from './transferUserCollectibles';
-export * from './getTopCollectibles';

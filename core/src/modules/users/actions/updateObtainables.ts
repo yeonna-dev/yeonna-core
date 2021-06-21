@@ -42,3 +42,41 @@ export async function updateObtainables({
     await ObtainableService.updateObtainables(userUUID, newPoints, isCollectible);
   }
 }
+
+export async function updateUserPoints({
+  userUUID,
+  discordID,
+  amount,
+  add,
+  subtract,
+  discordGuildID,
+}: {
+  userUUID?: string,
+  discordID?: string,
+  amount: number,
+  add?: boolean,
+  subtract?: boolean,
+  discordGuildID?: string
+}): Promise<void>
+{
+  await updateObtainables({ userUUID, discordID, amount, add, subtract, discordGuildID });
+}
+
+export async function updateUserCollectibles({
+  userUUID,
+  discordID,
+  amount,
+  add,
+  subtract,
+  discordGuildID,
+}: {
+  userUUID?: string,
+  discordID?: string,
+  amount: number,
+  add?: boolean,
+  subtract?: boolean,
+  discordGuildID?: string
+}): Promise<void>
+{
+  await updateObtainables({ userUUID, discordID, amount, add, subtract, discordGuildID, isCollectible: true });
+}

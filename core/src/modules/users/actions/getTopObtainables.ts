@@ -56,3 +56,13 @@ export async function getTopObtainables({
 
   return topUsers;
 }
+
+export function getTopPoints(count: number, discordGuildID?: string)
+{
+  return getTopObtainables({ count, discordGuildID });
+}
+
+export function getTopCollectibles(count: number, discordGuildID?: string)
+{
+  return getTopObtainables({ count, isCollectible: true, discordGuildID });
+}

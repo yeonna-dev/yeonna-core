@@ -18,3 +18,14 @@ export async function getObtainables({
 
   return ObtainableService.getObtainable(userUUID, isCollectible);
 }
+
+export async function getUserPoints({ userUUID, discordID } : { userUUID?: string, discordID?: string })
+{
+  return getObtainables({ userUUID, discordID });
+}
+
+export async function getUserCollectibles({ userUUID, discordID } : { userUUID?: string, discordID?: string })
+{
+  return getObtainables({ userUUID, discordID, isCollectible: true });
+}
+

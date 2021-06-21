@@ -61,3 +61,56 @@ export async function transferObtainables({
   /* Subtract obtainables from the source user. */
   await ObtainableService.updateObtainables(source, sourceObtainables - amount, isCollectible);
 }
+
+export async function transferUserPoints({
+  fromUserUUID,
+  fromDiscordUserID,
+  toUserUUID,
+  toDiscordUserID,
+  amount,
+  discordGuildID,
+} : {
+  fromUserUUID?: string,
+  fromDiscordUserID?: string,
+  toUserUUID?: string,
+  toDiscordUserID?: string,
+  amount: number,
+  discordGuildID?: string,
+}): Promise<void>
+{
+  await transferObtainables({
+    fromUserUUID,
+    fromDiscordUserID,
+    toUserUUID,
+    toDiscordUserID,
+    amount,
+    discordGuildID,
+  });
+}
+
+export async function transferUserCollectibles({
+  fromUserUUID,
+  fromDiscordUserID,
+  toUserUUID,
+  toDiscordUserID,
+  amount,
+  discordGuildID,
+} : {
+  fromUserUUID?: string,
+  fromDiscordUserID?: string,
+  toUserUUID?: string,
+  toDiscordUserID?: string,
+  amount: number,
+  discordGuildID?: string,
+}): Promise<void>
+{
+  await transferObtainables({
+    fromUserUUID,
+    fromDiscordUserID,
+    toUserUUID,
+    toDiscordUserID,
+    amount,
+    discordGuildID,
+    isCollectible: true,
+  });
+}
