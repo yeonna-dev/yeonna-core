@@ -61,7 +61,7 @@ export async function updatePoints({
 
   try
   {
-    await updateUserPoints({ user, amount, discordGuildID: message.guild.id, add });
+    await updateUserPoints({ discordID: user, amount, discordGuildID: message.guild.id, add });
     message.channel.send(add
       ? `Added ${amount} points to ${member.displayName}.`
       : `Set points of ${member.displayName} to ${amount}`

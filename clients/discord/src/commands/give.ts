@@ -44,7 +44,13 @@ export const give: Command =
     const amount = parseFloat(amountString);
     try
     {
-      await transferUserPoints(message.author.id, user, amount, message.guild.id);
+      await transferUserPoints({
+        fromDiscordUserID: message.author.id,
+        toDiscordUserID: user,
+        amount,
+        discordGuildID: message.guild.id,
+      });
+
       message.channel.send(`Transferred ${amount} points to ${member.displayName}.`);
     }
     catch(error)

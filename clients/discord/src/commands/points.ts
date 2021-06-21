@@ -10,15 +10,15 @@ export const points: Command =
   aliases: [ 'p' ],
   run: async ({ message, params }: { message: Message, params: string }) =>
   {
-    let [ discordUser ] = parseParamsToArray(params);
-    discordUser = discordUser || message.author.id;
-    discordUser = getIdFromMention(discordUser);
+    let [ discordID ] = parseParamsToArray(params);
+    discordID = discordID || message.author.id;
+    discordID = getIdFromMention(discordID);
 
     message.channel.startTyping();
 
     try
     {
-      const points = await getUserPoints(discordUser);
+      const points = await getUserPoints({ discordID });
       // TODO: Update message
       message.channel.send(points?.toString() || 0);
     }

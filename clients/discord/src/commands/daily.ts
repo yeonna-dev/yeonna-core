@@ -11,6 +11,7 @@ const command = 'daily';
 /* Add 24-hour cooldown. */
 cooldowns.add(command, 86400000, true);
 
+// TODO: Update responses.
 export const daily: Command =
 {
   name: command,
