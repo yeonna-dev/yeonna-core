@@ -11,7 +11,7 @@ import
 
 import { assertThrowsAsync } from '../helpers/assertThrowsAsync';
 
-import { NotEnoughPoints } from '../../src/common/errors';
+import { NotEnoughCollectibles } from '../../src/common/errors';
 
 describe('User Collectibles', () =>
 {
@@ -36,7 +36,7 @@ describe('User Collectibles', () =>
     await transferUserCollectibles({ fromUserUUID: user1, toUserUUID: user2, amount, discordGuildID })
   );
 
-  it('should throw a NotEnoughPoints error', async () =>
+  it('should throw a NotEnoughCollectibles error', async () =>
     await assertThrowsAsync(
       async () =>
       {
@@ -48,7 +48,7 @@ describe('User Collectibles', () =>
           discordGuildID,
         });
       },
-      new NotEnoughPoints(),
+      new NotEnoughCollectibles(),
     )
   );
 

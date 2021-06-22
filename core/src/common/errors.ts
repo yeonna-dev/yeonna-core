@@ -15,3 +15,11 @@ export class NotEnoughPoints extends Error
     super('Not enough points');
   }
 }
+
+export class NotEnoughCollectibles extends Error
+{
+  constructor()
+  {
+    super('Not enough collectibles');
+  }
+}

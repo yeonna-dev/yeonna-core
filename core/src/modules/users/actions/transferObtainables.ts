@@ -2,7 +2,7 @@ import { findUserByID } from './findUserByID';
 
 import { ObtainableService } from '../services/ObtainableService';
 
-import { NotEnoughPoints } from '../../../common/errors';
+import { NotEnoughCollectibles, NotEnoughPoints } from '../../../common/errors';
 import { getObtainables } from './getObtainables';
 
 export async function transferObtainables({
@@ -28,13 +28,13 @@ export async function transferObtainables({
   /* Get the obtainables of the user to get obtainables from (source user) */
   const source = await findUserByID({ discordID: fromDiscordUserID, userUUID: fromUserUUID });
   if(! source)
-    throw new NotEnoughPoints();
+    throw new (isCollectible ? NotEnoughCollectibles : NotEnoughPoints)();
 
   const sourceObtainables = await getObtainables({ userUUID: source, isCollectible });
 
   /* Check if the source user has less obtainables than the given amount. */
   if(! sourceObtainables || sourceObtainables < amount)
-    throw new NotEnoughPoints();
+    throw new (isCollectible ? NotEnoughCollectibles : NotEnoughPoints)();
 
   /* Get the obtainables of user to add obtainables to (target user). */
   const target = await findUserByID({

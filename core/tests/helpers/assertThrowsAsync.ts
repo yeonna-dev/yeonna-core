@@ -6,7 +6,8 @@ export async function assertThrowsAsync(fn: Function, error: string | Error)
   try
   {
     await fn();
-  } catch(e)
+  }
+  catch(e)
   {
     f = () => {throw e};
   }
