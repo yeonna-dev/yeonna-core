@@ -11,7 +11,7 @@ import { Log } from './utilities/logger';
   const commands = await loadCommands();
   const comtroller = new Comtroller({
     commands,
-    defaults: { prefix: '-' },
+    defaults: { prefix: ';' },
   });
 
   const discordBot = new Client();
