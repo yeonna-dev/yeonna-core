@@ -9,7 +9,9 @@ export const collectibles: Command =
   aliases: [ 'cs' ],
   run: async ({ message }: { message: Message }) =>
   {
+    message.channel.startTyping();
     const collectibles = await getUserCollectibles({ discordID: message.author.id });
     message.channel.send(`${message.member?.displayName} has ${collectibles} collectibles.`);
+    message.channel.stopTyping(true);
   },
 };
