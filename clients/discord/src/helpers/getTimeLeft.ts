@@ -1,12 +1,12 @@
 export function getTimeLeft(milliseconds: any)
 {
-  const suffix = (amount: number) => amount !== 1 ? 's' : '';
+  const suffix = (amount: number | string) => amount !== 1 ? 's' : '';
 
   const rawSeconds = milliseconds / 1000;
   if(milliseconds < 60000)
   {
-    const seconds = milliseconds >= 1000 ? Math.floor(rawSeconds) : (rawSeconds);
-    return `${seconds.toFixed(2)} second${suffix(seconds)}`;
+    const seconds = milliseconds >= 1000 ? Math.floor(rawSeconds) : rawSeconds.toFixed(2);
+    return `${seconds} second${suffix(seconds)}`;
   }
 
   const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
