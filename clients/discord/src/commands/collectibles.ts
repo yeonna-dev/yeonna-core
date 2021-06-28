@@ -9,8 +9,14 @@ export const collectibles: Command =
   aliases: [ 'cs' ],
   run: async ({ message }: { message: Message }) =>
   {
+    if(! message.guild)
+      return message.channel.send('This command can only be used in a guild.');
+
     message.channel.startTyping();
-    const collectibles = await getUserCollectibles({ discordID: message.author.id });
+    const collectibles = await getUserCollectibles({
+      discordID: message.author.id,
+      discordGuildID: message.guild.id,
+    });
     message.channel.send(`${message.member?.displayName} has ${collectibles} collectibles.`);
     message.channel.stopTyping(true);
   },
