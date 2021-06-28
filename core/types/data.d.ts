@@ -2,6 +2,7 @@ interface User
 {
   uuid: string;
   discordID?: string | null;
+  twitchID?: string | null;
 }
 
 interface DiscordGuild

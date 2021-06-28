@@ -3,37 +3,40 @@ import { UsersService } from '../services/UsersService';
 export async function findUserByID({
   userUUID,
   discordID,
+  twitchID,
   createIfNotExisting,
 } : {
   userUUID?: string,
   discordID?: string,
+  twitchID?: string,
   createIfNotExisting?: boolean
 })
 {
-  /* Get the user/s with the given user UUID/s or Discord ID/s. */
-  let result;
-  if(discordID)
-    result = await UsersService.findByDiscordID(discordID);
-  else if(userUUID)
-    result = await UsersService.findByUUID(userUUID);
+  /* Get the user/s with the given user UUID/s or Discord or Twitch ID/s. */
+  const result = await UsersService.find({
+    uuids: userUUID,
+    discordIDs: discordID,
+    twitchIDs: twitchID,
+  });
 
-  if(! result && createIfNotExisting)
+  const [ user ] = result;
+  if(! user && createIfNotExisting)
   {
-    const createdUserUUID = await UsersService.create({ userUUID, discordID });
+    const createdUserUUID = await UsersService.create({ discordID, twitchID });
     if(! createdUserUUID)
       throw new Error('User not saved');
 
     return createdUserUUID;
   }
 
-  if(! result)
+  if(! user)
     return;
 
-  if(! Array.isArray(result))
-    return result.uuid;
+  if(! Array.isArray(user))
+    return user.uuid;
 
-  if(result.length === 0)
+  if(user.length === 0)
     return;
 
-  return result.pop()?.uuid;
+  return user.pop()?.uuid;
 }

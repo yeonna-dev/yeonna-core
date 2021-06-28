@@ -5,27 +5,37 @@ type TopPoints =
 {
   userUUID: string;
   discordID?: string | null;
+  twitchID?: string | null;
   points: number;
 };
 
+// TODO: Join getting users with obtainables
 export async function getTopObtainables({
   count,
-  discordGuildID,
   isCollectible,
+  discordGuildID,
+  twitchChannelID,
 } : {
   count: number,
-  discordGuildID?: string,
   isCollectible?: boolean,
+  discordGuildID?: string,
+  twitchChannelID?: string,
 }): Promise<TopPoints[]>
 {
   /* Get top points. */
-  const top = await ObtainableService.getTop({ count, discordGuildID, isCollectible });
+  const top = await ObtainableService.getTop({
+    count,
+    discordGuildID,
+    twitchChannelID,
+    isCollectible,
+  });
+
   if(! top)
     return [];
 
   /* Get users of top points. */
   const userUUIDs = top.map(user => user[ObtainableFields.user_uuid]);
-  const users = await UsersService.findByUUID(userUUIDs);
+  const users = await UsersService.find({ uuids: userUUIDs });
   if(! users || ! Array.isArray(users))
     return [];
 
@@ -50,6 +60,7 @@ export async function getTopObtainables({
     topUsers.push({
       userUUID: pointsUser.uuid,
       discordID: pointsUser.discordID,
+      twitchID: pointsUser.twitchID,
       points: points[ObtainableFields.amount],
     });
   }
@@ -57,12 +68,28 @@ export async function getTopObtainables({
   return topUsers;
 }
 
-export function getTopPoints(count: number, discordGuildID?: string)
+export function getTopPoints({
+  count,
+  discordGuildID,
+  twitchChannelID,
+} : {
+  count: number,
+  discordGuildID?: string,
+  twitchChannelID?: string,
+})
 {
-  return getTopObtainables({ count, discordGuildID });
+  return getTopObtainables({ count, discordGuildID, twitchChannelID });
 }
 
-export function getTopCollectibles(count: number, discordGuildID?: string)
+export function getTopCollectibles({
+  count,
+  discordGuildID,
+  twitchChannelID,
+} : {
+  count: number,
+  discordGuildID?: string,
+  twitchChannelID?: string,
+})
 {
-  return getTopObtainables({ count, isCollectible: true, discordGuildID });
+  return getTopObtainables({ count, isCollectible: true, discordGuildID, twitchChannelID });
 }

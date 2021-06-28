@@ -6,6 +6,7 @@ export enum UsersFields
 {
   uuid = 'uuid',
   discord_id = 'discord_id',
+  twitch_id = 'twitch_id',
   created_at = 'created_at',
   updated_at = 'updated_at',
   deleted_at = 'deleted_at',
@@ -15,17 +16,21 @@ export const UsersService = new class
 {
   /* Creates a user record. */
   async create({
-    userUUID,
     discordID,
+    twitchID,
   } : {
-    userUUID?: string,
     discordID?: string,
+    twitchID?: string,
   } = {}): Promise<string>
   {
+    if(! discordID && ! twitchID)
+      throw new Error('No Discord or Twitch ID provided.');
+
     const user =
     {
-      uuid: userUUID || generateUUID(),
-      discord_id: discordID,
+      [UsersFields.uuid]: generateUUID(),
+      [UsersFields.discord_id]: discordID,
+      [UsersFields.twitch_id]: twitchID,
     };
 
     const { data, error } = await users().insert(user);
@@ -41,58 +46,61 @@ export const UsersService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  private async find(
-    identifier: string | string[],
-    filterColumn: keyof UserRecord,
-  ): Promise<User | User[] | undefined>
+  async find({
+    uuids,
+    discordIDs,
+    twitchIDs,
+  } : {
+    uuids?: string | string[],
+    discordIDs?: string | string[],
+    twitchIDs?: string | string[],
+  }): Promise<User[]>
   {
-    let query = users()
+    const query = users()
       .select();
 
-    const { data, error } = await (
-      Array.isArray(identifier)
-        ? query.in(filterColumn, identifier)
-        : query.filter(filterColumn, 'eq', identifier)
-    );
+    if(uuids)
+      query.in(UsersFields.uuid, Array.isArray(uuids) ? uuids : [ uuids ]);
+
+    if(discordIDs)
+      query.in(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [ discordIDs ]);
+
+    if(twitchIDs)
+      query.in(UsersFields.twitch_id, Array.isArray(twitchIDs) ? twitchIDs : [ twitchIDs ]);
+
+    const { data, error } = await query;
+    if(error)
+      throw error;
+
+    if(! data || data.length === 0)
+      return [];
+
+    return data.map(user => ({
+      uuid: user[UsersFields.uuid],
+      discordID: user[UsersFields.discord_id],
+      twitchID: user[UsersFields.twitch_id],
+    }));
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async updateByUUID(
+    uuid: string,
+    { discordID, twitchID }: { discordID?: string, twitchID?: string }
+  )
+  {
+    const updateData: any = {};
+    if(discordID)
+      updateData[UsersFields.discord_id] = discordID;
+
+    if(twitchID)
+      updateData[UsersFields.twitch_id] = twitchID;
+
+    const { error } = await users()
+      .update(updateData)
+      .match({ [UsersFields.uuid]: uuid });
 
     if(error)
-    {
-      /* Error with code `22P02` means the given identifier is not a UUID,
-        so it might be a Discord ID. */
-      if(error.code === '22P02')
-        return;
-
       throw error;
-    }
-
-    if(Array.isArray(identifier))
-      return data?.map(user => ({
-        uuid: user[UsersFields.uuid],
-        discordID: user[UsersFields.discord_id],
-      }));
-
-    const user = data?.pop();
-    if(! user)
-      return;
-
-    return ({
-      uuid: user.uuid,
-      discordID: user.discord_id,
-    });
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  async findByUUID(uuid: string | string[])
-  {
-    return this.find(uuid, UsersFields.uuid);
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  /* Gets the user with the given Discord ID. */
-  async findByDiscordID(discordID: string | string[])
-  {
-    return this.find(discordID, UsersFields.discord_id);
   }
 }
