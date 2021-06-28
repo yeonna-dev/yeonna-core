@@ -12,6 +12,7 @@ exports.up = async function(knex)
 
     table.uuid('user_uuid').index().notNullable();
     table.string('discord_guild_id').index();
+    table.string('twitch_channel_id').index();
     table.decimal('amount', 20).defaultTo(0);
     table.boolean('is_collectible').defaultTo(false);
 
