@@ -13,9 +13,9 @@ exports.up = async function(knex)
     table.uuid('user_uuid').unique().notNullable();
     table.uuid('bit_uuid').unique().notNullable();
 
-    table.date('created_at').index().defaultTo(knex.fn.now());
-    table.date('updated_at').index();
-    table.date('deleted_at').index();
+    table.dateTime('created_at').index().defaultTo(knex.fn.now());
+    table.dateTime('updated_at').index();
+    table.dateTime('deleted_at').index();
   });
 };
 
