@@ -1,9 +1,11 @@
 {
-  "name": "yeonna-backend",
+  "name": "yeonna-core",
   "version": "0.0.1",
-  "description": "",
+  "description": "Yeonna Core",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node --transpile-only src'",
     "test": "mocha -r tests/pre-test 'tests/.test.ts'"
   },
