@@ -22,7 +22,7 @@ describe('User Points', () =>
   const amount = 100;
 
   const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
-  const twitchChannelID = '555995989';
+  const twitchChannelID = '193202362';
 
   it('should get the points of a Discord user in a Discord server', async () =>
     await getUserPoints({ discordID: discordUser1, discordGuildID })

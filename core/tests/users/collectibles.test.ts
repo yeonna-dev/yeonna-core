@@ -22,7 +22,7 @@ describe('User Collectibles', () =>
   const amount = 1;
 
   const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
-  const twitchChannelID = '555995989';
+  const twitchChannelID = '193202362';
 
   it('should get the collectibles of a Discord user in a Discord server', async () =>
     await getUserCollectibles({ discordID: discordUser1, discordGuildID })
