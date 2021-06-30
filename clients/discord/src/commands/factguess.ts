@@ -46,82 +46,86 @@ export const factguess: Command =
   aliases: [ 'fg' ],
   run: async ({ message }: { message: Message }) =>
   {
+    message.channel.send('kprofiles changed so now this command is broken...');
+
     // TODO: Remove temporary guild filter.
-    if(! [ '504135117296500746', '533510632985853953' ].includes(message.guild?.id || ''))
-      return;
+    // if(! [ '504135117296500746', '533510632985853953' ].includes(message.guild?.id || ''))
+    //   return;
 
-    const user = message.author.id;
-    const cooldown = await cooldowns.check(command, user);
-    if(cooldown)
-      return message.channel.send(`Please wait ${getTimeLeft(cooldown)}.`);
+    // const user = message.author.id;
+    // const cooldown = await cooldowns.check(command, user);
+    // if(cooldown)
+    //   return message.channel.send(`Please wait ${getTimeLeft(cooldown)}.`);
 
-    /* Pick a random member. */
-    const
-    {
-      name: memberName,
-      hangul: memberHangulName,
-    } = members[Math.floor(Math.random() * members.length)];
+    // /* Pick a random member. */
+    // const
+    // {
+    //   name: memberName,
+    //   hangul: memberHangulName,
+    // } = members[Math.floor(Math.random() * members.length)];
 
-    message.channel.startTyping();
+    // message.channel.startTyping();
 
-    /* Scrape the information from the website. */
-    const { data: profiles } = await axios.get('https://kprofiles.com/twice-members-profile');
-    let $ = cheerio.load(profiles);
-    let info: any = $(`.entry-content > p:contains("${memberHangulName}")`).text();
-    let facts = $(`.entry-content > p:contains("${memberName} Facts") a:contains("Show more")`)
-      .prop('href');
+    // /* Scrape the information from the website. */
+    // const { data: profiles } = await axios.get('https://kprofiles.com/twice-members-profile');
+    // let $ = cheerio.load(profiles);
+    // let info: any = $(`.entry-content > p:contains("${memberHangulName}")`).text();
+    // let facts = $(`.entry-content > p:contains("${memberName} Facts") a:contains("Show more")`)
+    //   .prop('href');
 
-    const { data: memberFacts } = await axios.get(facts);
-    if(! memberFacts)
-      return message.channel.send('Cannot get member facts.');
+    // const { data: memberFacts } = await axios.get(facts);
+    // if(! memberFacts)
+    //   return message.channel.send('Cannot get member facts.');
 
-    $ = cheerio.load(memberFacts);
-    facts = $(`.entry-content > p:contains("${memberName} facts")`).text();
-    info += `\n${facts}`;
-    info = info.split('\n')
-      .filter((_info: string) =>
-      {
-        _info = _info.toLowerCase();
-        const name = memberName.toLowerCase();
-        return (
-          _info !== '' && _info !== name &&
-          !_info.match(`${name} facts`) &&
-          filteredText.every(item => !_info.match(item))
-        );
-      });
+    // $ = cheerio.load(memberFacts);
+    // facts = $(`.entry-content > p:contains("${memberName} facts")`).text();
+    // info += `\n${facts}`;
+    // info = info.split('\n')
+    //   .filter((_info: string) =>
+    //   {
+    //     _info = _info.toLowerCase();
+    //     const name = memberName.toLowerCase();
+    //     return (
+    //       _info !== '' && _info !== name &&
+    //       !_info.match(`${name} facts`) &&
+    //       filteredText.every(item => !_info.match(item))
+    //     );
+    //   });
 
-    info = info[Math.floor(Math.random() * members.length)]
-      .replace(/^– /g, '')
-      .replace(new RegExp(memberName, 'g'), 'this member')
-      .replace(misspelledNamesRegex, 'this member');
+    // console.log(info);
 
-    info = info.charAt(0).toUpperCase() + info.substr(1).trim();
+    // info = info[Math.floor(Math.random() * members.length)]
+    //   .replace(/^– /g, '')
+    //   .replace(new RegExp(memberName, 'g'), 'this member')
+    //   .replace(misspelledNamesRegex, 'this member');
 
-    message.channel.send(info);
-    message.channel.stopTyping(true);
+    // info = info.charAt(0).toUpperCase() + info.substr(1).trim();
 
-    const response = await waitResponse(message, 5000);
-    if(! response)
-      return message.channel.send(`Time's up! It's **${memberName}**.`);
+    // message.channel.send(info);
+    // message.channel.stopTyping(true);
 
-    if(response.content.toLowerCase() !== memberName.toLowerCase())
-      return message.channel.send('Wrong.');
+    // const response = await waitResponse(message, 5000);
+    // if(! response)
+    //   return message.channel.send(`Time's up! It's **${memberName}**.`);
 
-    try
-    {
-      const reward = 250;
-      await updateUserPoints({
-        discordID: user,
-        amount: reward,
-        discordGuildID: message.guild?.id,
-        add: true,
-      });
-      message.channel.send(`Correct! You get **${reward}** points.`);
-    }
-    catch(error)
-    {
-      Log.error(error);
-      message.channel.send('Cannot add points.');
-    }
+    // if(response.content.toLowerCase() !== memberName.toLowerCase())
+    //   return message.channel.send('Wrong.');
+
+    // try
+    // {
+    //   const reward = 250;
+    //   await updateUserPoints({
+    //     discordID: user,
+    //     amount: reward,
+    //     discordGuildID: message.guild?.id,
+    //     add: true,
+    //   });
+    //   message.channel.send(`Correct! You get **${reward}** points.`);
+    // }
+    // catch(error)
+    // {
+    //   Log.error(error);
+    //   message.channel.send('Cannot add points.');
+    // }
   },
 };
