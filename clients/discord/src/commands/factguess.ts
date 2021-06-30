@@ -3,12 +3,12 @@ import { Command } from 'comtroller';
 import axios from 'axios';
 import cheerio from 'cheerio';
 
+import { updateUserPoints } from 'yeonna-core';
+
 import { cooldowns } from '../cooldowns/cooldowns-instance';
 import { waitResponse } from '../helpers/waitResponse';
 import { getTimeLeft } from '../helpers/getTimeLeft';
 import { Log } from '../utilities/logger';
-
-import { updateUserPoints } from '../../../../core/src';
 
 const command = 'factguess';
 

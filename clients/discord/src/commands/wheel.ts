@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { Command, parseParamsToArray } from 'comtroller';
 
-import { updateUserPoints } from '../../../../core/src';
+import { updateUserPoints } from 'yeonna-core';
 
 // TODO: Create per-server configurable data
 const reward = 350;

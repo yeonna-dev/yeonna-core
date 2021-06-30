@@ -1,7 +1,7 @@
 import { GuildMember, Message } from 'discord.js';
 import { parseParamsToArray } from 'comtroller';
 
-import { updateUserPoints } from '../../../../core/src';
+import { updateUserPoints } from 'yeonna-core';
 
 import { findDiscordUser } from './findDiscordUser';
 

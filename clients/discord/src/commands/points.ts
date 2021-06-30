@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { Command, parseParamsToArray } from 'comtroller';
 
-import { getUserPoints } from '../../../../core/src';
+import { getUserPoints } from 'yeonna-core';
 import { getIdFromMention } from '../helpers/getIdFromMention';
 
 import { Log } from '../utilities/logger';

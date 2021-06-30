@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { Command } from 'comtroller';
 
-import { getUserCollectibles } from '../../../../core/src';
+import { getUserCollectibles } from 'yeonna-core';
 
 export const collectibles: Command =
 {

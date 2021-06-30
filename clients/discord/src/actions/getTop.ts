@@ -2,7 +2,7 @@ import { GuildMember, Message } from 'discord.js';
 
 import { findDiscordUser } from './findDiscordUser';
 
-import { getTopCollectibles, getTopPoints } from '../../../../core/src';
+import { getTopCollectibles, getTopPoints } from 'yeonna-core';
 
 // TODO: Update responses
 export async function getTop(message: Message, collectibles?: boolean)

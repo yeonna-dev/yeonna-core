@@ -4,13 +4,13 @@ import fs from 'fs';
 export async function loadCommands()
 {
   const commandFiles = fs.readdirSync(__dirname);
-  commandFiles.splice(commandFiles.indexOf('index.ts'), 1);
+  commandFiles.splice(commandFiles.findIndex(file => file.startsWith('index')), 1);
 
   const commands = [];
   for(const commandFile of commandFiles)
   {
     const command = await import(`${__dirname}/${commandFile}`);
-    commands.push(command[commandFile.replace('.ts', '')]);
+    commands.push(command[commandFile.substr(0, commandFile.lastIndexOf('.'))]);
   }
 
   return commands;

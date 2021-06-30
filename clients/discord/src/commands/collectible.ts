@@ -6,7 +6,7 @@ import
   NotEnoughCollectibles,
   transferUserCollectibles,
   updateUserCollectibles,
-} from '../../../../core/src';
+} from 'yeonna-core';
 
 import { cooldowns } from '../cooldowns/cooldowns-instance';
 import { findDiscordUser } from '../actions/findDiscordUser';
