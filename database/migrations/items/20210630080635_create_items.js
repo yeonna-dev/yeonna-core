@@ -1,4 +1,4 @@
-const tableName = 'users';
+const tableName = 'items';
 
 /** @param {import('knex').Knex} knex */
 exports.up = async function(knex)
@@ -10,9 +10,14 @@ exports.up = async function(knex)
   {
     table.increments('pk_id');
 
-    table.string('id', 15).unique().notNullable();
-    table.string('discord_id').unique();
-    table.string('twitch_id').unique();
+    table.string('category_id', 15).index();
+    table.string('code').unique();
+    table.string('name').unique();
+    table.decimal('chance_min');
+    table.decimal('chance_max');
+    table.decimal('price').defaultTo(0);
+    table.string('image');
+    table.string('emote');
 
     table.dateTime('created_at').index().defaultTo(knex.fn.now());
     table.dateTime('updated_at').index();
