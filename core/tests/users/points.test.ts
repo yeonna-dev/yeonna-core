@@ -25,11 +25,11 @@ describe('User Points', () =>
   const twitchChannelID = '193202362';
 
   it('should get the points of a Discord user in a Discord server', async () =>
-    await getUserPoints({ discordID: discordUser1, discordGuildID })
+    await getUserPoints({ userIdentifier: discordUser1, discordGuildID })
   );
 
   it('should get the points of a Twitch user in a Twitch channel', async () =>
-    await getUserPoints({ twitchID: twitchUser1, twitchChannelID })
+    await getUserPoints({ userIdentifier: twitchUser1, twitchChannelID })
   );
 
   it('should set the points of a Discord user in a Discord server', async () =>
@@ -50,7 +50,7 @@ describe('User Points', () =>
 
   it('should transfer the points of a Discord user to another', async () =>
     await transferUserPoints({
-      fromDiscordUserID: discordUser1,
+      fromUserIdentifier: discordUser1,
       toDiscordUserID: discordUser2,
       amount,
       discordGuildID,
@@ -59,7 +59,7 @@ describe('User Points', () =>
 
   it('should transfer the points of a Twitch user to another', async () =>
     await transferUserPoints({
-      fromTwitchUserID: twitchUser1,
+      fromUserIdentifier: twitchUser1,
       toTwitchUserID: twitchUser2,
       amount,
       twitchChannelID,
@@ -70,9 +70,9 @@ describe('User Points', () =>
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await getUserPoints({ discordID: discordUser1, discordGuildID });
+        const sourcePoints = await getUserPoints({ userIdentifier: discordUser1, discordGuildID });
         await transferUserPoints({
-          fromDiscordUserID: discordUser1,
+          fromUserIdentifier: discordUser1,
           toDiscordUserID: discordUser2,
           amount: sourcePoints + 1,
           discordGuildID,
@@ -86,7 +86,7 @@ describe('User Points', () =>
   {
     const topUsers = await getTopPoints({ count: 10, discordGuildID });
     assert.strictEqual(
-      topUsers.every(user => user.userUUID && typeof user.points === 'number'),
+      topUsers.every(user => user.userID && typeof user.points === 'number'),
       true,
     );
   });
@@ -95,7 +95,7 @@ describe('User Points', () =>
   {
     const topUsers = await getTopPoints({ count: 10, twitchChannelID });
     assert.strictEqual(
-      topUsers.every(user => user.userUUID && typeof user.points === 'number'),
+      topUsers.every(user => user.userID && typeof user.points === 'number'),
       true,
     );
   });

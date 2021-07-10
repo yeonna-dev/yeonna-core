@@ -25,11 +25,11 @@ describe('User Collectibles', () =>
   const twitchChannelID = '193202362';
 
   it('should get the collectibles of a Discord user in a Discord server', async () =>
-    await getUserCollectibles({ discordID: discordUser1, discordGuildID })
+    await getUserCollectibles({ userIdentifier: discordUser1, discordGuildID })
   );
 
   it('should get the collectibles of a Twitch user in a Twitch channel', async () =>
-    await getUserCollectibles({ twitchID: twitchUser1, twitchChannelID })
+    await getUserCollectibles({ userIdentifier: twitchUser1, twitchChannelID })
   );
 
   it('should set the collectibles of a Discord user in a Discord server', async () =>
@@ -50,8 +50,8 @@ describe('User Collectibles', () =>
 
   it('should transfer the collectibles of a Discord user to another', async () =>
     await transferUserCollectibles({
-      fromDiscordUserID: discordUser1,
-      toDiscordUserID: discordUser2,
+      fromUserIdentifier: discordUser2,
+      toDiscordUserID: discordUser1,
       amount,
       discordGuildID,
     })
@@ -59,8 +59,8 @@ describe('User Collectibles', () =>
 
   it('should transfer the collectibles of a Twitch user to another', async () =>
     await transferUserCollectibles({
-      fromTwitchUserID: twitchUser1,
-      toTwitchUserID: twitchUser2,
+      fromUserIdentifier: twitchUser2,
+      toTwitchUserID: twitchUser1,
       amount,
       twitchChannelID,
     })
@@ -70,9 +70,9 @@ describe('User Collectibles', () =>
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await getUserCollectibles({ discordID: discordUser1, discordGuildID });
+        const sourcePoints = await getUserCollectibles({ userIdentifier: discordUser1, discordGuildID });
         await transferUserCollectibles({
-          fromDiscordUserID: discordUser1,
+          fromUserIdentifier: discordUser1,
           toDiscordUserID: discordUser2,
           amount: sourcePoints + 1,
           discordGuildID,
@@ -86,7 +86,7 @@ describe('User Collectibles', () =>
   {
     const topUsers = await getTopCollectibles({ count: 10, discordGuildID });
     assert.strictEqual(
-      topUsers.every(user => user.userUUID && typeof user.points === 'number'),
+      topUsers.every(user => user.userID && typeof user.points === 'number'),
       true,
     );
   });
@@ -95,7 +95,7 @@ describe('User Collectibles', () =>
   {
     const topUsers = await getTopCollectibles({ count: 10, twitchChannelID });
     assert.strictEqual(
-      topUsers.every(user => user.userUUID && typeof user.points === 'number'),
+      topUsers.every(user => user.userID && typeof user.points === 'number'),
       true,
     );
   });

@@ -2,9 +2,29 @@
 
 interface User
 {
-  uuid: string;
+  id: string;
   discordID?: string | null;
   twitchID?: string | null;
+}
+
+interface Obtainable
+{
+  userID: string;
+  discordGuildID: string;
+  amount: number;
+  isCollectible?: boolean;
+}
+
+interface Item
+{
+  categoryID?: string;
+  code: string;
+  name: string;
+  chanceMin?: number;
+  chanceMax?: number;
+  price?: number;
+  image?: string;
+  emote?: string;
 }
 
 interface DiscordGuild
@@ -16,22 +36,14 @@ interface DiscordGuild
 
 interface Bit
 {
-  uuid: string;
+  id: string;
   content: string;
 }
 
 interface UserBit
 {
-  userUUID: string;
-  bitUUID: string;
-}
-
-interface Obtainable
-{
-  userUUID: string;
-  discordGuildID: string;
-  amount: number;
-  isCollectible?: boolean;
+  userID: string;
+  bitID: string;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -47,17 +59,28 @@ interface TimestampedRecord
 
 interface UserRecord extends TimestampedRecord
 {
-  uuid: string;
+  id: string;
   discord_id: string | null;
   twitch_id: string | null;
 }
 
 interface ObtainableRecord extends TimestampedRecord
 {
-  user_uuid: string;
+  user_id: string;
   amount: number;
   is_collectible?: boolean;
   discord_guild_id?: string;
   twitch_channel_id?: string;
 }
 
+interface ItemRecord extends TimestampedRecord
+{
+  category_id?: string;
+  code: string;
+  name: string;
+  chance_min?: number;
+  chance_max?: number;
+  price?: number;
+  image?: string;
+  emote?: string;
+}

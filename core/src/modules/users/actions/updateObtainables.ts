@@ -1,8 +1,8 @@
 import { ObtainableService } from '../services/ObtainableService';
-import { findUserByID } from './findUserByID';
+import { findOrCreateUser } from './findUser';
 
 export async function updateObtainables({
-  userUUID,
+  userID,
   discordID,
   twitchID,
   amount,
@@ -12,7 +12,7 @@ export async function updateObtainables({
   discordGuildID,
   twitchChannelID,
 } : {
-  userUUID?: string,
+  userID?: string,
   discordID?: string,
   twitchID?: string,
   amount: number,
@@ -28,13 +28,13 @@ export async function updateObtainables({
 
   amount = Math.abs(amount);
 
-  userUUID = await findUserByID({ userUUID, discordID, twitchID, createIfNotExisting: true });
-  if(! userUUID)
+  userID = await findOrCreateUser({ userID, discordID, twitchID });
+  if(! userID)
     throw new Error('Cannot update user points');
 
   /* Check if the user's obtainable record is already created. */
   const obtainables = await ObtainableService.getObtainable({
-    userUUID,
+    userID,
     isCollectible,
     discordGuildID,
     twitchChannelID,
@@ -43,7 +43,7 @@ export async function updateObtainables({
   /* Create the obtainable record if not existing. */
   if(obtainables === undefined)
     await ObtainableService.createObtainable({
-      userUUID,
+      userID,
       amount,
       isCollectible,
       discordGuildID,
@@ -58,7 +58,7 @@ export async function updateObtainables({
       newPoints = obtainables - amount;
 
     await ObtainableService.updateObtainables({
-      userUUID,
+      userID,
       amount: newPoints,
       isCollectible,
       discordGuildID,
@@ -68,7 +68,7 @@ export async function updateObtainables({
 }
 
 export async function updateUserPoints({
-  userUUID,
+  userID,
   discordID,
   twitchID,
   amount,
@@ -77,7 +77,7 @@ export async function updateUserPoints({
   discordGuildID,
   twitchChannelID,
 } : {
-  userUUID?: string,
+  userID?: string,
   discordID?: string,
   twitchID?: string,
   amount: number,
@@ -88,7 +88,7 @@ export async function updateUserPoints({
 }): Promise<void>
 {
   await updateObtainables({
-    userUUID,
+    userID,
     discordID,
     twitchID,
     amount,
@@ -100,7 +100,7 @@ export async function updateUserPoints({
 }
 
 export async function updateUserCollectibles({
-  userUUID,
+  userID,
   discordID,
   twitchID,
   amount,
@@ -109,7 +109,7 @@ export async function updateUserCollectibles({
   discordGuildID,
   twitchChannelID,
 } : {
-  userUUID?: string,
+  userID?: string,
   discordID?: string,
   twitchID?: string,
   amount: number,
@@ -120,7 +120,7 @@ export async function updateUserCollectibles({
 }): Promise<void>
 {
   await updateObtainables({
-    userUUID,
+    userID,
     discordID,
     twitchID,
     amount,

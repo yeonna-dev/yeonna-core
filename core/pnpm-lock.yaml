@@ -4,27 +4,25 @@ specifiers:
   '@supabase/supabase-js': ^1.15.1
   '@types/mocha': ^8.2.2
   '@types/node': ^15.12.2
-  '@types/uuid': ^8.3.0
   dotenv: ^10.0.0
   knex: ^0.95.6
   mocha: ^9.0.0
+  nanoid-good: ^3.1.0
   nodemon: ^2.0.7
   pg: ^8.6.0
   ts-node: ^10.0.0
   typescript: ^4.3.2
-  uuid: ^8.3.2
 
 dependencies:
   '@supabase/supabase-js': 1.15.1
   knex: 0.95.6_pg@8.6.0
+  nanoid-good: 3.1.0
   pg: 8.6.0
   ts-node: 10.0.0_e3fb3700f8b176f300f1b7e599dc9c29
-  uuid: 8.3.2
 
 devDependencies:
   '@types/mocha': 8.2.2
   '@types/node': 15.12.2
-  '@types/uuid': 8.3.0
   dotenv: 10.0.0
   mocha: 9.0.0
   nodemon: 2.0.7
@@ -100,10 +98,6 @@ packages:
 
   /@types/node/15.12.2:
     resolution: {integrity: sha512-zjQ69G564OCIWIOHSXyQEEDpdpGl+G348RAKY0XXy9Z5kU9Vzv1GMNnkar/ZJ8dzXB3COzD9Mo9NtRZ4xfgUww==}
-
-  /@types/uuid/8.3.0:
-    resolution: {integrity: sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==}
-    dev: true
 
   /@types/websocket/1.0.2:
     resolution: {integrity: sha512-B5m9aq7cbbD/5/jThEr33nUY8WEfVi6A2YKCTOvw5Ldy7mtsOkqRvGjnzy6g7iMMDsgu7xREuCzqATLDLQVKcQ==}
@@ -934,11 +928,21 @@ packages:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
     dev: true
 
+  /nanoid-good/3.1.0:
+    resolution: {integrity: sha512-gG9D+AVHAZ+t2mAk3sw+Bx08VzOBc8fc+JylIzCLbEoRYakvQK9RiI3U+bXjdlMc5Ec4W9zUQsZZKngjifv7Vw==}
+    dependencies:
+      nanoid: 3.1.23
+      naughty-words: 1.2.0
+    dev: false
+
   /nanoid/3.1.23:
     resolution: {integrity: sha512-FiB0kzdP0FFVGDKlRLEQ1BgDzU87dy5NnzjeW9YZNt+/c3+q82EQDUwniSAUxp/F0gFNI1ZhKU1FqYsMuqZVnw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
-    dev: true
+
+  /naughty-words/1.2.0:
+    resolution: {integrity: sha512-0iadX6fN+3NsfvIRtWmmpEX9VsoIQ6n9FwyIxmew9w5yzFNqMgs/Ky0eAC/z5xXSHtqlVoByiovdROikwH9SXQ==}
+    dev: false
 
   /next-tick/1.0.0:
     resolution: {integrity: sha1-yobR/ogoFpsBICCOPchCS524NCw=}
@@ -1495,11 +1499,6 @@ packages:
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=}
-    dev: false
-
-  /uuid/8.3.2:
-    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
-    hasBin: true
     dev: false
 
   /websocket/1.0.34:

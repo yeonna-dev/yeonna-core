@@ -1,17 +1,14 @@
 import { ObtainableService } from '../services/ObtainableService';
-import { findUserByID } from './findUserByID';
+import { findUser } from './findUser';
+import { UserNotFound } from '../../../common/errors';
 
 export async function getObtainables({
-  userUUID,
-  discordID,
-  twitchID,
+  userIdentifier,
   isCollectible,
   discordGuildID,
   twitchChannelID,
 } : {
-  userUUID?: string,
-  discordID?: string,
-  twitchID?: string,
+  userIdentifier: string,
   isCollectible?: boolean,
   discordGuildID?: string,
   twitchChannelID?: string,
@@ -21,10 +18,12 @@ export async function getObtainables({
     throw new Error('No Discord Guild ID or Twitch Channel ID provided');
 
   /* Check if the user is existing. */
-  userUUID = await findUserByID({ userUUID, discordID, twitchID });
+  const userID = await findUser(userIdentifier);
+  if(! userID )
+    throw new UserNotFound();
 
-  return ! userUUID ? 0 : ObtainableService.getObtainable({
-    userUUID,
+  return ! userID ? 0 : ObtainableService.getObtainable({
+    userID,
     isCollectible,
     discordGuildID,
     twitchChannelID,
@@ -32,40 +31,34 @@ export async function getObtainables({
 }
 
 export async function getUserPoints({
-  userUUID,
-  discordID,
-  twitchID,
+  userIdentifier,
   discordGuildID,
   twitchChannelID,
 } : {
-  userUUID?: string,
-  discordID?: string,
-  twitchID?: string,
-  discordGuildID?: string,
-  twitchChannelID?: string,
-})
-{
-  return getObtainables({ userUUID, discordID, twitchID, discordGuildID, twitchChannelID });
-}
-
-export async function getUserCollectibles({
-  userUUID,
-  discordID,
-  twitchID,
-  discordGuildID,
-  twitchChannelID,
-} : {
-  userUUID?: string,
-  discordID?: string,
-  twitchID?: string,
+  userIdentifier: string,
   discordGuildID?: string,
   twitchChannelID?: string,
 })
 {
   return getObtainables({
-    userUUID,
-    discordID,
-    twitchID,
+    userIdentifier,
+    discordGuildID,
+    twitchChannelID,
+  });
+}
+
+export async function getUserCollectibles({
+  userIdentifier,
+  discordGuildID,
+  twitchChannelID,
+} : {
+  userIdentifier: string,
+  discordGuildID?: string,
+  twitchChannelID?: string,
+})
+{
+  return getObtainables({
+    userIdentifier,
     isCollectible: true,
     discordGuildID,
     twitchChannelID,

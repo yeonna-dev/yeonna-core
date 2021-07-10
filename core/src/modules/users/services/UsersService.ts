@@ -1,10 +1,10 @@
 import { supabase } from '../../../common/supabase-client';
-import { v4 as generateUUID } from 'uuid';
+import { nanoid } from '../../../common/nanoid';
 
 const users = () => supabase.from<UserRecord>('users');
 export enum UsersFields
 {
-  uuid = 'uuid',
+  id = 'id',
   discord_id = 'discord_id',
   twitch_id = 'twitch_id',
   created_at = 'created_at',
@@ -28,7 +28,7 @@ export const UsersService = new class
 
     const user =
     {
-      [UsersFields.uuid]: generateUUID(),
+      [UsersFields.id]: nanoid(15),
       [UsersFields.discord_id]: discordID,
       [UsersFields.twitch_id]: twitchID,
     };
@@ -41,17 +41,44 @@ export const UsersService = new class
     if(! createdUser)
       throw new Error('User not created');
 
-    return createdUser.uuid;
+    return createdUser.id;
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async findByID(ids: string | string[]): Promise<User[]>
+  {
+    ids = `(${(Array.isArray(ids) ? ids : [ ids ]).join(',')})`;
+
+    const { data, error } = await users()
+      .select()
+      .or(
+        `${UsersFields.id}.in.${ids},`
+        + `${UsersFields.discord_id}.in.${ids},`
+        + `${UsersFields.twitch_id}.in.${ids}`
+      );
+
+    if(error)
+      throw error;
+
+    if(! data || data.length === 0)
+      return [];
+
+    return data.map(user => ({
+      id: user[UsersFields.id],
+      discordID: user[UsersFields.discord_id],
+      twitchID: user[UsersFields.twitch_id],
+    }));
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   async find({
-    uuids,
+    ids,
     discordIDs,
     twitchIDs,
   } : {
-    uuids?: string | string[],
+    ids?: string | string[],
     discordIDs?: string | string[],
     twitchIDs?: string | string[],
   }): Promise<User[]>
@@ -59,8 +86,8 @@ export const UsersService = new class
     const query = users()
       .select();
 
-    if(uuids)
-      query.in(UsersFields.uuid, Array.isArray(uuids) ? uuids : [ uuids ]);
+    if(ids)
+      query.in(UsersFields.id, Array.isArray(ids) ? ids : [ ids ]);
 
     if(discordIDs)
       query.in(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [ discordIDs ]);
@@ -76,7 +103,7 @@ export const UsersService = new class
       return [];
 
     return data.map(user => ({
-      uuid: user[UsersFields.uuid],
+      id: user[UsersFields.id],
       discordID: user[UsersFields.discord_id],
       twitchID: user[UsersFields.twitch_id],
     }));
@@ -84,8 +111,8 @@ export const UsersService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async updateByUUID(
-    uuid: string,
+  async updateByID(
+    id: string,
     { discordID, twitchID }: { discordID?: string, twitchID?: string }
   )
   {
@@ -98,7 +125,7 @@ export const UsersService = new class
 
     const { error } = await users()
       .update(updateData)
-      .match({ [UsersFields.uuid]: uuid });
+      .match({ [UsersFields.id]: id });
 
     if(error)
       throw error;

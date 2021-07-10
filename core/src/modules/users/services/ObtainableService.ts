@@ -3,7 +3,7 @@ import { supabase } from '../../../common/supabase-client';
 const obtainables = () => supabase.from<ObtainableRecord>('obtainables');
 export enum ObtainableFields
 {
-  user_uuid = 'user_uuid',
+  user_id = 'user_id',
   amount = 'amount',
   is_collectible = 'is_collectible',
   discord_guild_id = 'discord_guild_id',
@@ -17,13 +17,13 @@ export const ObtainableService = new class
 {
   /* Creates an obtainable record */
   async createObtainable({
-    userUUID,
+    userID,
     amount = 0,
     isCollectible,
     discordGuildID,
     twitchChannelID,
   } : {
-    userUUID: string,
+    userID: string,
     amount: number,
     isCollectible?: boolean,
     discordGuildID?: string,
@@ -32,7 +32,7 @@ export const ObtainableService = new class
   {
     const insertData: ObtainableRecord =
     {
-      user_uuid: userUUID,
+      user_id: userID,
       amount,
       is_collectible: isCollectible,
     };
@@ -57,12 +57,12 @@ export const ObtainableService = new class
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   async getObtainable({
-    userUUID,
+    userID,
     isCollectible,
     discordGuildID,
     twitchChannelID,
   } : {
-    userUUID: string,
+    userID: string,
     isCollectible?: boolean,
     discordGuildID?: string,
     twitchChannelID?: string,
@@ -70,7 +70,7 @@ export const ObtainableService = new class
   {
     const query = obtainables()
       .select()
-      .eq(ObtainableFields.user_uuid, userUUID)
+      .eq(ObtainableFields.user_id, userID)
       .is(ObtainableFields.is_collectible, isCollectible ? true : false);
 
     if(discordGuildID)
@@ -90,13 +90,13 @@ export const ObtainableService = new class
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   async updateObtainables({
-    userUUID,
+    userID,
     amount,
     isCollectible,
     discordGuildID,
     twitchChannelID,
   } : {
-    userUUID: string,
+    userID: string,
     amount: number,
     isCollectible?: boolean,
     discordGuildID?: string,
@@ -105,7 +105,7 @@ export const ObtainableService = new class
   {
     const query = obtainables()
       .update({ [ObtainableFields.amount]: amount })
-      .match({ [ObtainableFields.user_uuid]: userUUID })
+      .match({ [ObtainableFields.user_id]: userID })
       .is(ObtainableFields.is_collectible, isCollectible ? true : false);
 
     if(discordGuildID)

@@ -1,4 +1,4 @@
-import { findUserByID } from './findUserByID';
+import { findUser, findOrCreateUser } from './findUser';
 
 import { ObtainableService } from '../services/ObtainableService';
 
@@ -6,10 +6,8 @@ import { NotEnoughCollectibles, NotEnoughPoints } from '../../../common/errors';
 import { getObtainables } from './getObtainables';
 
 export async function transferObtainables({
-  fromUserUUID,
-  fromDiscordUserID,
-  fromTwitchUserID,
-  toUserUUID,
+  fromUserIdentifier,
+  toUserID,
   toDiscordUserID,
   toTwitchUserID,
   amount,
@@ -17,10 +15,8 @@ export async function transferObtainables({
   discordGuildID,
   twitchChannelID,
 } : {
-  fromUserUUID?: string,
-  fromDiscordUserID?: string,
-  fromTwitchUserID?: string,
-  toUserUUID?: string,
+  fromUserIdentifier: string,
+  toUserID?: string,
   toDiscordUserID?: string,
   toTwitchUserID?: string,
   amount: number,
@@ -35,16 +31,12 @@ export async function transferObtainables({
   amount = Math.abs(amount);
 
   /* Get the obtainables of the user to get obtainables from (source user) */
-  const source = await findUserByID({
-    discordID: fromDiscordUserID,
-    twitchID: fromTwitchUserID,
-    userUUID: fromUserUUID,
-  });
+  const source = await findUser(fromUserIdentifier);
   if(! source)
     throw new (isCollectible ? NotEnoughCollectibles : NotEnoughPoints)();
 
   const sourceObtainables = await getObtainables({
-    userUUID: source,
+    userIdentifier: source,
     isCollectible,
     discordGuildID,
     twitchChannelID,
@@ -55,11 +47,10 @@ export async function transferObtainables({
     throw new (isCollectible ? NotEnoughCollectibles : NotEnoughPoints)();
 
   /* Get the obtainables of user to add obtainables to (target user). */
-  const target = await findUserByID({
+  const target = await findOrCreateUser({
     discordID: toDiscordUserID,
     twitchID: toTwitchUserID,
-    userUUID: toUserUUID,
-    createIfNotExisting: true,
+    userID: toUserID,
   });
 
   if(! target)
@@ -67,7 +58,7 @@ export async function transferObtainables({
 
   /* Add obtainables to the target user. */
   const targetObtainables = await getObtainables({
-    userUUID: target,
+    userIdentifier: target,
     isCollectible,
     discordGuildID,
     twitchChannelID,
@@ -75,7 +66,7 @@ export async function transferObtainables({
 
   if(! targetObtainables)
     await ObtainableService.createObtainable({
-      userUUID: target,
+      userID: target,
       amount,
       discordGuildID,
       twitchChannelID,
@@ -83,7 +74,7 @@ export async function transferObtainables({
     });
   else
     await ObtainableService.updateObtainables({
-      userUUID: target,
+      userID: target,
       amount: targetObtainables + amount,
       isCollectible,
       discordGuildID,
@@ -92,7 +83,7 @@ export async function transferObtainables({
 
   /* Subtract obtainables from the source user. */
   await ObtainableService.updateObtainables({
-    userUUID: source,
+    userID: source,
     amount: sourceObtainables - amount,
     isCollectible,
     discordGuildID,
@@ -101,20 +92,16 @@ export async function transferObtainables({
 }
 
 export async function transferUserPoints({
-  fromUserUUID,
-  fromDiscordUserID,
-  fromTwitchUserID,
-  toUserUUID,
+  fromUserIdentifier,
+  toUserID,
   toDiscordUserID,
   toTwitchUserID,
   amount,
   discordGuildID,
   twitchChannelID,
 } : {
-  fromUserUUID?: string,
-  fromDiscordUserID?: string,
-  fromTwitchUserID?: string,
-  toUserUUID?: string,
+  fromUserIdentifier: string,
+  toUserID?: string,
   toDiscordUserID?: string,
   toTwitchUserID?: string,
   amount: number,
@@ -123,10 +110,8 @@ export async function transferUserPoints({
 }): Promise<void>
 {
   await transferObtainables({
-    fromUserUUID,
-    fromDiscordUserID,
-    fromTwitchUserID,
-    toUserUUID,
+    fromUserIdentifier,
+    toUserID,
     toDiscordUserID,
     toTwitchUserID,
     amount,
@@ -136,20 +121,16 @@ export async function transferUserPoints({
 }
 
 export async function transferUserCollectibles({
-  fromUserUUID,
-  fromDiscordUserID,
-  fromTwitchUserID,
-  toUserUUID,
+  fromUserIdentifier,
+  toUserID,
   toDiscordUserID,
   toTwitchUserID,
   amount,
   discordGuildID,
   twitchChannelID,
 } : {
-  fromUserUUID?: string,
-  fromDiscordUserID?: string,
-  fromTwitchUserID?: string,
-  toUserUUID?: string,
+  fromUserIdentifier: string,
+  toUserID?: string,
   toDiscordUserID?: string,
   toTwitchUserID?: string,
   amount: number,
@@ -158,10 +139,8 @@ export async function transferUserCollectibles({
 }): Promise<void>
 {
   await transferObtainables({
-    fromUserUUID,
-    fromDiscordUserID,
-    fromTwitchUserID,
-    toUserUUID,
+    fromUserIdentifier,
+    toUserID,
     toDiscordUserID,
     toTwitchUserID,
     amount,

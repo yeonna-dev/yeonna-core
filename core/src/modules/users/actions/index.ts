@@ -1,5 +1,5 @@
 /* Users */
-export * from './findUserByID';
+export * from './findUser';
 export * from './connectIDtoUser';
 
 /* Obtainables */

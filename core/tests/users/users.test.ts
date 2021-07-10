@@ -1,7 +1,7 @@
 import 'mocha';
 import assert from 'assert';
 
-import { connectIDtoUser, findUserByID } from '../../src';
+import { connectIDtoUser, findOrCreateUser, findUser } from '../../src';
 
 describe('Users', () =>
 {
@@ -12,35 +12,35 @@ describe('Users', () =>
   const twitchUser2 = '19264788'; /* Nightbot Twitch ID */
 
   it('should create a user with a Discord ID', async () =>
-    await findUserByID({ discordID: discordUser1, createIfNotExisting: true })
+    await findOrCreateUser({ discordID: discordUser1 })
   );
 
   it('should create a user with a Twitch ID', async () =>
-    await findUserByID({ twitchID: twitchUser2, createIfNotExisting: true })
+    await findOrCreateUser({ twitchID: twitchUser2 })
   );
 
   it('should find a user by a Discord ID', async () =>
   {
-    const userUUID = await findUserByID({ discordID: discordUser1 });
-    assert.notStrictEqual(userUUID, undefined);
+    const userID = await findUser(discordUser1);
+    assert.notStrictEqual(userID, undefined);
   });
 
   it('should find a user by a Twitch ID', async () =>
   {
-    const userUUID = await findUserByID({ twitchID: twitchUser2 });
-    assert.notStrictEqual(userUUID, undefined);
+    const userID = await findUser(twitchUser2);
+    assert.notStrictEqual(userID, undefined);
   });
 
   it('should connect a Discord ID to a user', async () =>
     await connectIDtoUser({
-      twitchID: twitchUser2,
+      userIdentifier: twitchUser2,
       newDiscordID: discordUser2,
     })
   );
 
   it('should connect a Twitch ID to a user', async () =>
     await connectIDtoUser({
-      discordID: discordUser1,
+      userIdentifier: discordUser1,
       newTwitchID: twitchUser1,
     })
   );

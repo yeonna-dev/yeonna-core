@@ -3,7 +3,7 @@ import { UsersService } from '../services/UsersService';
 
 type TopPoints =
 {
-  userUUID: string;
+  userID: string;
   discordID?: string | null;
   twitchID?: string | null;
   points: number;
@@ -34,8 +34,8 @@ export async function getTopObtainables({
     return [];
 
   /* Get users of top points. */
-  const userUUIDs = top.map(user => user[ObtainableFields.user_uuid]);
-  const users = await UsersService.find({ uuids: userUUIDs });
+  const userIDs = top.map(user => user[ObtainableFields.user_id]);
+  const users = await UsersService.find({ ids: userIDs });
   if(! users || ! Array.isArray(users))
     return [];
 
@@ -47,7 +47,7 @@ export async function getTopObtainables({
     let pointsUser;
     for(const user of users)
     {
-      if(user.uuid === points[ObtainableFields.user_uuid])
+      if(user.id === points[ObtainableFields.user_id])
       {
         pointsUser = user;
         break;
@@ -58,7 +58,7 @@ export async function getTopObtainables({
       continue;
 
     topUsers.push({
-      userUUID: pointsUser.uuid,
+      userID: pointsUser.id,
       discordID: pointsUser.discordID,
       twitchID: pointsUser.twitchID,
       points: points[ObtainableFields.amount],

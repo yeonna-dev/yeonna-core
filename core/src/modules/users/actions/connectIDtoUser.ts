@@ -1,18 +1,13 @@
 import { UsersService } from '../services/UsersService';
 
-import { UserNotFound } from '../../../common/errors';
-import { findUserByID } from './findUserByID';
+import { findUser } from './findUser';
 
 export async function connectIDtoUser({
-  userUUID,
-  discordID,
-  twitchID,
+  userIdentifier,
   newDiscordID,
   newTwitchID,
 } : {
-  userUUID?: string,
-  discordID?: string,
-  twitchID?: string,
+  userIdentifier: string,
   newDiscordID?: string,
   newTwitchID?: string,
 })
@@ -20,11 +15,9 @@ export async function connectIDtoUser({
   if(! newDiscordID && ! newTwitchID)
     throw new Error('No new Discord or Twitch ID provided');
 
-  /* Get the user/s with the given user UUID/s or Discord or Twitch ID/s. */
-  const user = await findUserByID({ userUUID, discordID, twitchID });
-  if(! user)
-    throw new UserNotFound();
+  /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
+  const user = await findUser(userIdentifier);
 
   /* Update the user record */
-  await UsersService.updateByUUID(user, { discordID: newDiscordID, twitchID: newTwitchID });
+  await UsersService.updateByID(user, { discordID: newDiscordID, twitchID: newTwitchID });
 }
