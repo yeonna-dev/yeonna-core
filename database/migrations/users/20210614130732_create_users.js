@@ -11,8 +11,7 @@ exports.up = async function(knex)
     table.increments('pk_id');
 
     table.string('id', 15).unique().notNullable();
-    table.string('discord_id').unique();
-    table.string('twitch_id').unique();
+    table.string('context').unique();
 
     table.dateTime('created_at').index().defaultTo(knex.fn.now());
     table.dateTime('updated_at').index();

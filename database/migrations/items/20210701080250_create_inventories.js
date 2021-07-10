@@ -11,8 +11,7 @@ exports.up = async function(knex)
     table.increments('pk_id');
 
     table.string('user_id', 15).index();
-    table.string('discord_guild_id').index();
-    table.string('twitch_channel_id').index();
+    table.string('context').index();
     table.string('item_code');
 
     table.dateTime('created_at').index().defaultTo(knex.fn.now());

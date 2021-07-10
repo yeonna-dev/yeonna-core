@@ -11,8 +11,7 @@ exports.up = async function(knex)
     table.increments('pk_id');
 
     table.string('user_id', 15).index().notNullable();
-    table.string('discord_guild_id').index();
-    table.string('twitch_channel_id').index();
+    table.string('context').index();
     table.decimal('amount', 20).defaultTo(0);
     table.boolean('is_collectible').defaultTo(false);
 
