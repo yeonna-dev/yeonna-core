@@ -10,8 +10,8 @@ interface User
 interface Obtainable
 {
   userID: string;
-  discordGuildID: string;
   amount: number;
+  context?: string;
   isCollectible?: boolean;
 }
 
@@ -68,9 +68,8 @@ interface ObtainableRecord extends TimestampedRecord
 {
   user_id: string;
   amount: number;
+  context?: string;
   is_collectible?: boolean;
-  discord_guild_id?: string;
-  twitch_channel_id?: string;
 }
 
 interface ItemRecord extends TimestampedRecord

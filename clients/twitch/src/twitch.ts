@@ -20,7 +20,7 @@ import { Log } from './utilities/logger';
 	const client = new Client({
 		connection: { secure: true, reconnect: true },
 		identity: { username, password: process.env.TWITCH_PASSWORD },
-		channels: [ 'esfox316' ],
+		channels: [ 'esfox316', 'xJabee' ],
 	});
 
 	client.connect();

@@ -6,8 +6,7 @@ export enum ObtainableFields
   user_id = 'user_id',
   amount = 'amount',
   is_collectible = 'is_collectible',
-  discord_guild_id = 'discord_guild_id',
-  twitch_channel_id = 'twitch_channel_id',
+  context = 'context',
   created_at = 'created_at',
   updated_at = 'updated_at',
   deleted_at = 'deleted_at',
@@ -38,7 +37,7 @@ export const ObtainableService = new class
     };
 
     if(discordGuildID)
-      insertData.discord_guild_id = discordGuildID;
+      insertData.context = discordGuildID;
 
     if(twitchChannelID)
       insertData.twitch_channel_id = twitchChannelID;

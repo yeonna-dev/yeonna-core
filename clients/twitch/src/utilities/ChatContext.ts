@@ -15,11 +15,11 @@ export class ChatContext
     this.message = message;
   }
 
-  send(message: string, noMention?: boolean)
+  send(message: any, noMention?: boolean)
   {
     this.client.say(
       this.channel,
-      noMention ? message : `@${this.tags.username} ${message}`,
+      noMention ? message.toString() : `@${this.tags.username} ${message}`,
     );
   }
 }
