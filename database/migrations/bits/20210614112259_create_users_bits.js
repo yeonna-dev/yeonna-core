@@ -8,10 +8,10 @@ exports.up = async function(knex)
 
   await knex.schema.createTable(tableName, table =>
   {
-    table.increments('id');
+    table.increments('pk_id');
 
-    table.uuid('user_uuid').unique().notNullable();
-    table.uuid('bit_uuid').unique().notNullable();
+    table.string('user_id', 15).index().notNullable();
+    table.string('bit_id', 15).index().notNullable();
 
     table.dateTime('created_at').index().defaultTo(knex.fn.now());
     table.dateTime('updated_at').index();

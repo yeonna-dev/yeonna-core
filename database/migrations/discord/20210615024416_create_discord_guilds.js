@@ -8,9 +8,9 @@ exports.up = async function(knex)
 
   await knex.schema.createTable(tableName, table =>
   {
-    table.increments('id');
+    table.increments('pk_id');
 
-    table.uuid('discord_id').unique().notNullable();
+    table.string('discord_id').unique().notNullable();
     table.string('points_name').index();
     table.string('collectibles_name').index();
 

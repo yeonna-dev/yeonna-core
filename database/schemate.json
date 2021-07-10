@@ -9,6 +9,9 @@
     },
     "discord": {
       "migrationsDir": "migrations/discord/"
+    },
+    "items": {
+      "migrationsDir": "migrations/items"
     }
   }
 }
