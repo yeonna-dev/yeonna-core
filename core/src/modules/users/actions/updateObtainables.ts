@@ -59,14 +59,12 @@ export async function updateObtainables({
     if(subtract)
       newPoints = obtainables - amount;
 
-    const updated = await ObtainableService.updateObtainables({
+    return ObtainableService.updateObtainables({
       userID,
       amount: newPoints,
       isCollectible,
       context,
     });
-
-    console.log(updated);
   }
 }
 
@@ -88,7 +86,7 @@ export async function updateUserPoints({
   subtract?: boolean,
   discordGuildID?: string,
   twitchChannelID?: string,
-}): Promise<void>
+})
 {
   return updateObtainables({
     userID,
@@ -120,7 +118,7 @@ export async function updateUserCollectibles({
   subtract?: boolean,
   discordGuildID?: string,
   twitchChannelID?: string,
-}): Promise<void>
+})
 {
   return updateObtainables({
     userID,
