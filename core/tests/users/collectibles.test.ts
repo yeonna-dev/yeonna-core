@@ -19,7 +19,8 @@ describe('User Collectibles', () =>
 
   const discordUser2 = '550362465905541132';  /* Botler#4197 Discord ID */
   const twitchUser2 = '19264788'; /* Nightbot Twitch ID */
-  const amount = 1;
+  const updateAmount = 5;
+  const addAmount = 1;
 
   const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
   const twitchChannelID = '193202362';
@@ -33,26 +34,26 @@ describe('User Collectibles', () =>
   );
 
   it('should set the collectibles of a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ discordID: discordUser2, amount: 5, discordGuildID })
+    await updateUserCollectibles({ discordID: discordUser2, amount: updateAmount, discordGuildID })
   );
 
   it('should set the collectibles of a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ twitchID: twitchUser2, amount: 5, twitchChannelID })
+    await updateUserCollectibles({ twitchID: twitchUser2, amount: updateAmount, twitchChannelID })
   );
 
   it('should add a collectible to a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ discordID: discordUser1, amount, discordGuildID, add: true })
+    await updateUserCollectibles({ discordID: discordUser1, amount: addAmount, discordGuildID, add: true })
   );
 
   it('should add a collectible to a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ twitchID: twitchUser1, amount, twitchChannelID, add: true })
+    await updateUserCollectibles({ twitchID: twitchUser1, amount: addAmount, twitchChannelID, add: true })
   );
 
   it('should transfer the collectibles of a Discord user to another', async () =>
     await transferUserCollectibles({
       fromUserIdentifier: discordUser2,
       toDiscordUserID: discordUser1,
-      amount,
+      amount: addAmount,
       discordGuildID,
     })
   );
@@ -61,7 +62,7 @@ describe('User Collectibles', () =>
     await transferUserCollectibles({
       fromUserIdentifier: twitchUser2,
       toTwitchUserID: twitchUser1,
-      amount,
+      amount: addAmount,
       twitchChannelID,
     })
   );

@@ -1,9 +1,10 @@
 import { findUser, findOrCreateUser } from './findUser';
+import { getObtainables } from './getObtainables';
 
 import { ObtainableService } from '../services/ObtainableService';
 
+import { ContextUtil } from '../../../common/ContextUtil';
 import { NotEnoughCollectibles, NotEnoughPoints } from '../../../common/errors';
-import { getObtainables } from './getObtainables';
 
 export async function transferObtainables({
   fromUserIdentifier,
@@ -64,21 +65,20 @@ export async function transferObtainables({
     twitchChannelID,
   });
 
+  const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
   if(! targetObtainables)
     await ObtainableService.createObtainable({
       userID: target,
       amount,
-      discordGuildID,
-      twitchChannelID,
       isCollectible,
+      context,
     });
   else
     await ObtainableService.updateObtainables({
       userID: target,
       amount: targetObtainables + amount,
       isCollectible,
-      discordGuildID,
-      twitchChannelID,
+      context,
     });
 
   /* Subtract obtainables from the source user. */
@@ -86,8 +86,7 @@ export async function transferObtainables({
     userID: source,
     amount: sourceObtainables - amount,
     isCollectible,
-    discordGuildID,
-    twitchChannelID,
+    context,
   });
 }
 

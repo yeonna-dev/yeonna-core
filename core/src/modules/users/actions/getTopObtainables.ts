@@ -1,6 +1,8 @@
 import { ObtainableService, ObtainableFields } from '../services/ObtainableService';
 import { UsersService } from '../services/UsersService';
 
+import { ContextUtil } from '../../../common/ContextUtil';
+
 type TopPoints =
 {
   userID: string;
@@ -22,12 +24,13 @@ export async function getTopObtainables({
   twitchChannelID?: string,
 }): Promise<TopPoints[]>
 {
+  const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
+
   /* Get top points. */
   const top = await ObtainableService.getTop({
     count,
-    discordGuildID,
-    twitchChannelID,
     isCollectible,
+    context,
   });
 
   if(! top)

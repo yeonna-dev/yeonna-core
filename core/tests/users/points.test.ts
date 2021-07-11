@@ -19,7 +19,9 @@ describe('User Points', () =>
 
   const discordUser2 = '550362465905541132';  /* Botler#4197 Discord ID */
   const twitchUser2 = '19264788'; /* Nightbot Twitch ID */
-  const amount = 100;
+  const updateAmount = 500;
+  const addAmount = 100;
+  const transferAmount = 50;
 
   const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
   const twitchChannelID = '193202362';
@@ -33,35 +35,35 @@ describe('User Points', () =>
   );
 
   it('should set the points of a Discord user in a Discord server', async () =>
-    await updateUserPoints({ discordID: discordUser2, amount, discordGuildID })
+    await updateUserPoints({ discordID: discordUser2, amount: updateAmount, discordGuildID })
   );
 
   it('should set the points of a Twitch user in a Twitch channel', async () =>
-    await updateUserPoints({ twitchID: twitchUser2, amount, twitchChannelID })
+    await updateUserPoints({ twitchID: twitchUser2, amount: updateAmount, twitchChannelID })
   );
 
   it('should add points to a Discord user in a Discord server', async () =>
-    await updateUserPoints({ discordID: discordUser1, amount, discordGuildID, add: true })
+    await updateUserPoints({ discordID: discordUser1, amount: addAmount, discordGuildID, add: true })
   );
 
   it('should add points to a Twitch user in a Twitch channel', async () =>
-    await updateUserPoints({ twitchID: twitchUser1, amount, twitchChannelID, add: true })
+    await updateUserPoints({ twitchID: twitchUser1, amount: addAmount, twitchChannelID, add: true })
   );
 
   it('should transfer the points of a Discord user to another', async () =>
     await transferUserPoints({
-      fromUserIdentifier: discordUser1,
-      toDiscordUserID: discordUser2,
-      amount,
+      fromUserIdentifier: discordUser2,
+      toDiscordUserID: discordUser1,
+      amount: transferAmount,
       discordGuildID,
     })
   );
 
   it('should transfer the points of a Twitch user to another', async () =>
     await transferUserPoints({
-      fromUserIdentifier: twitchUser1,
-      toTwitchUserID: twitchUser2,
-      amount,
+      fromUserIdentifier: twitchUser2,
+      toTwitchUserID: twitchUser1,
+      amount: transferAmount,
       twitchChannelID,
     })
   );

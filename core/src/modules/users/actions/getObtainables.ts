@@ -1,5 +1,8 @@
-import { ObtainableService } from '../services/ObtainableService';
 import { findUser } from './findUser';
+
+import { ObtainableService } from '../services/ObtainableService';
+
+import { ContextUtil } from '../../../common/ContextUtil';
 import { UserNotFound } from '../../../common/errors';
 
 export async function getObtainables({
@@ -22,12 +25,13 @@ export async function getObtainables({
   if(! userID )
     throw new UserNotFound();
 
-  return ! userID ? 0 : ObtainableService.getObtainable({
+  const obtainables = await ObtainableService.getObtainable({
     userID,
     isCollectible,
-    discordGuildID,
-    twitchChannelID,
+    context: ContextUtil.createContext({ discordGuildID, twitchChannelID }),
   });
+
+  return obtainables || 0;
 }
 
 export async function getUserPoints({

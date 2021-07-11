@@ -19,14 +19,12 @@ export const ObtainableService = new class
     userID,
     amount = 0,
     isCollectible,
-    discordGuildID,
-    twitchChannelID,
+    context,
   } : {
     userID: string,
     amount: number,
     isCollectible?: boolean,
-    discordGuildID?: string,
-    twitchChannelID?: string,
+    context?: string,
   }): Promise<Boolean>
   {
     const insertData: ObtainableRecord =
@@ -36,11 +34,8 @@ export const ObtainableService = new class
       is_collectible: isCollectible,
     };
 
-    if(discordGuildID)
-      insertData.context = discordGuildID;
-
-    if(twitchChannelID)
-      insertData.twitch_channel_id = twitchChannelID;
+    if(context)
+      insertData.context = context;
 
     const { data, error } = await obtainables().insert(insertData);
     if(error)
@@ -58,13 +53,11 @@ export const ObtainableService = new class
   async getObtainable({
     userID,
     isCollectible,
-    discordGuildID,
-    twitchChannelID,
+    context,
   } : {
     userID: string,
     isCollectible?: boolean,
-    discordGuildID?: string,
-    twitchChannelID?: string,
+    context?: string,
   })
   {
     const query = obtainables()
@@ -72,12 +65,8 @@ export const ObtainableService = new class
       .eq(ObtainableFields.user_id, userID)
       .is(ObtainableFields.is_collectible, isCollectible ? true : false);
 
-    if(discordGuildID)
-      query.eq(ObtainableFields.discord_guild_id, discordGuildID);
-
-    if(twitchChannelID)
-      query.eq(ObtainableFields.twitch_channel_id, twitchChannelID);
-
+    if(context)
+      query.eq(ObtainableFields.context, context);
 
     const { data, error } = await query;
     if(error)
@@ -92,14 +81,12 @@ export const ObtainableService = new class
     userID,
     amount,
     isCollectible,
-    discordGuildID,
-    twitchChannelID,
+    context,
   } : {
     userID: string,
     amount: number,
     isCollectible?: boolean,
-    discordGuildID?: string,
-    twitchChannelID?: string,
+    context?: string,
   }): Promise<void>
   {
     const query = obtainables()
@@ -107,11 +94,8 @@ export const ObtainableService = new class
       .match({ [ObtainableFields.user_id]: userID })
       .is(ObtainableFields.is_collectible, isCollectible ? true : false);
 
-    if(discordGuildID)
-      query.eq(ObtainableFields.discord_guild_id, discordGuildID);
-
-    if(twitchChannelID)
-      query.eq(ObtainableFields.twitch_channel_id, twitchChannelID);
+    if(context)
+      query.eq(ObtainableFields.context, context);
 
     const { error } = await query;
     if(error)
@@ -123,13 +107,11 @@ export const ObtainableService = new class
   async getTop({
     count,
     isCollectible,
-    discordGuildID,
-    twitchChannelID,
+    context,
   } : {
     count: number,
     isCollectible?: boolean,
-    discordGuildID?: string,
-    twitchChannelID?: string,
+    context?: string,
   })
   {
     const query = obtainables()
@@ -138,11 +120,8 @@ export const ObtainableService = new class
       .is(ObtainableFields.is_collectible, isCollectible ? true : false)
       .limit(count);
 
-    if(discordGuildID)
-      query.eq(ObtainableFields.discord_guild_id, discordGuildID);
-
-    if(twitchChannelID)
-      query.eq(ObtainableFields.twitch_channel_id, twitchChannelID);
+    if(context)
+      query.eq(ObtainableFields.context, context);
 
     const { data, error } = await query;
     if(error)

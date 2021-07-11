@@ -6,14 +6,23 @@ class ContextUtilClass
     twitch: 'twitch',
   }
 
-  private createContext = (contextName: string, contextIdentifier: string) =>
-    `${contextName}:${contextIdentifier}`
+  createContext({
+    discordGuildID,
+    twitchChannelID,
+  } : {
+    discordGuildID?: string,
+    twitchChannelID?: string,
+  })
+  {
+    if(! discordGuildID && ! twitchChannelID)
+      throw new Error('No context identifier provided');
 
-  discordContext = (discordGuildID: string) =>
-    this.createContext(this.contexts.discord, discordGuildID)
+    const context = discordGuildID
+      ? this.contexts.discord
+      : this.contexts.twitch;
 
-  twitchContext = (twitchChannelID: string) =>
-    this.createContext(this.contexts.twitch, twitchChannelID)
+    return `${context}:${discordGuildID || twitchChannelID}`;
+  }
 }
 
 export const ContextUtil = new ContextUtilClass();
