@@ -59,12 +59,14 @@ export async function updateObtainables({
     if(subtract)
       newPoints = obtainables - amount;
 
-    await ObtainableService.updateObtainables({
+    const updated = await ObtainableService.updateObtainables({
       userID,
       amount: newPoints,
       isCollectible,
       context,
     });
+
+    console.log(updated);
   }
 }
 

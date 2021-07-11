@@ -87,7 +87,7 @@ export const ObtainableService = new class
     amount: number,
     isCollectible?: boolean,
     context?: string,
-  }): Promise<void>
+  })
   {
     const query = obtainables()
       .update({ [ObtainableFields.amount]: amount })
@@ -97,9 +97,11 @@ export const ObtainableService = new class
     if(context)
       query.eq(ObtainableFields.context, context);
 
-    const { error } = await query;
+    const { data, error } = await query;
     if(error)
       throw error;
+
+    return data?.pop()?.amount;
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
