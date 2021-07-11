@@ -15,7 +15,7 @@ class ContextUtilClass
   })
   {
     if(! discordGuildID && ! twitchChannelID)
-      throw new Error('No context identifier provided');
+      return;
 
     const context = discordGuildID
       ? this.contexts.discord
