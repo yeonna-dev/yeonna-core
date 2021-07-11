@@ -90,7 +90,7 @@ export async function updateUserPoints({
   twitchChannelID?: string,
 }): Promise<void>
 {
-  await updateObtainables({
+  return updateObtainables({
     userID,
     discordID,
     twitchID,
@@ -122,7 +122,7 @@ export async function updateUserCollectibles({
   twitchChannelID?: string,
 }): Promise<void>
 {
-  await updateObtainables({
+  return updateObtainables({
     userID,
     discordID,
     twitchID,
