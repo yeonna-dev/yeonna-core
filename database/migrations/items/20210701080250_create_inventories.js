@@ -12,7 +12,8 @@ exports.up = async function(knex)
 
     table.string('user_id', 15).index();
     table.string('context').index();
-    table.string('item_code');
+    table.string('item_code').index();
+    table.integer('amount');
 
     table.dateTime('created_at').index().defaultTo(knex.fn.now());
     table.dateTime('updated_at').index();
