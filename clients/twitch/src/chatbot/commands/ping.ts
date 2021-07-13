@@ -1,6 +1,6 @@
 import { Command } from 'comtroller';
 
-import { ChatContext } from '../utilities/ChatContext';
+import { ChatContext } from '../../utilities/ChatContext';
 
 export const ping: Command =
 {
