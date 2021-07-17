@@ -27,6 +27,13 @@ interface Item
   emote?: string;
 }
 
+interface InventoryItem
+{
+  itemCode: string;
+  amount: number;
+  context?: string;
+}
+
 interface DiscordGuild
 {
   discordID: string;
@@ -82,4 +89,12 @@ interface ItemRecord extends TimestampedRecord
   price?: number;
   image?: string;
   emote?: string;
+}
+
+interface InventoryRecord extends TimestampedRecord
+{
+  user_id: string;
+  item_code: string;
+  amount: number;
+  context?: string;
 }

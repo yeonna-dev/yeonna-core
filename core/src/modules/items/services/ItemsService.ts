@@ -18,10 +18,19 @@ export enum ItemsFields
 
 export const ItemsService = new class
 {
-  async find({ chance } : { chance?: number })
+  async find({
+    code,
+    chance,
+  } : {
+    code?: string,
+    chance?: number,
+  })
   {
     const query = items()
       .select();
+
+    if(code)
+      query.eq(ItemsFields.code, code);
 
     if(chance)
       query

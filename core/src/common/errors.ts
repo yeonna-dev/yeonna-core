@@ -23,3 +23,13 @@ export class NotEnoughCollectibles extends Error
     super('Not enough collectibles');
   }
 }
+
+/* Items */
+
+export class ItemNotFound extends Error
+{
+  constructor()
+  {
+    super('Item not found');
+  }
+}
