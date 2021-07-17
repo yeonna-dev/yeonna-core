@@ -1,12 +1,12 @@
 import TES from 'tesjs';
 import localtunnel from 'localtunnel';
-import { Client } from 'tmi.js';
 
 import { Redemptions } from './redemptions/Redemptions';
 
+import { client } from '../chatbot/initChatBot';
 import { Log } from '../utilities/logger';
 
-export async function initEventSub(client?: Client)
+export async function initEventSub()
 {
   const clientID = process.env.TWITCH_CLIENT_ID;
   const clientSecret = process.env.TWITCH_CLIENT_SECRET;
