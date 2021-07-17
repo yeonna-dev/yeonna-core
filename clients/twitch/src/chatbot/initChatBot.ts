@@ -12,7 +12,7 @@ const password = process.env.TWITCH_PASSWORD;
 export const client = new Client({
   connection: { secure: true, reconnect: true },
   identity: { username, password },
-  channels: [ /* 'esfox316',  */'xJabee' ],
+  channels: process.env.TWITCH_CHANNELS?.split(',') || [],
 });
 
 export async function initChatBot()
