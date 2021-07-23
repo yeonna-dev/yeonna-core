@@ -1,18 +1,20 @@
 import { Command, parseParamsToArray } from 'comtroller';
-import { updateUserPoints } from 'yeonna-core';
+import { NotEnoughPoints, transferUserPoints } from 'yeonna-core';
 
 import { API } from '../../api';
 
 import { ChatContext } from '../../utilities/ChatContext';
 import { Log } from '../../utilities/logger';
 
-export const addpoints: Command =
+export const give: Command =
 {
-  name: 'addpoints',
+  name: 'give',
+  aliases: [ 'pay' ],
   run: async ({ context, params }: { context: ChatContext, params: string }) =>
   {
+    const userID = context.tags['user-id'];
     const twitchChannelID = context.tags['room-id'];
-    if(! twitchChannelID)
+    if(! userID || ! twitchChannelID)
       return;
 
     const [ mentioned, amountString ] = parseParamsToArray(params);
@@ -29,18 +31,22 @@ export const addpoints: Command =
 
     try
     {
-      await updateUserPoints({
-        twitchID: user.id,
-        twitchChannelID,
+      await transferUserPoints({
+        fromUserIdentifier: userID,
+        toTwitchUserID: user.id,
         amount,
-        add: true,
+        twitchChannelID,
       });
 
-      context.send(`Added ${amount} points to @${user.displayName}`, true);
+      context.send(`gave ${amount} points to @${user.displayName}`);
     }
     catch(error)
     {
       Log.error(error);
+
+      if(error instanceof NotEnoughPoints)
+        return context.send('not enough points');
+
       context.send('Cannot add points');
     }
   },

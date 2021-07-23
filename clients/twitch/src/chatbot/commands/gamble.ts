@@ -20,8 +20,6 @@ export const gamble: Command =
     if(! userIdentifier)
       return;
 
-    const [ betString ] = parseParamsToArray(params);
-
     let points;
     try
     {
@@ -41,6 +39,7 @@ export const gamble: Command =
     if(! points)
       return;
 
+    const [ betString ] = parseParamsToArray(params);
     const bet = betString.toLowerCase() == 'all' ? points : parseInt(betString);
     if(isNaN(bet))
       return context.send('please enter bet amount(!bet [amount])');

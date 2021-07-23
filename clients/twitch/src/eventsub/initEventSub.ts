@@ -20,6 +20,8 @@ export async function initEventSub()
   if(! broadcasterID)
     throw new Error('Please provide the broadcaster ID in the .env file');
 
+  Log.info('Initializing to EventSub...', true);
+
   let baseURL = process.env.EVENTSUB_LISTENER_URL;
   const port = parseInt(process.env.EVENTSUB_DEV_TUNNEL_PORT || '8080');
 
@@ -99,6 +101,6 @@ export async function initEventSub()
   Log.info(`Listening to EventSub on ${baseURL}`, true);
 
   // TODO: Update
-  if(client)
-    client.say('#xjabee', 'gamba bro');
+  // if(client)
+  //   client.say('#xjabee', 'gamba bro');
 }
