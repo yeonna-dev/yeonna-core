@@ -1,7 +1,7 @@
-import { Command, parseParamsToArray } from 'comtroller';
+import { Command } from 'comtroller';
 import { updateUserPoints } from 'yeonna-core';
 
-import { API } from '../../api';
+import { getMentionedUserAndAmount } from '../actions/getMentionAndAmount';
 
 import { ChatContext } from '../../utilities/ChatContext';
 import { Log } from '../../utilities/logger';
@@ -11,27 +11,16 @@ export const addpoints: Command =
   name: 'addpoints',
   run: async ({ context, params }: { context: ChatContext, params: string }) =>
   {
-    const twitchChannelID = context.tags['room-id'];
-    if(! twitchChannelID)
+    const args = await getMentionedUserAndAmount(context, params);
+    if(! args)
       return;
 
-    const [ mentioned, amountString ] = parseParamsToArray(params);
-    if(! mentioned && ! amountString)
-      return;
-
-    let amount = parseInt(amountString);
-    if(isNaN(amount))
-      return context.send('please enter the amount');
-
-    const user = await API.getUserByName(mentioned.replace(/@/g, ''));
-    if(! user)
-      return;
-
+    const { user, amount, channel } = args;
     try
     {
       await updateUserPoints({
         twitchID: user.id,
-        twitchChannelID,
+        twitchChannelID: channel,
         amount,
         add: true,
       });
