@@ -24,7 +24,7 @@ describe('User Points', () =>
   const transferAmount = 50;
 
   const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
-  const twitchChannelID = '193202362';
+  const twitchChannelID = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the points of a Discord user in a Discord server', async () =>
     await getUserPoints({ userIdentifier: discordUser1, discordGuildID })
@@ -35,25 +35,25 @@ describe('User Points', () =>
   );
 
   it('should set the points of a Discord user in a Discord server', async () =>
-    await updateUserPoints({ discordID: discordUser2, amount: updateAmount, discordGuildID })
+    await updateUserPoints({ userIdentifier: discordUser2, amount: updateAmount, discordGuildID })
   );
 
   it('should set the points of a Twitch user in a Twitch channel', async () =>
-    await updateUserPoints({ twitchID: twitchUser2, amount: updateAmount, twitchChannelID })
+    await updateUserPoints({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelID })
   );
 
   it('should add points to a Discord user in a Discord server', async () =>
-    await updateUserPoints({ discordID: discordUser1, amount: addAmount, discordGuildID, add: true })
+    await updateUserPoints({ userIdentifier: discordUser1, amount: addAmount, discordGuildID, add: true })
   );
 
   it('should add points to a Twitch user in a Twitch channel', async () =>
-    await updateUserPoints({ twitchID: twitchUser1, amount: addAmount, twitchChannelID, add: true })
+    await updateUserPoints({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelID, add: true })
   );
 
   it('should transfer the points of a Discord user to another', async () =>
     await transferUserPoints({
       fromUserIdentifier: discordUser2,
-      toDiscordUserID: discordUser1,
+      toUserIdentifier: discordUser1,
       amount: transferAmount,
       discordGuildID,
     })
@@ -62,7 +62,7 @@ describe('User Points', () =>
   it('should transfer the points of a Twitch user to another', async () =>
     await transferUserPoints({
       fromUserIdentifier: twitchUser2,
-      toTwitchUserID: twitchUser1,
+      toUserIdentifier: twitchUser1,
       amount: transferAmount,
       twitchChannelID,
     })
@@ -75,7 +75,7 @@ describe('User Points', () =>
         const sourcePoints = await getUserPoints({ userIdentifier: discordUser1, discordGuildID });
         await transferUserPoints({
           fromUserIdentifier: discordUser1,
-          toDiscordUserID: discordUser2,
+          toUserIdentifier: discordUser2,
           amount: sourcePoints + 1,
           discordGuildID,
         });

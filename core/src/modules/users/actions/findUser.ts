@@ -1,5 +1,6 @@
 import { UserNotFound } from '../../../common/errors';
 import { UsersService } from '../services/UsersService';
+import { ContextPlatforms } from '../../../common/ContextUtil';
 
 export async function findUser(userIdentifier: string): Promise<string>
 {
@@ -11,26 +12,36 @@ export async function findUser(userIdentifier: string): Promise<string>
 }
 
 export async function findOrCreateUser({
-  userID,
-  discordID,
-  twitchID,
+  userIdentifier,
+  discordGuildID,
+  twitchChannelID,
 } : {
-  userID?: string,
-  discordID?: string,
-  twitchID?: string,
+  userIdentifier: string,
+  discordGuildID?: string,
+  twitchChannelID?: string,
 })
 {
-  /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
-  const result = await UsersService.find({
-    ids: userID,
-    discordIDs: discordID,
-    twitchIDs: twitchID,
-  });
+  let userFindKey = 'ids';
+  let userCreateKey;
 
+  if(discordGuildID)
+  {
+    userFindKey = 'discordIDs';
+    userCreateKey = 'discordID';
+  }
+  if(twitchChannelID)
+  {
+    userFindKey = 'twitchIDs';
+    userCreateKey = 'twitchID';
+  }
+
+  /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
+  const result = await UsersService.find({ [userFindKey]: userIdentifier });
   const [ user ] = result;
   if(! user)
   {
-    const createdUserID = await UsersService.create({ discordID, twitchID });
+    const createUserParams = userCreateKey ? { [userCreateKey]: userIdentifier } : {};
+    const createdUserID = await UsersService.create(createUserParams);
     if(! createdUserID)
       throw new Error('User not saved');
 

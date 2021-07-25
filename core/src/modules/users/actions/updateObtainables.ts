@@ -2,12 +2,10 @@ import { findOrCreateUser } from './findUser';
 
 import { ObtainableService } from '../services/ObtainableService';
 
-import { ContextUtil } from '../../../common/ContextUtil';
+import { ContextPlatforms, ContextUtil } from '../../../common/ContextUtil';
 
 export async function updateObtainables({
-  userID,
-  discordID,
-  twitchID,
+  userIdentifier,
   amount,
   isCollectible,
   add,
@@ -15,9 +13,7 @@ export async function updateObtainables({
   discordGuildID,
   twitchChannelID,
 } : {
-  userID?: string,
-  discordID?: string,
-  twitchID?: string,
+  userIdentifier: string,
   amount: number,
   isCollectible?: boolean,
   add?: boolean,
@@ -31,7 +27,7 @@ export async function updateObtainables({
 
   amount = Math.abs(amount);
 
-  userID = await findOrCreateUser({ userID, discordID, twitchID });
+  const userID = await findOrCreateUser({ userIdentifier, discordGuildID, twitchChannelID });
   if(! userID)
     throw new Error('Cannot update user points');
 
@@ -69,18 +65,14 @@ export async function updateObtainables({
 }
 
 export async function updateUserPoints({
-  userID,
-  discordID,
-  twitchID,
+  userIdentifier,
   amount,
   add,
   subtract,
   discordGuildID,
   twitchChannelID,
 } : {
-  userID?: string,
-  discordID?: string,
-  twitchID?: string,
+  userIdentifier: string,
   amount: number,
   add?: boolean,
   subtract?: boolean,
@@ -89,9 +81,7 @@ export async function updateUserPoints({
 })
 {
   return updateObtainables({
-    userID,
-    discordID,
-    twitchID,
+    userIdentifier,
     amount,
     add,
     subtract,
@@ -101,18 +91,14 @@ export async function updateUserPoints({
 }
 
 export async function updateUserCollectibles({
-  userID,
-  discordID,
-  twitchID,
+  userIdentifier,
   amount,
   add,
   subtract,
   discordGuildID,
   twitchChannelID,
 } : {
-  userID?: string,
-  discordID?: string,
-  twitchID?: string,
+  userIdentifier: string,
   amount: number,
   add?: boolean,
   subtract?: boolean,
@@ -121,9 +107,7 @@ export async function updateUserCollectibles({
 })
 {
   return updateObtainables({
-    userID,
-    discordID,
-    twitchID,
+    userIdentifier,
     amount,
     isCollectible: true,
     add,

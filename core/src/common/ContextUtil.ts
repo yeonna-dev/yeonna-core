@@ -1,11 +1,11 @@
+export const ContextPlatforms =
+{
+  Discord: 'discord',
+  Twitch: 'twitch',
+}
+
 class ContextUtilClass
 {
-  private contexts =
-  {
-    discord: 'discord',
-    twitch: 'twitch',
-  }
-
   createContext({
     discordGuildID,
     twitchChannelID,
@@ -17,11 +17,8 @@ class ContextUtilClass
     if(! discordGuildID && ! twitchChannelID)
       return;
 
-    const context = discordGuildID
-      ? this.contexts.discord
-      : this.contexts.twitch;
-
-    return `${context}:${discordGuildID || twitchChannelID}`;
+    const platform = discordGuildID ? ContextPlatforms.Discord : ContextPlatforms.Twitch;
+    return `${platform}:${discordGuildID || twitchChannelID}`;
   }
 }
 

@@ -8,18 +8,14 @@ import { NotEnoughCollectibles, NotEnoughPoints } from '../../../common/errors';
 
 export async function transferObtainables({
   fromUserIdentifier,
-  toUserID,
-  toDiscordUserID,
-  toTwitchUserID,
+  toUserIdentifier,
   amount,
   isCollectible,
   discordGuildID,
   twitchChannelID,
 } : {
   fromUserIdentifier: string,
-  toUserID?: string,
-  toDiscordUserID?: string,
-  toTwitchUserID?: string,
+  toUserIdentifier: string,
   amount: number,
   isCollectible?: boolean,
   discordGuildID?: string,
@@ -49,9 +45,9 @@ export async function transferObtainables({
 
   /* Get the obtainables of user to add obtainables to (target user). */
   const target = await findOrCreateUser({
-    discordID: toDiscordUserID,
-    twitchID: toTwitchUserID,
-    userID: toUserID,
+    userIdentifier: toUserIdentifier,
+    discordGuildID,
+    twitchChannelID,
   });
 
   if(! target)
@@ -92,17 +88,13 @@ export async function transferObtainables({
 
 export async function transferUserPoints({
   fromUserIdentifier,
-  toUserID,
-  toDiscordUserID,
-  toTwitchUserID,
+  toUserIdentifier,
   amount,
   discordGuildID,
   twitchChannelID,
 } : {
   fromUserIdentifier: string,
-  toUserID?: string,
-  toDiscordUserID?: string,
-  toTwitchUserID?: string,
+  toUserIdentifier: string,
   amount: number,
   discordGuildID?: string,
   twitchChannelID?: string,
@@ -110,9 +102,7 @@ export async function transferUserPoints({
 {
   await transferObtainables({
     fromUserIdentifier,
-    toUserID,
-    toDiscordUserID,
-    toTwitchUserID,
+    toUserIdentifier,
     amount,
     discordGuildID,
     twitchChannelID,
@@ -121,17 +111,13 @@ export async function transferUserPoints({
 
 export async function transferUserCollectibles({
   fromUserIdentifier,
-  toUserID,
-  toDiscordUserID,
-  toTwitchUserID,
+  toUserIdentifier,
   amount,
   discordGuildID,
   twitchChannelID,
 } : {
   fromUserIdentifier: string,
-  toUserID?: string,
-  toDiscordUserID?: string,
-  toTwitchUserID?: string,
+  toUserIdentifier: string,
   amount: number,
   discordGuildID?: string,
   twitchChannelID?: string,
@@ -139,9 +125,7 @@ export async function transferUserCollectibles({
 {
   await transferObtainables({
     fromUserIdentifier,
-    toUserID,
-    toDiscordUserID,
-    toTwitchUserID,
+    toUserIdentifier,
     amount,
     discordGuildID,
     twitchChannelID,

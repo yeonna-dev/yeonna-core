@@ -23,7 +23,7 @@ describe('User Collectibles', () =>
   const addAmount = 1;
 
   const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
-  const twitchChannelID = '193202362';
+  const twitchChannelID = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the collectibles of a Discord user in a Discord server', async () =>
     await getUserCollectibles({ userIdentifier: discordUser1, discordGuildID })
@@ -34,25 +34,25 @@ describe('User Collectibles', () =>
   );
 
   it('should set the collectibles of a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ discordID: discordUser2, amount: updateAmount, discordGuildID })
+    await updateUserCollectibles({ userIdentifier: discordUser2, amount: updateAmount, discordGuildID })
   );
 
   it('should set the collectibles of a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ twitchID: twitchUser2, amount: updateAmount, twitchChannelID })
+    await updateUserCollectibles({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelID })
   );
 
   it('should add a collectible to a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ discordID: discordUser1, amount: addAmount, discordGuildID, add: true })
+    await updateUserCollectibles({ userIdentifier: discordUser1, amount: addAmount, discordGuildID, add: true })
   );
 
   it('should add a collectible to a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ twitchID: twitchUser1, amount: addAmount, twitchChannelID, add: true })
+    await updateUserCollectibles({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelID, add: true })
   );
 
   it('should transfer the collectibles of a Discord user to another', async () =>
     await transferUserCollectibles({
       fromUserIdentifier: discordUser2,
-      toDiscordUserID: discordUser1,
+      toUserIdentifier: discordUser1,
       amount: addAmount,
       discordGuildID,
     })
@@ -61,7 +61,7 @@ describe('User Collectibles', () =>
   it('should transfer the collectibles of a Twitch user to another', async () =>
     await transferUserCollectibles({
       fromUserIdentifier: twitchUser2,
-      toTwitchUserID: twitchUser1,
+      toUserIdentifier: twitchUser1,
       amount: addAmount,
       twitchChannelID,
     })
@@ -74,7 +74,7 @@ describe('User Collectibles', () =>
         const sourcePoints = await getUserCollectibles({ userIdentifier: discordUser1, discordGuildID });
         await transferUserCollectibles({
           fromUserIdentifier: discordUser1,
-          toDiscordUserID: discordUser2,
+          toUserIdentifier: discordUser2,
           amount: sourcePoints + 1,
           discordGuildID,
         });

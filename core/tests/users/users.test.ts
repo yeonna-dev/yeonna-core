@@ -11,12 +11,15 @@ describe('Users', () =>
   const discordUser2 = '550362465905541132';  /* Botler#4197 Discord ID */
   const twitchUser2 = '19264788'; /* Nightbot Twitch ID */
 
+  const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
+  const twitchChannelID = '193202362'; /* esfox316 Twitch Channel ID */
+
   it('should create a user with a Discord ID', async () =>
-    await findOrCreateUser({ discordID: discordUser1 })
+    await findOrCreateUser({ userIdentifier: discordUser1, discordGuildID })
   );
 
   it('should create a user with a Twitch ID', async () =>
-    await findOrCreateUser({ twitchID: twitchUser2 })
+    await findOrCreateUser({ userIdentifier: twitchUser2, twitchChannelID })
   );
 
   it('should find a user by a Discord ID', async () =>
