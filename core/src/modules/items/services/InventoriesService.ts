@@ -14,7 +14,7 @@ export enum InventoriesFields
 
 export const InventoriesService = new class
 {
-  async getUserItems(userID: string, context?: string): Promise<InventoryItem[]>
+  async getUserItems(userID: string, context?: string): Promise<Inventory[]>
   {
     const query = inventories()
       .select()

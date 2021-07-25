@@ -59,9 +59,6 @@ describe('Items', function()
   it('should get the items of a Discord user', async () =>
   {
     const userItems = await getUserItems({ userIdentifier, discordGuildID });
-    assert.deepStrictEqual(
-      true,
-      userItems.every(item => item.itemCode && item.amount && item.context),
-    );
+    assert.deepStrictEqual(true, userItems.every(item => item.code && item.name && item.amount));
   });
 });

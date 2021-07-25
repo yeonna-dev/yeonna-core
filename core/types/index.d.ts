@@ -27,9 +27,15 @@ interface Item
   emote?: string;
 }
 
-interface InventoryItem
+interface Inventory
 {
   itemCode: string;
+  amount: number;
+  context?: string;
+}
+
+interface InventoryItem extends Item
+{
   amount: number;
   context?: string;
 }

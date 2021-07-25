@@ -41,22 +41,37 @@ export const ItemsService = new class
     if(error)
       throw error;
 
-    if(! data || data.length === 0)
-      return [];
+    return ! data || data.length === 0 ? [] : this.serialize(data);
+  }
 
-    const formatted: Item[] = []
-    for(const { category_id, code, name, chance_min, chance_max, price, image, emote } of data)
-      formatted.push({
-        categoryID: category_id,
-        code,
-        name,
-        chanceMin: chance_min,
-        chanceMax: chance_max,
-        price,
-        image,
-        emote,
-      });
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-    return formatted;
+  async findByCodes(codes: string[])
+  {
+    const { data, error } = await items()
+      .select()
+      .in(ItemsFields.code, codes);
+
+    if(error)
+      throw error;
+
+    return ! data || data.length === 0 ? [] : this.serialize(data);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  serialize(items: ItemRecord[])
+  {
+    return items.map(({ category_id, code, name, chance_min, chance_max, price, image, emote }) =>
+    ({
+      categoryID: category_id,
+      code,
+      name,
+      chanceMin: chance_min,
+      chanceMax: chance_max,
+      price,
+      image,
+      emote,
+    }));
   }
 }
