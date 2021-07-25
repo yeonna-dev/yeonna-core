@@ -27,14 +27,14 @@ export const collectible: Command =
   aliases: [ 'c' ],
   run: async ({ message, params }: { message: Message, params: string }) =>
   {
-    const discordID = message.author.id;
+    const userIdentifier = message.author.id;
     const discordGuildID = message.guild?.id;
 
     let mentionedMember = message.mentions.members?.first();
     let [ receiverID ] = parseParamsToArray(params);
 
     const toGet = ! mentionedMember && ! receiverID;
-    const cooldown = await cooldowns.check(`collectible-${toGet ? 'get' : 'give'}`, discordID);
+    const cooldown = await cooldowns.check(`collectible-${toGet ? 'get' : 'give'}`, userIdentifier);
     if(cooldown)
       return message.channel.send(`Please wait ${getTimeLeft(cooldown)}.`);
 
@@ -44,7 +44,7 @@ export const collectible: Command =
 
       /* Claim collectible. */
       await updateUserCollectibles({
-        discordID,
+        userIdentifier,
         amount: 1,
         add: true,
         discordGuildID,
@@ -71,8 +71,8 @@ export const collectible: Command =
     {
       /* Give collectible. */
       await transferUserCollectibles({
-        fromUserIdentifier: discordID,
-        toDiscordUserID: mentionedMember.id,
+        fromUserIdentifier: userIdentifier,
+        toUserIdentifier: mentionedMember.id,
         amount: 1,
         discordGuildID,
       });

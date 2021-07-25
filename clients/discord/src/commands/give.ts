@@ -46,7 +46,7 @@ export const give: Command =
     {
       await transferUserPoints({
         fromUserIdentifier: message.author.id,
-        toDiscordUserID: user,
+        toUserIdentifier: user,
         amount,
         discordGuildID: message.guild.id,
       });

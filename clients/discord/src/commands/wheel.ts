@@ -46,7 +46,7 @@ export const wheel: Command =
     const won = animal.code === chosenAnimal.code;
     if(won)
       await updateUserPoints({
-        discordID: message.author.id,
+        userIdentifier: message.author.id,
         discordGuildID: message.guild?.id,
         amount: reward,
         add: true,
