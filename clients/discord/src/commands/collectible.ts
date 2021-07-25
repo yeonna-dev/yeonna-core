@@ -71,7 +71,7 @@ export const collectible: Command =
     {
       /* Give collectible. */
       await transferUserCollectibles({
-        fromDiscordUserID: discordID,
+        fromUserIdentifier: discordID,
         toDiscordUserID: mentionedMember.id,
         amount: 1,
         discordGuildID,

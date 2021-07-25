@@ -14,7 +14,7 @@ export const collectibles: Command =
 
     message.channel.startTyping();
     const collectibles = await getUserCollectibles({
-      discordID: message.author.id,
+      userIdentifier: message.author.id,
       discordGuildID: message.guild.id,
     });
     message.channel.send(`${message.member?.displayName} has ${collectibles} collectibles.`);

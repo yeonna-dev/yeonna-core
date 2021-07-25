@@ -16,15 +16,15 @@ export const points: Command =
     if(! message.guild)
       return message.channel.send('This command can only be used in a guild.');
 
-    let [ discordID ] = parseParamsToArray(params);
-    discordID = discordID || message.author.id;
-    discordID = getIdFromMention(discordID);
+    let [ userIdentifier ] = parseParamsToArray(params);
+    userIdentifier = userIdentifier || message.author.id;
+    userIdentifier = getIdFromMention(userIdentifier);
 
     message.channel.startTyping();
 
     try
     {
-      const points = await getUserPoints({ discordID, discordGuildID: message.guild.id });
+      const points = await getUserPoints({ userIdentifier, discordGuildID: message.guild.id });
       message.channel.send(points?.toString() || 0);
     }
     catch(error)
