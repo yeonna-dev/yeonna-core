@@ -1,7 +1,8 @@
 import { Command } from 'comtroller';
-import { getUserItems } from 'yeonna-core';
 import { Message } from 'discord.js';
 import { table } from 'table';
+
+import { getUserInventory } from '../actions/getUserInventory';
 
 export const bag: Command =
 {
@@ -9,20 +10,16 @@ export const bag: Command =
   aliases: [ 'b' ],
   run: async ({ message }: { message: Message }) =>
   {
-    if(! message.guild)
-      return;
-
     message.channel.startTyping();
 
-    const inventory = await getUserItems({
-      userIdentifier: message.author.id,
-      discordGuildID: message.guild.id,
-    });
+    const items = await getUserInventory(message);
+    if(! items)
+      return;
 
     let totalAmount = 0;
     let totalCost = 0;
     const inventoryTableData = [];
-    for(const { name, amount, price } of inventory)
+    for(const { name, amount, price } of items)
     {
       totalAmount += amount;
       totalCost += amount * price;
