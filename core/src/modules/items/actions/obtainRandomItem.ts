@@ -30,7 +30,7 @@ export async function obtainRandomItem({
 
   /* Add item to the user. */
   const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
-  await InventoriesService.updateUserItem({
+  await InventoriesService.updateOrCreateUserItem({
     itemCode: randomItem.code,
     userID,
     context,

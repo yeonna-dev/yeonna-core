@@ -1,39 +1,36 @@
-import { ItemsService } from '../services/ItemsService';
 import { InventoriesService } from '../services/InventoriesService';
 
 import { findUser } from '../../users/actions';
 
 import { ContextUtil } from '../../../common/ContextUtil';
-import { ItemNotFound, UserNotFound } from '../../../common/errors';
+import { UserNotFound } from '../../../common/errors';
 
-export async function removeUserItem({
+export async function removeUserItems({
   userIdentifier,
-  itemCode,
+  itemsToRemove = [],
   discordGuildID,
   twitchChannelID,
 } : {
   userIdentifier: string,
-  itemCode: string,
+  itemsToRemove:
+  {
+    code: string,
+    amount: number,
+  }[],
   discordGuildID?: string,
   twitchChannelID?: string,
 })
 {
-  /* Get the item with the given code. */
-  const [ item ] = await ItemsService.find({ code: itemCode });
-  if(! item)
-    throw new ItemNotFound();
-
   /* Get the user with the given identifier. */
   const userID = await findUser(userIdentifier);
   if(! userID)
     throw new UserNotFound();
 
-  /* Update the user's inventory to remove the given item. */
+  /* Update the user's inventory to remove the given items. */
   const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
-  await InventoriesService.updateUserItem({
+  return InventoriesService.updateUserItems({
     userID,
-    itemCode,
+    items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),
     context,
-    remove: true,
   });
 }

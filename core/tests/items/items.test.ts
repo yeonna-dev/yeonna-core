@@ -6,7 +6,7 @@ import
   findUser,
   getUserItems,
   obtainRandomItem,
-  removeUserItem,
+  removeUserItems,
 } from '../../src';
 import { InventoriesService } from '../../src/modules/items/services/InventoriesService';
 
@@ -40,7 +40,7 @@ describe('Items', function()
   {
     const userID = await findUser(userIdentifier);
     for(let i = 0; i < 2; i++)
-      await InventoriesService.updateUserItem({
+      await InventoriesService.updateOrCreateUserItem({
         itemCode,
         userID,
         context: 'discord:504135117296500746',
@@ -49,9 +49,23 @@ describe('Items', function()
   });
 
   it('should remove an item from a Discord user inventory', async () =>
-    await removeUserItem({
+    await removeUserItems({
       userIdentifier,
-      itemCode,
+      itemsToRemove:
+      [
+        {
+          code: 'c',
+          amount: 10
+        },
+        {
+          code: 'j',
+          amount: 0,
+        },
+        {
+          code: 'kng',
+          amount: 1,
+        },
+      ],
       discordGuildID,
     })
   );
@@ -59,6 +73,10 @@ describe('Items', function()
   it('should get the items of a Discord user', async () =>
   {
     const userItems = await getUserItems({ userIdentifier, discordGuildID });
-    assert.deepStrictEqual(true, userItems.every(item => item.code && item.name && item.amount));
+    console.log(userItems);
+    assert.deepStrictEqual(
+      true,
+      userItems.every(item => item.code && item.name && item.amount !== undefined),
+    );
   });
 });

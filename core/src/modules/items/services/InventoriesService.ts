@@ -3,6 +3,7 @@ import { supabase } from '../../../common/supabase-client';
 const inventories = () => supabase.from<InventoryRecord>('inventories');
 export enum InventoriesFields
 {
+  pk_id = 'pk_id',
   user_id = 'user_id',
   item_code = 'item_code',
   amount = 'amount',
@@ -27,28 +28,22 @@ export const InventoriesService = new class
     if(error)
       throw error;
 
-    if(! data)
-      return [];
-
-    return data.map(item => ({
-      itemCode: item[InventoriesFields.item_code],
-      amount: item[InventoriesFields.amount],
-      context: item[InventoriesFields.context],
-    }));
+    return ! data || data.length === 0 ? [] : this.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async updateUserItem({
-    itemCode,
+  // TODO: Use upsert
+  async updateOrCreateUserItem({
     userID,
+    itemCode,
     amount = 1,
     context,
     add,
     remove,
   } : {
-    itemCode: string,
     userID: string,
+    itemCode: string,
     amount?: number,
     context?: string,
     add?: boolean,
@@ -101,5 +96,87 @@ export const InventoriesService = new class
 
     if(error)
       throw error;
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async updateUserItems({
+    userID,
+    items,
+    context,
+  } : {
+    userID: string,
+    items:
+    {
+      code: string,
+      amount: number,
+    }[],
+    context?: string,
+  })
+  {
+    const amountsMap: any = {};
+    for(const { code, amount } of items)
+      amountsMap[code] = amount;
+
+    const { data: userItems, error: getError } = await inventories()
+      .select()
+      .eq(InventoriesFields.user_id, userID)
+      .in(InventoriesFields.item_code, items.map(({ code }) => code))
+
+    if(getError)
+      throw getError;
+
+    if(! userItems)
+      return;
+
+    const upsertDataMap: any = {};
+    for(const item of userItems)
+    {
+      const code = item[InventoriesFields.item_code];
+      upsertDataMap[code] =
+      {
+        [InventoriesFields.pk_id]: item[InventoriesFields.pk_id],
+        [InventoriesFields.user_id]: userID,
+        [InventoriesFields.item_code]: code,
+        [InventoriesFields.amount]: amountsMap[code],
+        [InventoriesFields.context]: context,
+      };
+    }
+
+    for(const code in amountsMap)
+    {
+      if(upsertDataMap[code])
+        continue;
+
+      upsertDataMap[code] =
+      {
+        // TODO: Add unique column for upsert
+        [InventoriesFields.pk_id]: 9999,
+        [InventoriesFields.user_id]: userID,
+        [InventoriesFields.item_code]: code,
+        [InventoriesFields.amount]: amountsMap[code],
+        [InventoriesFields.context]: context,
+      };
+    }
+
+    const { data, error } = await inventories()
+      .upsert(Object.values(upsertDataMap));
+
+    if(error)
+      throw error;
+
+    return ! data || data.length === 0 ? [] : this.serialize(data);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  serialize(items: InventoryRecord[])
+  {
+    return items.map(item =>
+    ({
+      itemCode: item[InventoriesFields.item_code],
+      amount: item[InventoriesFields.amount],
+      context: item[InventoriesFields.context],
+    }));
   }
 }

@@ -99,6 +99,7 @@ interface ItemRecord extends TimestampedRecord
 
 interface InventoryRecord extends TimestampedRecord
 {
+  pk_id: number;
   user_id: string;
   item_code: string;
   amount: number;
