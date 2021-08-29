@@ -10,8 +10,7 @@ export const bitsave: Command =
   aliases: [ 'bs' ],
   run: async ({ message, params }: { message: Message, params: string }) =>
   {
-    const [ content ] = parseParamsToArray(params);
-    if(! content)
+    if(! params)
       return message.channel.send('Please add content to the bit.');
 
     try
@@ -20,7 +19,7 @@ export const bitsave: Command =
 
       const userBit = await saveUserBit({
         userIdentifier: message.author.id,
-        content,
+        content: params,
         discordGuildID: 'true',
       });
 
