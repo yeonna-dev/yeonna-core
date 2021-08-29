@@ -1,16 +1,18 @@
 import { BitsService } from '../services/BitsService';
 import { UsersBitsService } from '../services/UsersBitsService';
 
-import { findUser } from '../../users/actions';
+import { findOrCreateUser } from '../../users/actions';
 
 import { NoBitContentProvided } from '../../../common/errors';
 
 export async function saveUserBit({
   userIdentifier,
   content,
+  discordGuildID,
 } : {
   userIdentifier: string,
   content: string,
+  discordGuildID?: string,
 })
 {
   if(! content)
@@ -30,7 +32,7 @@ export async function saveUserBit({
   }
 
   /* Get the user by the given user identifier. */
-  const userID = await findUser(userIdentifier);
+  const userID = await findOrCreateUser({ userIdentifier, discordGuildID });
 
   /* Check if the bit has been added to the user. */
   const [ userBit ] = await UsersBitsService.find({ userIDs: [ userID ], bitIDs: [ bitID ] });
