@@ -4,7 +4,7 @@ specifiers:
   '@types/node': ^15.12.2
   axios: ^0.21.1
   cheerio: ^1.0.0-rc.10
-  comtroller: link:/media/esfox/Drive/dev/comtroller
+  comtroller: github:esfox/comtroller
   discord.js: ^12.5.3
   dotenv: ^10.0.0
   nodemon: ^2.0.7
@@ -18,7 +18,7 @@ specifiers:
 dependencies:
   axios: 0.21.1
   cheerio: 1.0.0-rc.10
-  comtroller: link:../../../comtroller
+  comtroller: github.com/esfox/comtroller/fd2e990ce55c297b046e0b11a988be7dc99209ed
   discord.js: 12.5.3
   table: 6.7.1
   winston: 3.3.3
@@ -53,6 +53,18 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.31
+    dev: false
+
+  /@seald-io/binary-search-tree/1.0.2:
+    resolution: {integrity: sha512-+pYGvPFAk7wUR+ONMOlc6A+LUN4kOCFwyPLjyaeS7wVibADPHWYJNYsNtyIAwjF1AXQkuaXElnIc4XjKt55QZA==}
+    dev: false
+
+  /@seald-io/nedb/2.0.4:
+    resolution: {integrity: sha512-QMSMJemcCIVhbcwVg/oASV74Qudl6ex6c1U8IwckxIvFub1TwRQcchMva30qBUIrNGrLgKXM3c+lgwfdlGa55w==}
+    dependencies:
+      '@seald-io/binary-search-tree': 1.0.2
+      async: 0.2.10
+      localforage: 1.10.0
     dev: false
 
   /@sindresorhus/is/0.14.0:
@@ -143,6 +155,10 @@ packages:
   /astral-regex/2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
+    dev: false
+
+  /async/0.2.10:
+    resolution: {integrity: sha1-trvgsGdLnXGXCMo43owjfLUmw9E=}
     dev: false
 
   /async/3.2.0:
@@ -641,6 +657,10 @@ packages:
     resolution: {integrity: sha1-SMptcvbGo68Aqa1K5odr44ieKwk=}
     dev: true
 
+  /immediate/3.0.6:
+    resolution: {integrity: sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=}
+    dev: false
+
   /import-lazy/2.1.0:
     resolution: {integrity: sha1-BWmOPUXIjo1+nZLLBYTnfwlvPkM=}
     engines: {node: '>=4'}
@@ -772,6 +792,18 @@ packages:
       package-json: 6.5.0
     dev: true
 
+  /lie/3.1.1:
+    resolution: {integrity: sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=}
+    dependencies:
+      immediate: 3.0.6
+    dev: false
+
+  /localforage/1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
+    dependencies:
+      lie: 3.1.1
+    dev: false
+
   /lodash.clonedeep/4.5.0:
     resolution: {integrity: sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=}
     dev: false
@@ -848,6 +880,12 @@ packages:
 
   /ms/2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
+
+  /nedb-promises/5.0.0:
+    resolution: {integrity: sha512-PZ+V+1RScHr3mZHflAMMkx35naGHKVVGtqLwdK2aado7uN2HcIcubiaVlE/X8BTa34RnIHmusVM+VeTj/pnfew==}
+    dependencies:
+      '@seald-io/nedb': 2.0.4
+    dev: false
 
   /node-fetch/2.6.1:
     resolution: {integrity: sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==}
@@ -1405,3 +1443,11 @@ packages:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
     dev: true
+
+  github.com/esfox/comtroller/fd2e990ce55c297b046e0b11a988be7dc99209ed:
+    resolution: {tarball: https://codeload.github.com/esfox/comtroller/tar.gz/fd2e990ce55c297b046e0b11a988be7dc99209ed}
+    name: comtroller
+    version: 0.0.3
+    dependencies:
+      nedb-promises: 5.0.0
+    dev: false

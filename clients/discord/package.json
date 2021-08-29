@@ -13,12 +13,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.10",
-    "comtroller": "link:/media/esfox/Drive/dev/comtroller",
+    "comtroller": "github:esfox/comtroller",
     "discord.js": "^12.5.3",
     "table": "^6.7.1",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.5",
-    "yeonna-core": "link:/media/esfox/Drive/dev/yeonna/core"
+    "yeonna-core": "link:../../core"
   },
   "devDependencies": {
     "@types/node": "^15.12.2",
