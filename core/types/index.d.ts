@@ -105,3 +105,23 @@ interface InventoryRecord extends TimestampedRecord
   amount: number;
   context?: string;
 }
+
+interface BitRecord extends TimestampedRecord
+{
+  pk_id: number;
+  id: string;
+  content: string;
+}
+
+interface UserBitRecord extends TimestampedRecord
+{
+  pk_id: number;
+  user_id: string;
+  bit_id: string;
+  bit?: BitRecord;
+  'bit.content': string;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+type ContextPlatformType = 'discord' | 'twitch';

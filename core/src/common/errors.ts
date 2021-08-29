@@ -33,3 +33,21 @@ export class ItemNotFound extends Error
     super('Item not found');
   }
 }
+
+/* Bits */
+
+export class BitNotFound extends Error
+{
+  constructor()
+  {
+    super('Bit not found');
+  }
+}
+
+export class UserBitNotFound extends Error
+{
+  constructor()
+  {
+    super('Bit not found for user');
+  }
+}
