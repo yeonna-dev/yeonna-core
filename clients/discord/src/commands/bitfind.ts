@@ -1,8 +1,8 @@
 import { Message, MessageReaction, User } from 'discord.js';
 import { Command, parseParamsToArray } from 'comtroller';
+import { findUserBits } from 'yeonna-core';
 
 import { Log } from '../utilities/logger';
-import { findUserBits } from '../../../../core/dist';
 
 export const bitfind: Command =
 {

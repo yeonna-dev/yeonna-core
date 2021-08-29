@@ -17,7 +17,13 @@ export const bitsave: Command =
     try
     {
       message.channel.startTyping();
-      const userBit = await saveUserBit({ userIdentifier: message.author.id, content });
+
+      const userBit = await saveUserBit({
+        userIdentifier: message.author.id,
+        content,
+        discordGuildID: 'true',
+      });
+
       if(! userBit)
         return message.channel.send('You already saved that bit.');
 
