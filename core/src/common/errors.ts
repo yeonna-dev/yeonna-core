@@ -51,3 +51,11 @@ export class UserBitNotFound extends Error
     super('Bit not found for user');
   }
 }
+
+export class NoBitContentProvided extends Error
+{
+  constructor()
+  {
+    super('No content provided');
+  }
+}

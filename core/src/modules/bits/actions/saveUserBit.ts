@@ -1,8 +1,9 @@
 import { BitsService } from '../services/BitsService';
+import { UsersBitsService } from '../services/UsersBitsService';
 
 import { findUser } from '../../users/actions';
 
-import { UsersBitsService } from '../services/UsersBitsService';
+import { NoBitContentProvided } from '../../../common/errors';
 
 export async function saveUserBit({
   userIdentifier,
@@ -12,6 +13,9 @@ export async function saveUserBit({
   content: string,
 })
 {
+  if(! content)
+    throw new NoBitContentProvided();
+
   /* Check if a bit with the same content is existing. */
   const [ foundBit ] = await BitsService.find({ content });
 
@@ -33,7 +37,7 @@ export async function saveUserBit({
 
   /* Save the bit for the user if the user does not have the bit. */
   if(userBit)
-    return userBit;
+    return;
 
   const [ createdUserBit ] = await UsersBitsService.create([ { userID, bitID } ]);
   return createdUserBit;
