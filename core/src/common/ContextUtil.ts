@@ -1,7 +1,7 @@
-export const ContextPlatforms =
+export enum ContextPlatforms
 {
-  Discord: 'discord',
-  Twitch: 'twitch',
+  Discord = 'discord',
+  Twitch = 'twitch',
 }
 
 class ContextUtilClass
