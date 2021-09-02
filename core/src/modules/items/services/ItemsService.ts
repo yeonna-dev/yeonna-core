@@ -41,6 +41,7 @@ export const ItemsService = new class
     if(error)
       throw error;
 
+    // TODO: Flip condition
     return ! data || data.length === 0 ? [] : this.serialize(data);
   }
 
@@ -55,6 +56,7 @@ export const ItemsService = new class
     if(error)
       throw error;
 
+    // TODO: Flip condition
     return ! data || data.length === 0 ? [] : this.serialize(data);
   }
 

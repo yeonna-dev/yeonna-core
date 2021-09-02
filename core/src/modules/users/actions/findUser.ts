@@ -1,6 +1,5 @@
 import { UserNotFound } from '../../../common/errors';
 import { UsersService } from '../services/UsersService';
-import { ContextPlatforms } from '../../../common/ContextUtil';
 
 export async function findUser(userIdentifier: string): Promise<string>
 {
@@ -21,6 +20,7 @@ export async function findOrCreateUser({
   twitchChannelID?: string,
 })
 {
+  // TODO: Try to use actual objects for the params instead of dynamic key names.
   let userFindKey = 'ids';
   let userCreateKey;
 
