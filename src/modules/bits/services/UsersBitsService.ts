@@ -6,6 +6,7 @@ export enum UsersBitsFields
 {
   user_id = 'user_id',
   bit_id = 'bit_id',
+  tag_ids = 'tag_ids',
   bit = 'bit',
 };
 
@@ -69,12 +70,21 @@ export const UsersBitsService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async create(usersBitsData: { userID: string, bitID: string }[])
+  async create(usersBitsData: { userID: string, bitID: string, tagIDs: string[] }[])
   {
-    const insertData = usersBitsData.map(({ userID, bitID }) => ({
-      [UsersBitsFields.user_id]: userID,
-      [UsersBitsFields.bit_id]: bitID,
-    }));
+    const insertData = usersBitsData.map(({ userID, bitID, tagIDs }) =>
+    {
+      const data: any =
+      {
+        [UsersBitsFields.user_id]: userID,
+        [UsersBitsFields.bit_id]: bitID,
+      };
+
+      if(tagIDs && tagIDs.length !== 0)
+        data[UsersBitsFields.tag_ids] = tagIDs.join(',');
+
+      return data;
+    });
 
     const { data, error } = await usersBits().insert(insertData);
     if(error)
@@ -95,6 +105,23 @@ export const UsersBitsService = new class
       throw error;
 
     return this.serialize(data);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async addTags({ userID, bitID, tagIDs }: { userID: string, bitID: string, tagIDs: string[] })
+  {
+    const { data, error } = await usersBits()
+      .update({ [UsersBitsFields.tag_ids]: tagIDs.join(',') })
+      .match({
+        [UsersBitsFields.user_id]: userID,
+        [UsersBitsFields.bit_id]: bitID,
+      });
+
+    if(error)
+      throw error;
+
+    return data;
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

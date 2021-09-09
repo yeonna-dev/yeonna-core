@@ -59,6 +59,12 @@ interface UserBit
   bitID: string;
 }
 
+interface Tag
+{
+  id: string;
+  name: string;
+}
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 /* Database */
@@ -118,8 +124,16 @@ interface UserBitRecord extends TimestampedRecord
   pk_id: number;
   user_id: string;
   bit_id: string;
+  tag_ids: string;
   bit?: BitRecord;
   'bit.content': string;
+}
+
+interface TagRecord extends TimestampedRecord
+{
+  pk_id: number;
+  id: string;
+  name: string;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

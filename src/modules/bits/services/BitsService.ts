@@ -33,6 +33,7 @@ export const BitsService = new class
     if(search)
       query.like(BitsFields.content, `%${search}%`);
 
+    // TODO: Remove unnecessary searching by exact content.
     if(content)
       query.eq(BitsFields.content, content);
 

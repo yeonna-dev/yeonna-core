@@ -10,15 +10,16 @@ import
 
 describe('Bits', () =>
 {
-  const discordUser1 = '247955535620472844'; /* esfox316#2053 Discord ID */
+  const discordUser1 = '247955535620472844'; /* esfox#2053 Discord ID */
   let createdBitID;
-  // const twitchUser1 = '193202362'; /* esfox316 Twitch ID */
 
-  it('should create a bit for a user', async () =>
+  it('should create a bit with tags for a user', async () =>
   {
     const createdBit = await saveUserBit({
       userIdentifier: discordUser1,
       content: 'test-content',
+      tags: [ 'Fox', 'Dog' ],
+      discordGuildID: '504135117296500746',
     });
 
     createdBitID = createdBit.bit.id;

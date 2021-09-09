@@ -59,3 +59,13 @@ export class NoBitContentProvided extends Error
     super('No content provided');
   }
 }
+
+/* Tags */
+
+export class TagsNotFound extends Error
+{
+  constructor()
+  {
+    super('Tags not found');
+  }
+}
