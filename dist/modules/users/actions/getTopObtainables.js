@@ -32,11 +32,11 @@ function getTopObtainables({ count, isCollectible, discordGuildID, twitchChannel
             return [];
         /* Get the user of each top record. */
         const topUsers = [];
-        for (const points of top) {
+        for (const amounts of top) {
             /* Find the user of the points. */
             let pointsUser;
             for (const user of users) {
-                if (user.id === points[ObtainableService_1.ObtainableFields.user_id]) {
+                if (user.id === amounts[ObtainableService_1.ObtainableFields.user_id]) {
                     pointsUser = user;
                     break;
                 }
@@ -47,7 +47,7 @@ function getTopObtainables({ count, isCollectible, discordGuildID, twitchChannel
                 userID: pointsUser.id,
                 discordID: pointsUser.discordID,
                 twitchID: pointsUser.twitchID,
-                points: points[ObtainableService_1.ObtainableFields.amount],
+                amount: amounts[ObtainableService_1.ObtainableFields.amount],
             });
         }
         return topUsers;
