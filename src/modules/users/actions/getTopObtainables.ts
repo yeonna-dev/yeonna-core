@@ -3,12 +3,11 @@ import { UsersService } from '../services/UsersService';
 
 import { ContextUtil } from '../../../common/ContextUtil';
 
-type TopPoints =
-{
+type TopObtainables = {
   userID: string;
   discordID?: string | null;
   twitchID?: string | null;
-  points: number;
+  amount: number;
 };
 
 // TODO: Join getting users with obtainables
@@ -17,12 +16,12 @@ export async function getTopObtainables({
   isCollectible,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   count: number,
   isCollectible?: boolean,
   discordGuildID?: string,
   twitchChannelID?: string,
-}): Promise<TopPoints[]>
+}): Promise<TopObtainables[]>
 {
   const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
 
@@ -33,38 +32,38 @@ export async function getTopObtainables({
     context,
   });
 
-  if(! top)
+  if(!top)
     return [];
 
   /* Get users of top points. */
   const userIDs = top.map(user => user[ObtainableFields.user_id]);
   const users = await UsersService.find({ ids: userIDs });
-  if(! users || ! Array.isArray(users))
+  if(!users || !Array.isArray(users))
     return [];
 
   /* Get the user of each top record. */
-  const topUsers: TopPoints[] = [];
-  for(const points of top)
+  const topUsers: TopObtainables[] = [];
+  for(const amounts of top)
   {
     /* Find the user of the points. */
     let pointsUser;
     for(const user of users)
     {
-      if(user.id === points[ObtainableFields.user_id])
+      if(user.id === amounts[ObtainableFields.user_id])
       {
         pointsUser = user;
         break;
       }
     }
 
-    if(! pointsUser)
+    if(!pointsUser)
       continue;
 
     topUsers.push({
       userID: pointsUser.id,
       discordID: pointsUser.discordID,
       twitchID: pointsUser.twitchID,
-      points: points[ObtainableFields.amount],
+      amount: amounts[ObtainableFields.amount],
     });
   }
 
@@ -75,7 +74,7 @@ export function getTopPoints({
   count,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   count: number,
   discordGuildID?: string,
   twitchChannelID?: string,
@@ -88,7 +87,7 @@ export function getTopCollectibles({
   count,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   count: number,
   discordGuildID?: string,
   twitchChannelID?: string,
