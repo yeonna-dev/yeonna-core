@@ -3,8 +3,10 @@ import assert from 'assert';
 
 import { connectIDtoUser, findOrCreateUser, findUser } from '../../src';
 
-describe('Users', () =>
+describe('Users', function()
 {
+  this.timeout(20000);
+
   const discordUser1 = '247955535620472844'; /* esfox316#2053 Discord ID */
   const twitchUser1 = '193202362'; /* esfox316 Twitch ID */
 

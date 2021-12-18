@@ -12,8 +12,10 @@ import
 import { NotEnoughPoints } from '../../src/common/errors';
 import { assertThrowsAsync } from '../helpers/assertThrowsAsync';
 
-describe('User Points', () =>
+describe('Points', function()
 {
+  this.timeout(20000);
+
   const discordUser1 = '247955535620472844'; /* esfox316#2053 Discord ID */
   const twitchUser1 = '193202362'; /* esfox316 Twitch ID */
 
@@ -88,7 +90,7 @@ describe('User Points', () =>
   {
     const topUsers = await getTopPoints({ count: 10, discordGuildID });
     assert.strictEqual(
-      topUsers.every(user => user.userID && typeof user.points === 'number'),
+      topUsers.every(user => user.userID && typeof user.amount === 'number'),
       true,
     );
   });
@@ -97,7 +99,7 @@ describe('User Points', () =>
   {
     const topUsers = await getTopPoints({ count: 10, twitchChannelID });
     assert.strictEqual(
-      topUsers.every(user => user.userID && typeof user.points === 'number'),
+      topUsers.every(user => user.userID && typeof user.amount === 'number'),
       true,
     );
   });

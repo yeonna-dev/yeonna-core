@@ -3,9 +3,11 @@ import assert from 'assert';
 
 import { createTags, deleteTags } from '../../src';
 
-describe('Tags', () =>
+describe('Tags', function()
 {
-  const tagNames = [ 'Fox', 'Dog', 'Cat', 'Rabbit' ];
+  this.timeout(20000);
+
+  const tagNames = ['Fox', 'Dog', 'Cat', 'Rabbit', 'Pig', 'Cow'];
   it('should create tags', async () =>
   {
     const createdTags = await createTags(tagNames);

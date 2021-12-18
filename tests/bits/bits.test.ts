@@ -8,8 +8,10 @@ import
   removeUserBits,
 } from '../../src';
 
-describe('Bits', () =>
+describe('Bits', function()
 {
+  this.timeout(20000);
+
   const discordUser1 = '247955535620472844'; /* esfox#2053 Discord ID */
   let createdBitID;
 
@@ -18,7 +20,7 @@ describe('Bits', () =>
     const createdBit = await saveUserBit({
       userIdentifier: discordUser1,
       content: 'test-content',
-      tags: [ 'Fox', 'Dog' ],
+      tags: ['Fox', 'Dog'],
       discordGuildID: '504135117296500746',
     });
 
@@ -28,7 +30,7 @@ describe('Bits', () =>
   it('should get the bits of a user', async () =>
   {
     const data = await findUserBits({ userIdentifier: discordUser1 });
-    assert.strictEqual(true, data.every(userBit => userBit.bit));
+    assert.strictEqual(true, data.every(userBit => userBit.user && userBit.bit));
   });
 
   it('should search the bits of a user', async () =>
@@ -41,6 +43,6 @@ describe('Bits', () =>
   it('should remove the bit of the user', async () =>
   {
     const data = await removeUserBits({ userIdentifier: discordUser1, bitID: createdBitID });
-    assert.strictEqual(true, data.every(userBit => userBit.bit.id === createdBitID));
+    assert.strictEqual(true, data.every(userBit => userBit.bitID === createdBitID));
   });
 });
