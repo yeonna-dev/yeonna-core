@@ -13,7 +13,7 @@ export async function transferObtainables({
   isCollectible,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   fromUserIdentifier: string,
   toUserIdentifier: string,
   amount: number,
@@ -22,14 +22,14 @@ export async function transferObtainables({
   twitchChannelID?: string,
 }): Promise<void>
 {
-  if(! discordGuildID && ! twitchChannelID)
+  if(!discordGuildID && !twitchChannelID)
     throw new Error('No Discord Guild ID or Twitch Channel ID provided');
 
   amount = Math.abs(amount);
 
   /* Get the obtainables of the user to get obtainables from (source user) */
   const source = await findUser(fromUserIdentifier);
-  if(! source)
+  if(!source)
     throw new (isCollectible ? NotEnoughCollectibles : NotEnoughPoints)();
 
   const sourceObtainables = await getObtainables({
@@ -40,7 +40,7 @@ export async function transferObtainables({
   });
 
   /* Check if the source user has less obtainables than the given amount. */
-  if(! sourceObtainables || sourceObtainables < amount)
+  if(!sourceObtainables || sourceObtainables < amount)
     throw new (isCollectible ? NotEnoughCollectibles : NotEnoughPoints)();
 
   /* Get the obtainables of user to add obtainables to (target user). */
@@ -50,7 +50,7 @@ export async function transferObtainables({
     twitchChannelID,
   });
 
-  if(! target)
+  if(!target)
     throw new Error('Cannot transfer points');
 
   /* Add obtainables to the target user. */
@@ -62,15 +62,15 @@ export async function transferObtainables({
   });
 
   const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
-  if(! targetObtainables)
-    await ObtainableService.createObtainable({
+  if(!targetObtainables)
+    await ObtainableService.create({
       userID: target,
       amount,
       isCollectible,
       context,
     });
   else
-    await ObtainableService.updateObtainables({
+    await ObtainableService.update({
       userID: target,
       amount: targetObtainables + amount,
       isCollectible,
@@ -78,7 +78,7 @@ export async function transferObtainables({
     });
 
   /* Subtract obtainables from the source user. */
-  await ObtainableService.updateObtainables({
+  await ObtainableService.update({
     userID: source,
     amount: sourceObtainables - amount,
     isCollectible,
@@ -92,7 +92,7 @@ export async function transferUserPoints({
   amount,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   fromUserIdentifier: string,
   toUserIdentifier: string,
   amount: number,
@@ -115,7 +115,7 @@ export async function transferUserCollectibles({
   amount,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   fromUserIdentifier: string,
   toUserIdentifier: string,
   amount: number,

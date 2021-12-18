@@ -1,13 +1,11 @@
-import { supabase } from '../../../common/supabase-client';
+import { DB } from '../../../common/DB';
 import { BitsFields, BitsService } from './BitsService';
 
-const usersBits = () => supabase.from<UserBitRecord>('users_bits');
 export enum UsersBitsFields
 {
   user_id = 'user_id',
   bit_id = 'bit_id',
   tag_ids = 'tag_ids',
-  bit = 'bit',
 };
 
 export const UsersBitsService = new class
@@ -16,61 +14,34 @@ export const UsersBitsService = new class
     userIDs,
     bitIDs,
     search,
-  } : {
+  }: {
     userIDs?: string[],
     bitIDs?: string[],
     search?: string,
   })
   {
-    const query = usersBits()
-      .select(`
-        ${UsersBitsFields.user_id},
-        ${UsersBitsFields.bit_id},
-        ${UsersBitsFields.bit}:${BitsService.tableName} (
-          ${BitsFields.content}
-        )
-      `);
+    const query = DB.usersBits()
+      .join(BitsService.table, UsersBitsFields.bit_id, BitsFields.id);
 
     if(userIDs)
-      query.in(UsersBitsFields.user_id, userIDs);
+      query.whereIn(UsersBitsFields.user_id, userIDs);
 
     if(bitIDs)
-      query.in(UsersBitsFields.bit_id, bitIDs);
+      query.and.whereIn(UsersBitsFields.bit_id, bitIDs);
 
     if(search)
-      query.like(`${UsersBitsFields.bit}.${BitsFields.content}`, `%${search}%`);
+      query.and.where(`${BitsService.table}.${BitsFields.content}`, 'LIKE', `%${search}%`);
 
-    let { data, error } = await query;
-    if(error)
-      throw error;
-
-    if(! data || data.length === 0)
+    const data = await query;
+    if(!data || data.length === 0)
       return [];
 
-    /* Remove duplicate data from result and filter results
-      that only have bits if a search query was given. */
-    const filtered: UserBitRecord[] = [];
-    for(const userBit of data)
-    {
-      const isUnique = ! filtered.some(element =>
-        element[UsersBitsFields.bit_id] === userBit[UsersBitsFields.bit_id]
-      );
-
-      if(! isUnique)
-        continue;
-
-      if(search && ! userBit[UsersBitsFields.bit])
-        continue;
-
-      filtered.push(userBit);
-    }
-
-    return this.serialize(filtered);
+    return this.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async create(usersBitsData: { userID: string, bitID: string, tagIDs: string[] }[])
+  async create(usersBitsData: { userID: string, bitID: string, tagIDs: string[]; }[])
   {
     const insertData = usersBitsData.map(({ userID, bitID, tagIDs }) =>
     {
@@ -86,64 +57,58 @@ export const UsersBitsService = new class
       return data;
     });
 
-    const { data, error } = await usersBits().insert(insertData);
-    if(error)
-      throw error;
+    const data = await DB.usersBits()
+      .insert(insertData)
+      .returning('*');
 
     return this.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async remove({ userID, bitID }: { userID: string, bitID: string })
+  async remove({ userID, bitID }: { userID: string, bitID: string; })
   {
-    const { data, error } = await usersBits()
-      .delete({ returning: 'representation' })
-      .match({ [UsersBitsFields.user_id]: userID, [UsersBitsFields.bit_id]: bitID });
+    const data = await DB.usersBits()
+      .delete()
+      .where({ [UsersBitsFields.user_id]: userID, [UsersBitsFields.bit_id]: bitID })
+      .returning('*');
 
-    if(error)
-      throw error;
-
-    return this.serialize(data);
+    return data.map((deletedUserBit) => ({
+      userID: deletedUserBit[UsersBitsFields.user_id],
+      bitID: deletedUserBit[UsersBitsFields.bit_id],
+    }));
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async addTags({ userID, bitID, tagIDs }: { userID: string, bitID: string, tagIDs: string[] })
+  async addTags({ userID, bitID, tagIDs }: { userID: string, bitID: string, tagIDs: string[]; })
   {
-    const { data, error } = await usersBits()
+    return DB.usersBits()
       .update({ [UsersBitsFields.tag_ids]: tagIDs.join(',') })
-      .match({
+      .where({
         [UsersBitsFields.user_id]: userID,
         [UsersBitsFields.bit_id]: bitID,
-      });
-
-    if(error)
-      throw error;
-
-    return data;
+      })
+      .returning('*');
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  serialize(usersBits: UserBitRecord[] | null)
+  serialize(usersBits: any[] | null)
   {
     const data = [];
-    for(const userBit of (usersBits || []))
+    for(const userBit of usersBits || [])
     {
-      const serialized: any =
-      {
-        user: { id: userBit[UsersBitsFields.user_id] },
-        bit: { id: userBit[UsersBitsFields.bit_id] },
-      };
+      const serialized: any = { user: { id: userBit[UsersBitsFields.user_id] } };
+      serialized.bit = { id: userBit[UsersBitsFields.bit_id] };
 
-      const bit = userBit[UsersBitsFields.bit];
-      if(bit)
-        serialized.bit.content = bit[BitsFields.content];
+      const content = userBit[BitsFields.content];
+      if(content)
+        serialized.bit.content = content;
 
       data.push(serialized);
     }
 
     return data;
   }
-}
+};

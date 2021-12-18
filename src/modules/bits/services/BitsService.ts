@@ -1,7 +1,6 @@
-import { supabase } from '../../../common/supabase-client';
+import { DB } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
-const bits = () => supabase.from<BitRecord>('bits');
 export enum BitsFields
 {
   id = 'id',
@@ -10,37 +9,33 @@ export enum BitsFields
 
 export const BitsService = new class
 {
-  tableName = 'bits';
+  /* Table name is added here to be able to use in joins in other services. */
+  table = 'bits';
 
   async find({
     ids,
     search,
     content,
-  } : {
+  }: {
     ids?: string | string[],
     search?: string,
     content?: string,
   })
   {
-    const idsArray = Array.isArray(ids) ? ids : [ ids ];
-
-    const query = bits()
-      .select();
-
+    const query = DB.bits();
     if(ids)
-      query.in(BitsFields.id, idsArray);
+    {
+      const idsArray = Array.isArray(ids) ? ids : [ids];
+      query.whereIn(BitsFields.id, idsArray);
+    }
 
     if(search)
-      query.like(BitsFields.content, `%${search}%`);
+      query.and.where(BitsFields.content, 'LIKE', `%${search}%`);
 
-    // TODO: Remove unnecessary searching by exact content.
     if(content)
-      query.eq(BitsFields.content, content);
+      query.and.where(BitsFields.content, content);
 
-    const { data, error } = await query;
-    if(error)
-      throw error;
-
+    const data = await query;
     return data || [];
   }
 
@@ -48,9 +43,9 @@ export const BitsService = new class
 
   async create(content: string | string[])
   {
-    content = Array.isArray(content) ? content : [ content ];
+    content = Array.isArray(content) ? content : [content];
 
-    if(! content || content.length === 0)
+    if(!content || content.length === 0)
       throw new Error('No content provided');
 
     const bitsData = content.map(content => ({
@@ -58,10 +53,10 @@ export const BitsService = new class
       [BitsFields.content]: content,
     }));
 
-    const { data, error } = await bits().insert(bitsData);
-    if(error)
-      throw error;
+    const data = await DB.bits()
+      .insert(bitsData)
+      .returning('*');
 
     return data ? data.map(bit => bit[BitsFields.id]) : [];
   }
-}
+};

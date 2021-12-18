@@ -1,7 +1,6 @@
-import { supabase } from '../../../common/supabase-client';
+import { DB } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
-const tags = () => supabase.from<TagRecord>('tags');
 export enum TagsFields
 {
   id = 'id',
@@ -16,30 +15,26 @@ export const TagsService = new class
     ids,
     search,
     names,
-  } : {
+  }: {
     ids?: string | string[],
     search?: string,
     names?: string[],
   })
   {
-    const idsArray = Array.isArray(ids) ? ids : [ ids ];
-
-    const query = tags()
-      .select();
-
+    const query = DB.tags();
     if(ids)
-      query.in(TagsFields.id, idsArray);
+    {
+      const idsArray = Array.isArray(ids) ? ids : [ids];
+      query.whereIn(TagsFields.id, idsArray);
+    }
 
     if(search)
-      query.like(TagsFields.name, `%${search}%`);
+      query.and.where(TagsFields.name, 'LIKE', `%${search}%`);
 
     if(names)
-      query.in(TagsFields.name, names);
+      query.and.whereIn(TagsFields.name, names);
 
-    const { data, error } = await query;
-    if(error)
-      throw error;
-
+    const data = await query;
     return this.serialize(data);
   }
 
@@ -47,8 +42,8 @@ export const TagsService = new class
 
   async create(names: string | string[])
   {
-    names = Array.isArray(names) ? names : [ names ];
-    if(! names || names.length === 0)
+    names = Array.isArray(names) ? names : [names];
+    if(!names || names.length === 0)
       throw new Error('No name/s provided');
 
     const tagsData = names.map(name => ({
@@ -56,9 +51,9 @@ export const TagsService = new class
       [TagsFields.name]: name,
     }));
 
-    const { data, error } = await tags().insert(tagsData);
-    if(error)
-      throw error;
+    const data = await DB.tags()
+      .insert(tagsData)
+      .returning('*');
 
     return this.serialize(data);
   }
@@ -67,16 +62,14 @@ export const TagsService = new class
 
   async remove(names: string | string[])
   {
-    names = Array.isArray(names) ? names : [ names ];
-    if(! names || names.length === 0)
+    names = Array.isArray(names) ? names : [names];
+    if(!names || names.length === 0)
       throw new Error('No name/s provided');
 
-    const { data, error } = await tags()
-      .delete({ returning: 'representation' })
-      .in(TagsFields.name, names);
-
-    if(error)
-      throw error;
+    const data = await DB.tags()
+      .delete()
+      .whereIn(TagsFields.name, names)
+      .returning('*');
 
     return this.serialize(data);
   }
@@ -90,4 +83,4 @@ export const TagsService = new class
       name: tag[TagsFields.name],
     }));
   }
-}
+};

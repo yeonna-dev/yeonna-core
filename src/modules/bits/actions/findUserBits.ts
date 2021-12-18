@@ -4,7 +4,7 @@ import { UsersBitsService } from '../services/UsersBitsService';
 export async function findUserBits({
   userIdentifier,
   search,
-} : {
+}: {
   userIdentifier: string,
   search?: string,
 })
@@ -13,5 +13,5 @@ export async function findUserBits({
   const userID = await findUser(userIdentifier);
 
   /* Get the user's bits and do a search by the search query if given.  */
-  return UsersBitsService.find({ userIDs: [ userID ], search });
+  return UsersBitsService.find({ userIDs: [userID], search });
 }

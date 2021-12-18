@@ -20,10 +20,8 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^1.15.1",
-    "knex": "^0.95.6",
+    "knex": "^0.95.14",
     "nanoid-good": "^3.1.0",
-    "pg": "^8.6.0",
-    "ts-node": "^10.0.0"
+    "pg": "^8.7.1"
   }
 }

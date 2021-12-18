@@ -125,8 +125,6 @@ interface UserBitRecord extends TimestampedRecord
   user_id: string;
   bit_id: string;
   tag_ids: string;
-  bit?: BitRecord;
-  'bit.content': string;
 }
 
 interface TagRecord extends TimestampedRecord

@@ -1,7 +1,6 @@
-import { supabase } from '../../../common/supabase-client';
+import { DB } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
-const users = () => supabase.from<UserRecord>('users');
 export enum UsersFields
 {
   id = 'id',
@@ -18,12 +17,12 @@ export const UsersService = new class
   async create({
     discordID,
     twitchID,
-  } : {
+  }: {
     discordID?: string,
     twitchID?: string,
   } = {}): Promise<string>
   {
-    if(! discordID && ! twitchID)
+    if(!discordID && !twitchID)
       throw new Error('No Discord or Twitch ID provided.');
 
     const user =
@@ -33,12 +32,9 @@ export const UsersService = new class
       [UsersFields.twitch_id]: twitchID,
     };
 
-    const { data, error } = await users().insert(user);
-    if(error)
-      throw error;
-
+    const data = await DB.users().insert(user).returning('*');
     const createdUser = data?.pop();
-    if(! createdUser)
+    if(!createdUser)
       throw new Error('User not created');
 
     return createdUser.id;
@@ -48,20 +44,14 @@ export const UsersService = new class
 
   async findByID(ids: string | string[]): Promise<User[]>
   {
-    ids = `(${(Array.isArray(ids) ? ids : [ ids ]).join(',')})`;
+    ids = Array.isArray(ids) ? ids : [ids];
 
-    const { data, error } = await users()
-      .select()
-      .or(
-        `${UsersFields.id}.in.${ids},`
-        + `${UsersFields.discord_id}.in.${ids},`
-        + `${UsersFields.twitch_id}.in.${ids}`
-      );
+    const data = await DB.users()
+      .or.whereIn(UsersFields.id, ids)
+      .or.whereIn(UsersFields.discord_id, ids)
+      .or.whereIn(UsersFields.twitch_id, ids);
 
-    if(error)
-      throw error;
-
-    if(! data || data.length === 0)
+    if(!data || data.length === 0)
       return [];
 
     return data.map(user => ({
@@ -77,29 +67,24 @@ export const UsersService = new class
     ids,
     discordIDs,
     twitchIDs,
-  } : {
+  }: {
     ids?: string | string[],
     discordIDs?: string | string[],
     twitchIDs?: string | string[],
   }): Promise<User[]>
   {
-    const query = users()
-      .select();
-
+    const query = DB.users();
     if(ids)
-      query.in(UsersFields.id, Array.isArray(ids) ? ids : [ ids ]);
+      query.whereIn(UsersFields.id, Array.isArray(ids) ? ids : [ids]);
 
     if(discordIDs)
-      query.in(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [ discordIDs ]);
+      query.whereIn(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [discordIDs]);
 
     if(twitchIDs)
-      query.in(UsersFields.twitch_id, Array.isArray(twitchIDs) ? twitchIDs : [ twitchIDs ]);
+      query.whereIn(UsersFields.twitch_id, Array.isArray(twitchIDs) ? twitchIDs : [twitchIDs]);
 
-    const { data, error } = await query;
-    if(error)
-      throw error;
-
-    if(! data || data.length === 0)
+    const data = await query;
+    if(!data || data.length === 0)
       return [];
 
     return data.map(user => ({
@@ -113,7 +98,7 @@ export const UsersService = new class
 
   async updateByID(
     id: string,
-    { discordID, twitchID }: { discordID?: string, twitchID?: string }
+    { discordID, twitchID }: { discordID?: string, twitchID?: string; }
   )
   {
     const updateData: any = {};
@@ -123,11 +108,8 @@ export const UsersService = new class
     if(twitchID)
       updateData[UsersFields.twitch_id] = twitchID;
 
-    const { error } = await users()
+    await DB.users()
       .update(updateData)
-      .match({ [UsersFields.id]: id });
-
-    if(error)
-      throw error;
+      .where(UsersFields.id, id);
   }
-}
+};

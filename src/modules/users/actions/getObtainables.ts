@@ -10,22 +10,22 @@ export async function getObtainables({
   isCollectible,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   userIdentifier: string,
   isCollectible?: boolean,
   discordGuildID?: string,
   twitchChannelID?: string,
 })
 {
-  if(! discordGuildID && ! twitchChannelID)
+  if(!discordGuildID && !twitchChannelID)
     throw new Error('No Discord Guild ID or Twitch Channel ID provided');
 
   /* Check if the user is existing. */
   const userID = await findUser(userIdentifier);
-  if(! userID )
+  if(!userID)
     throw new UserNotFound();
 
-  const obtainables = await ObtainableService.getObtainable({
+  const obtainables = await ObtainableService.find({
     userID,
     isCollectible,
     context: ContextUtil.createContext({ discordGuildID, twitchChannelID }),
@@ -38,7 +38,7 @@ export async function getUserPoints({
   userIdentifier,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   userIdentifier: string,
   discordGuildID?: string,
   twitchChannelID?: string,
@@ -55,7 +55,7 @@ export async function getUserCollectibles({
   userIdentifier,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   userIdentifier: string,
   discordGuildID?: string,
   twitchChannelID?: string,

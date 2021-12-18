@@ -9,18 +9,18 @@ export async function removeUserBits({ userIdentifier, bitID }: {
 })
 {
   /* Check if bit is existing. */
-  const [ foundBit ] = await BitsService.find({ ids: [ bitID ] });
+  const [foundBit] = await BitsService.find({ ids: [bitID] });
+  bitID = foundBit.id;
 
-  if(! foundBit)
+  if(!foundBit)
     throw new BitNotFound();
 
   /* Get the user by the given identifier. */
   const userID = await findUser(userIdentifier);
-  bitID = foundBit.id;
 
   /* Check if the bit has been added to the user. */
-  const [ userBit ] = await UsersBitsService.find({ userIDs: [ userID ], bitIDs: [ bitID ] });
-  if(! userBit)
+  const [userBit] = await UsersBitsService.find({ userIDs: [userID], bitIDs: [bitID] });
+  if(!userBit)
     throw new UserBitNotFound();
 
   return UsersBitsService.remove({ userID, bitID });

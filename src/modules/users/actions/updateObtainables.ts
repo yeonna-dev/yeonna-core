@@ -12,7 +12,7 @@ export async function updateObtainables({
   subtract,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   userIdentifier: string,
   amount: number,
   isCollectible?: boolean,
@@ -22,18 +22,18 @@ export async function updateObtainables({
   twitchChannelID?: string,
 })
 {
-  if(! discordGuildID && ! twitchChannelID)
+  if(!discordGuildID && !twitchChannelID)
     throw new Error('No Discord Guild ID or Twitch Channel ID provided');
 
   amount = Math.abs(amount);
 
   const userID = await findOrCreateUser({ userIdentifier, discordGuildID, twitchChannelID });
-  if(! userID)
+  if(!userID)
     throw new Error('Cannot update user points');
 
   /* Check if the user's obtainable record is already created. */
   const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
-  const obtainables = await ObtainableService.getObtainable({
+  const obtainables = await ObtainableService.find({
     userID,
     isCollectible,
     context,
@@ -41,7 +41,7 @@ export async function updateObtainables({
 
   /* Create the obtainable record if not existing. */
   if(obtainables === undefined)
-    await ObtainableService.createObtainable({
+    await ObtainableService.create({
       userID,
       amount,
       isCollectible,
@@ -55,7 +55,7 @@ export async function updateObtainables({
     if(subtract)
       newPoints = obtainables - amount;
 
-    return ObtainableService.updateObtainables({
+    return ObtainableService.update({
       userID,
       amount: newPoints,
       isCollectible,
@@ -71,7 +71,7 @@ export async function updateUserPoints({
   subtract,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   userIdentifier: string,
   amount: number,
   add?: boolean,
@@ -97,7 +97,7 @@ export async function updateUserCollectibles({
   subtract,
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   userIdentifier: string,
   amount: number,
   add?: boolean,

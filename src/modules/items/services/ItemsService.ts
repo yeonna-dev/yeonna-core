@@ -1,6 +1,5 @@
-import { supabase } from '../../../common/supabase-client';
+import { DB } from '../../../common/DB';
 
-const items = () => supabase.from<ItemRecord>('items');
 export enum ItemsFields
 {
   category_id = 'category_id',
@@ -21,49 +20,64 @@ export const ItemsService = new class
   async find({
     code,
     chance,
-  } : {
+  }: {
     code?: string,
     chance?: number,
   })
   {
-    const query = items()
-      .select();
-
+    const query = DB.items();
     if(code)
-      query.eq(ItemsFields.code, code);
+      query.where(ItemsFields.code, code);
 
     if(chance)
       query
-        .lte(ItemsFields.chance_min, chance)
-        .gte(ItemsFields.chance_max, chance);
+        .and.where(ItemsFields.chance_min, '<', chance)
+        .and.where(ItemsFields.chance_max, '>', chance);
 
-    const { data, error } = await query;
-    if(error)
-      throw error;
+    const data = await query;
+    return this.serialize(data);
+  }
 
-    // TODO: Flip condition
-    return ! data || data.length === 0 ? [] : this.serialize(data);
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async findRandom({
+    code,
+    chance,
+  }: {
+    code?: string,
+    chance?: number,
+  })
+  {
+    const query = DB.items();
+    if(code)
+      query.where(ItemsFields.code, code);
+
+    if(chance)
+      query
+        .and.where(ItemsFields.chance_min, '<', chance)
+        .and.where(ItemsFields.chance_max, '>', chance);
+
+    const data = await query
+      .orderByRaw('RANDOM()')
+      .limit(1);
+    return this.serialize(data).pop();
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   async findByCodes(codes: string[])
   {
-    const { data, error } = await items()
-      .select()
-      .in(ItemsFields.code, codes);
+    const data = await DB.items()
+      .whereIn(ItemsFields.code, codes);
 
-    if(error)
-      throw error;
-
-    // TODO: Flip condition
-    return ! data || data.length === 0 ? [] : this.serialize(data);
+    return this.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   serialize(items: ItemRecord[])
   {
+    if(!items) return [];
     return items.map(({ category_id, code, name, chance_min, chance_max, price, image, emote }) =>
     ({
       categoryID: category_id,
@@ -76,4 +90,4 @@ export const ItemsService = new class
       emote,
     }));
   }
-}
+};

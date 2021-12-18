@@ -1,11 +1,11 @@
-import { supabase } from '../../../common/supabase-client';
+import { DB } from '../../../common/DB';
 
-const inventories = () => supabase.from<InventoryRecord>('inventories');
 export enum InventoriesFields
 {
   pk_id = 'pk_id',
   user_id = 'user_id',
   item_code = 'item_code',
+  user_id_item_code = 'user_id_item_code',
   amount = 'amount',
   context = 'context',
   created_at = 'created_at',
@@ -13,100 +13,30 @@ export enum InventoriesFields
   deleted_at = 'deleted_at',
 };
 
+const createUserIdItemCodeKey = (userId: string, itemCode: string) => `${userId}:${itemCode}`;
+
 export const InventoriesService = new class
 {
-  async getUserItems(userID: string, context?: string): Promise<Inventory[]>
+  async getUserItems(userId: string, context?: string): Promise<Inventory[]>
   {
-    const query = inventories()
-      .select()
-      .eq(InventoriesFields.user_id, userID);
+    const query = DB.inventories()
+      .where(InventoriesFields.user_id, userId);
 
     if(context)
-      query.eq(InventoriesFields.context, context);
+      query.andWhere(InventoriesFields.context, context);
 
-    const { data, error } = await query;
-    if(error)
-      throw error;
-
-    // TODO: Flip condition
-    return ! data || data.length === 0 ? [] : this.serialize(data);
+    const data = await query;
+    return data && data.length !== 0 ? this.serialize(data) : [];
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  // TODO: Use upsert
-  async updateOrCreateUserItem({
-    userID,
-    itemCode,
-    amount = 1,
-    context,
-    add,
-    remove,
-  } : {
-    userID: string,
-    itemCode: string,
-    amount?: number,
-    context?: string,
-    add?: boolean,
-    remove?: boolean,
-  })
-  {
-    const match: Record<string, unknown> =
-    {
-      [InventoriesFields.item_code]: itemCode,
-      [InventoriesFields.user_id]: userID,
-    };
-
-    /* Get the user's current item. */
-    const { data: itemRecords, error: getError } = await inventories()
-      .select()
-      .match(match);
-
-    if(getError)
-      throw getError;
-
-    /* If the user doesn't have the item, create the inventory record. */
-    const [ item ] = itemRecords || [];
-    if(! item && ! remove)
-    {
-      const { error } = await inventories()
-        .insert({
-          [InventoriesFields.item_code]: itemCode,
-          [InventoriesFields.user_id]: userID,
-          [InventoriesFields.amount]: amount,
-          [InventoriesFields.context]: context,
-        });
-
-      if(error)
-        throw error;
-
-      return;
-    }
-
-    /* Update the user's item amount. */
-    const previousAmount = item[InventoriesFields.amount];
-    let newAmount = amount;
-    if(add)
-      newAmount += previousAmount;
-    if(remove)
-      newAmount = previousAmount === 0 ? 0 : previousAmount - 1;
-
-    const { error } = await inventories()
-      .update({ [InventoriesFields.amount]: newAmount })
-      .match(match);
-
-    if(error)
-      throw error;
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  async updateUserItems({
-    userID,
+  async updateOrCreateUserItems({
+    userId,
     items,
     context,
-  } : {
-    userID: string,
+  }: {
+    userId: string,
     items:
     {
       code: string,
@@ -115,59 +45,133 @@ export const InventoriesService = new class
     context?: string,
   })
   {
-    const amountsMap: any = {};
+    const upsertData: any[] = [];
     for(const { code, amount } of items)
-      amountsMap[code] = amount;
-
-    const { data: userItems, error: getError } = await inventories()
-      .select()
-      .eq(InventoriesFields.user_id, userID)
-      .in(InventoriesFields.item_code, items.map(({ code }) => code))
-
-    if(getError)
-      throw getError;
-
-    if(! userItems)
-      return;
-
-    const upsertDataMap: any = {};
-    for(const item of userItems)
     {
-      const code = item[InventoriesFields.item_code];
-      upsertDataMap[code] =
-      {
-        [InventoriesFields.pk_id]: item[InventoriesFields.pk_id],
-        [InventoriesFields.user_id]: userID,
-        [InventoriesFields.item_code]: code,
-        [InventoriesFields.amount]: amountsMap[code],
-        [InventoriesFields.context]: context,
-      };
-    }
-
-    for(const code in amountsMap)
-    {
-      if(upsertDataMap[code])
+      if(amount === 0)
         continue;
 
-      upsertDataMap[code] =
-      {
-        // TODO: Add unique column for upsert
-        [InventoriesFields.pk_id]: 9999,
-        [InventoriesFields.user_id]: userID,
+      upsertData.push({
+        [InventoriesFields.user_id]: userId,
         [InventoriesFields.item_code]: code,
-        [InventoriesFields.amount]: amountsMap[code],
+        [InventoriesFields.user_id_item_code]: createUserIdItemCodeKey(userId, code),
+        [InventoriesFields.amount]: amount,
         [InventoriesFields.context]: context,
-      };
+      });
     }
 
-    const { data, error } = await inventories()
-      .upsert(Object.values(upsertDataMap));
+    const data = await DB.inventories()
+      .insert(upsertData)
+      .returning('*')
+      .onConflict(InventoriesFields.user_id_item_code)
+      .merge([InventoriesFields.amount]);
 
-    if(error)
-      throw error;
+    return data && data.length !== 0 ? this.serialize(data) : [];
+  }
 
-    // TODO: Flip condition
-    return ! data || data.length === 0 ? [] : this.serialize(data);
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async addUserItems({
+    userId,
+    items,
+    context,
+  }: {
+    userId: string,
+    items:
+    {
+      code: string,
+      amount: number,
+    }[],
+    context?: string,
+  })
+  {
+    const updatedItems = await this.updateUserItemAmounts({
+      userId,
+      items: items.map(({ code, amount }) => ({ code, addAmount: amount })),
+      context,
+    });
+
+    if(updatedItems.length !== 0)
+      return updatedItems;
+
+    return this.updateOrCreateUserItems({
+      userId,
+      items,
+      context,
+    });
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async removeUserItem({
+    userId,
+    items,
+    context,
+  }: {
+    userId: string,
+    items:
+    {
+      code: string,
+      amount: number,
+    }[],
+    context?: string,
+  })
+  {
+    return this.updateUserItemAmounts({
+      userId,
+      items: items.map(({ code, amount }) => ({ code, subtractAmount: amount })),
+      context,
+    });
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  async updateUserItemAmounts({
+    userId,
+    items,
+    context,
+  }: {
+    userId: string,
+    items:
+    {
+      code: string,
+      addAmount?: number,
+      subtractAmount?: number,
+    }[],
+    context?: string,
+  })
+  {
+    let whenClauses = [];
+    const userIdItemCodeKeys = [];
+    for(const { code, addAmount, subtractAmount } of items)
+    {
+      if(addAmount === 0 || subtractAmount === 0)
+        continue;
+
+      const userIdItemCode = createUserIdItemCodeKey(userId, code);
+      userIdItemCodeKeys.push(userIdItemCode);
+
+      if(subtractAmount)
+        whenClauses.push(`
+          WHEN (${InventoriesFields.user_id_item_code} = '${userIdItemCode}')
+          AND (${InventoriesFields.amount} >= ${subtractAmount})
+          THEN ${InventoriesFields.amount} - ${subtractAmount}
+        `);
+      else
+        whenClauses.push(`
+          WHEN ${InventoriesFields.user_id_item_code} = '${userIdItemCode}'
+          THEN ${InventoriesFields.amount} + ${addAmount}
+        `);
+    }
+
+    if(whenClauses.length === 0)
+      return [];
+
+    const updateQuery = `(CASE ${whenClauses.join(' ')} ELSE 0 END)`;
+    return DB.inventories()
+      .update({ [InventoriesFields.amount]: DB.knex.raw(updateQuery) })
+      .whereIn(InventoriesFields.user_id_item_code, userIdItemCodeKeys)
+      .returning('*');
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -181,4 +185,4 @@ export const InventoriesService = new class
       context: item[InventoriesFields.context],
     }));
   }
-}
+};

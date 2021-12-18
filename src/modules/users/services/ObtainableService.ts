@@ -1,6 +1,5 @@
-import { supabase } from '../../../common/supabase-client';
+import { DB } from '../../../common/DB';
 
-const obtainables = () => supabase.from<ObtainableRecord>('obtainables');
 export enum ObtainableFields
 {
   user_id = 'user_id',
@@ -14,13 +13,37 @@ export enum ObtainableFields
 
 export const ObtainableService = new class
 {
+  async find({
+    userID,
+    isCollectible,
+    context,
+  }: {
+    userID: string,
+    isCollectible?: boolean,
+    context?: string,
+  })
+  {
+    const query = DB.obtainables()
+      .where(ObtainableFields.user_id, userID)
+      .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
+
+    if(context)
+      query.and.where(ObtainableFields.context, context);
+
+    const data = await query;
+    const amount = data?.pop()?.amount;
+    if(amount) return Number(amount);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
   /* Creates an obtainable record */
-  async createObtainable({
+  async create({
     userID,
     amount = 0,
     isCollectible,
     context,
-  } : {
+  }: {
     userID: string,
     amount: number,
     isCollectible?: boolean,
@@ -37,12 +60,9 @@ export const ObtainableService = new class
     if(context)
       insertData.context = context;
 
-    const { data, error } = await obtainables().insert(insertData);
-    if(error)
-      throw error;
-
+    const data = await DB.obtainables().insert(insertData).returning('*');
     const obtainableRecord = data?.pop();
-    if(! obtainableRecord)
+    if(!obtainableRecord)
       throw new Error('Obtainable record not created');
 
     return true;
@@ -50,58 +70,30 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async getObtainable({
-    userID,
-    isCollectible,
-    context,
-  } : {
-    userID: string,
-    isCollectible?: boolean,
-    context?: string,
-  })
-  {
-    const query = obtainables()
-      .select()
-      .eq(ObtainableFields.user_id, userID)
-      .is(ObtainableFields.is_collectible, isCollectible ? true : false);
-
-    if(context)
-      query.eq(ObtainableFields.context, context);
-
-    const { data, error } = await query;
-    if(error)
-      throw error;
-
-    return data?.pop()?.amount;
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  async updateObtainables({
+  async update({
     userID,
     amount,
     isCollectible,
     context,
-  } : {
+  }: {
     userID: string,
     amount: number,
     isCollectible?: boolean,
     context?: string,
   })
   {
-    const query = obtainables()
+    const query = DB.obtainables()
       .update({ [ObtainableFields.amount]: amount })
-      .match({ [ObtainableFields.user_id]: userID })
-      .is(ObtainableFields.is_collectible, isCollectible ? true : false);
+      .returning('*')
+      .where(ObtainableFields.user_id, userID)
+      .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
 
     if(context)
-      query.eq(ObtainableFields.context, context);
+      query.and.where(ObtainableFields.context, context);
 
-    const { data, error } = await query;
-    if(error)
-      throw error;
-
-    return data?.pop()?.amount;
+    const data = await query;
+    const resultAmount = data?.pop()?.amount;
+    if(resultAmount) return Number(resultAmount);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -110,25 +102,20 @@ export const ObtainableService = new class
     count,
     isCollectible,
     context,
-  } : {
+  }: {
     count: number,
     isCollectible?: boolean,
     context?: string,
   })
   {
-    const query = obtainables()
-      .select()
-      .order(ObtainableFields.amount, { ascending: false })
-      .is(ObtainableFields.is_collectible, isCollectible ? true : false)
+    const query = DB.obtainables()
+      .orderBy(ObtainableFields.amount, 'desc')
+      .where(ObtainableFields.is_collectible, Boolean(isCollectible))
       .limit(count);
 
     if(context)
-      query.eq(ObtainableFields.context, context);
+      query.and.where(ObtainableFields.context, context);
 
-    const { data, error } = await query;
-    if(error)
-      throw error;
-
-    return data;
+    return query;
   }
-}
+};

@@ -10,7 +10,7 @@ export async function removeUserItems({
   itemsToRemove = [],
   discordGuildID,
   twitchChannelID,
-} : {
+}: {
   userIdentifier: string,
   itemsToRemove:
   {
@@ -22,14 +22,14 @@ export async function removeUserItems({
 })
 {
   /* Get the user with the given identifier. */
-  const userID = await findUser(userIdentifier);
-  if(! userID)
+  const userId = await findUser(userIdentifier);
+  if(!userId)
     throw new UserNotFound();
 
   /* Update the user's inventory to remove the given items. */
   const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
-  return InventoriesService.updateUserItems({
-    userID,
+  return InventoriesService.removeUserItem({
+    userId,
     items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),
     context,
   });
