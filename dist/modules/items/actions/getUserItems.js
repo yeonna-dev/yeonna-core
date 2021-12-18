@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserItems = void 0;
 const InventoriesService_1 = require("../services/InventoriesService");
-const ItemsService_1 = require("../services/ItemsService");
 const actions_1 = require("../../users/actions");
 const ContextUtil_1 = require("../../../common/ContextUtil");
 const errors_1 = require("../../../common/errors");
@@ -23,25 +22,7 @@ function getUserItems({ userIdentifier, discordGuildID, twitchChannelID, }) {
             throw new errors_1.UserNotFound();
         const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
         const inventory = yield InventoriesService_1.InventoriesService.getUserItems(userID, context);
-        /* Get the item codes of the inventory items and create an object map
-          of each inventory item with the item code as the key. */
-        const codes = [];
-        const inventoryMap = {};
-        for (const item of inventory) {
-            if (!codes.includes(item.itemCode))
-                codes.push(item.itemCode);
-            inventoryMap[item.itemCode] = item;
-        }
-        /* Get the item records of each inventory item and set the item record of each inventory item. */
-        const items = yield ItemsService_1.ItemsService.findByCodes(codes);
-        const inventoryItems = [];
-        for (const item of items) {
-            const inventoryMapItem = inventoryMap[item.code];
-            if (!inventoryMapItem)
-                continue;
-            inventoryItems.push(Object.assign(Object.assign({}, item), { amount: inventoryMapItem.amount, context: inventoryMapItem.context }));
-        }
-        return inventoryItems;
+        return inventory;
     });
 }
 exports.getUserItems = getUserItems;

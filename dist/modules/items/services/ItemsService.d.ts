@@ -12,6 +12,7 @@ export declare enum ItemsFields {
     deleted_at = "deleted_at"
 }
 export declare const ItemsService: {
+    table: string;
     find({ code, chance, }: {
         code?: string | undefined;
         chance?: number | undefined;

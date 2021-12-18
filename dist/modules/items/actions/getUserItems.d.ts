@@ -2,4 +2,4 @@ export declare function getUserItems({ userIdentifier, discordGuildID, twitchCha
     userIdentifier: string;
     discordGuildID?: string;
     twitchChannelID?: string;
-}): Promise<InventoryItem[]>;
+}): Promise<Inventory[]>;

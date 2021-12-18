@@ -27,6 +27,10 @@ var ItemsFields;
 })(ItemsFields = exports.ItemsFields || (exports.ItemsFields = {}));
 ;
 exports.ItemsService = new class {
+    constructor() {
+        /* Table name is added here to be able to use in joins in other services. */
+        this.table = 'items';
+    }
     find({ code, chance, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.items();

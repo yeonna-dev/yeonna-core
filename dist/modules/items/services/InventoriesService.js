@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoriesService = exports.InventoriesFields = void 0;
 const DB_1 = require("../../../common/DB");
+const ItemsService_1 = require("./ItemsService");
 var InventoriesFields;
 (function (InventoriesFields) {
     InventoriesFields["pk_id"] = "pk_id";
@@ -29,11 +30,12 @@ exports.InventoriesService = new class {
     getUserItems(userId, context) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.inventories()
+                .join(ItemsService_1.ItemsService.table, InventoriesFields.item_code, ItemsService_1.ItemsFields.code)
                 .where(InventoriesFields.user_id, userId);
             if (context)
-                query.andWhere(InventoriesFields.context, context);
+                query.and.where(InventoriesFields.context, context);
             const data = yield query;
-            return data && data.length !== 0 ? this.serialize(data) : [];
+            return this.serialize(data);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -56,7 +58,7 @@ exports.InventoriesService = new class {
                 .returning('*')
                 .onConflict(InventoriesFields.user_id_item_code)
                 .merge([InventoriesFields.amount]);
-            return data && data.length !== 0 ? this.serialize(data) : [];
+            return this.serialize(data);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -67,7 +69,9 @@ exports.InventoriesService = new class {
                 items: items.map(({ code, amount }) => ({ code, addAmount: amount })),
                 context,
             });
-            if (updatedItems.length !== 0)
+            /* If the number of updated items is equal to the given items,
+              it means that there are no new items to be added. */
+            if (updatedItems.length === items.length)
                 return updatedItems;
             return this.updateOrCreateUserItems({
                 userId,
@@ -111,18 +115,40 @@ exports.InventoriesService = new class {
             if (whenClauses.length === 0)
                 return [];
             const updateQuery = `(CASE ${whenClauses.join(' ')} ELSE 0 END)`;
-            return DB_1.DB.inventories()
+            const data = yield DB_1.DB.inventories()
                 .update({ [InventoriesFields.amount]: DB_1.DB.knex.raw(updateQuery) })
                 .whereIn(InventoriesFields.user_id_item_code, userIdItemCodeKeys)
                 .returning('*');
+            return this.serialize(data);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    serialize(items) {
-        return items.map(item => ({
-            itemCode: item[InventoriesFields.item_code],
-            amount: item[InventoriesFields.amount],
-            context: item[InventoriesFields.context],
-        }));
+    serialize(userItems) {
+        const itemFieldsMapping = {
+            [ItemsService_1.ItemsFields.code]: 'code',
+            [ItemsService_1.ItemsFields.name]: 'name',
+            [ItemsService_1.ItemsFields.chance_min]: 'chanceMin',
+            [ItemsService_1.ItemsFields.chance_max]: 'chanceMax',
+            [ItemsService_1.ItemsFields.price]: 'price',
+            [ItemsService_1.ItemsFields.image]: 'image',
+            [ItemsService_1.ItemsFields.emote]: 'emote',
+            [ItemsService_1.ItemsFields.category_id]: 'categoryID',
+        };
+        const data = [];
+        for (const userItem of userItems || []) {
+            const serialized = {
+                amount: userItem[InventoriesFields.amount],
+                context: userItem[InventoriesFields.context],
+            };
+            for (const field in itemFieldsMapping) {
+                const serializedKey = itemFieldsMapping[field];
+                const property = userItem[field];
+                if (property)
+                    serialized[serializedKey] = property;
+            }
+            data.push(serialized);
+        }
+        ;
+        return data;
     }
 };

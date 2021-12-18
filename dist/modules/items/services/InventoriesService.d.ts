@@ -18,11 +18,7 @@ export declare const InventoriesService: {
             amount: number;
         }[];
         context?: string | undefined;
-    }): Promise<{
-        itemCode: string;
-        amount: number;
-        context: string | undefined;
-    }[]>;
+    }): Promise<any[]>;
     addUserItems({ userId, items, context, }: {
         userId: string;
         items: {
@@ -48,9 +44,5 @@ export declare const InventoriesService: {
         }[];
         context?: string | undefined;
     }): Promise<any[]>;
-    serialize(items: InventoryRecord[]): {
-        itemCode: string;
-        amount: number;
-        context: string | undefined;
-    }[];
+    serialize(userItems: any[] | null): any[];
 };
