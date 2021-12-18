@@ -1,4 +1,5 @@
 import { DB } from '../../../common/DB';
+import { ItemsFields, ItemsService } from './ItemsService';
 
 export enum InventoriesFields
 {
@@ -20,13 +21,14 @@ export const InventoriesService = new class
   async getUserItems(userId: string, context?: string): Promise<Inventory[]>
   {
     const query = DB.inventories()
+      .join(ItemsService.table, InventoriesFields.item_code, ItemsFields.code)
       .where(InventoriesFields.user_id, userId);
 
     if(context)
-      query.andWhere(InventoriesFields.context, context);
+      query.and.where(InventoriesFields.context, context);
 
     const data = await query;
-    return data && data.length !== 0 ? this.serialize(data) : [];
+    return this.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -66,7 +68,7 @@ export const InventoriesService = new class
       .onConflict(InventoriesFields.user_id_item_code)
       .merge([InventoriesFields.amount]);
 
-    return data && data.length !== 0 ? this.serialize(data) : [];
+    return this.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -91,7 +93,9 @@ export const InventoriesService = new class
       context,
     });
 
-    if(updatedItems.length !== 0)
+    /* If the number of updated items is equal to the given items,
+      it means that there are no new items to be added. */
+    if(updatedItems.length === items.length)
       return updatedItems;
 
     return this.updateOrCreateUserItems({
@@ -168,21 +172,49 @@ export const InventoriesService = new class
       return [];
 
     const updateQuery = `(CASE ${whenClauses.join(' ')} ELSE 0 END)`;
-    return DB.inventories()
+    const data = await DB.inventories()
       .update({ [InventoriesFields.amount]: DB.knex.raw(updateQuery) })
       .whereIn(InventoriesFields.user_id_item_code, userIdItemCodeKeys)
       .returning('*');
+
+    return this.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  serialize(items: InventoryRecord[])
+  serialize(userItems: any[] | null)
   {
-    return items.map(item =>
-    ({
-      itemCode: item[InventoriesFields.item_code],
-      amount: item[InventoriesFields.amount],
-      context: item[InventoriesFields.context],
-    }));
+    const itemFieldsMapping: any = {
+      [ItemsFields.code]: 'code',
+      [ItemsFields.name]: 'name',
+      [ItemsFields.chance_min]: 'chanceMin',
+      [ItemsFields.chance_max]: 'chanceMax',
+      [ItemsFields.price]: 'price',
+      [ItemsFields.image]: 'image',
+      [ItemsFields.emote]: 'emote',
+      [ItemsFields.category_id]: 'categoryID',
+    };
+
+    const data = [];
+    for(const userItem of userItems || [])
+    {
+      const serialized: any =
+      {
+        amount: userItem[InventoriesFields.amount],
+        context: userItem[InventoriesFields.context],
+      };
+
+      for(const field in itemFieldsMapping)
+      {
+        const serializedKey = itemFieldsMapping[field];
+        const property = userItem[field];
+        if(property)
+          serialized[serializedKey] = property;
+      }
+
+      data.push(serialized);
+    };
+
+    return data;
   }
 };

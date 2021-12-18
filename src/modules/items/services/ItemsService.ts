@@ -17,6 +17,9 @@ export enum ItemsFields
 
 export const ItemsService = new class
 {
+  /* Table name is added here to be able to use in joins in other services. */
+  table = 'items';
+
   async find({
     code,
     chance,
