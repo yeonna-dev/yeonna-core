@@ -1,7 +1,7 @@
 "use strict";
 /* Users */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NoBitContentProvided = exports.UserBitNotFound = exports.BitNotFound = exports.ItemNotFound = exports.NotEnoughCollectibles = exports.NotEnoughPoints = exports.UserNotFound = void 0;
+exports.TagsNotFound = exports.NoBitContentProvided = exports.UserBitNotFound = exports.BitNotFound = exports.ItemNotFound = exports.NotEnoughCollectibles = exports.NotEnoughPoints = exports.UserNotFound = void 0;
 class UserNotFound extends Error {
     constructor() {
         super('User not found');
@@ -46,3 +46,10 @@ class NoBitContentProvided extends Error {
     }
 }
 exports.NoBitContentProvided = NoBitContentProvided;
+/* Tags */
+class TagsNotFound extends Error {
+    constructor() {
+        super('Tags not found');
+    }
+}
+exports.TagsNotFound = TagsNotFound;

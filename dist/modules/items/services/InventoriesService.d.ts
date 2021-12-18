@@ -2,6 +2,7 @@ export declare enum InventoriesFields {
     pk_id = "pk_id",
     user_id = "user_id",
     item_code = "item_code",
+    user_id_item_code = "user_id_item_code",
     amount = "amount",
     context = "context",
     created_at = "created_at",
@@ -9,17 +10,9 @@ export declare enum InventoriesFields {
     deleted_at = "deleted_at"
 }
 export declare const InventoriesService: {
-    getUserItems(userID: string, context?: string | undefined): Promise<Inventory[]>;
-    updateOrCreateUserItem({ userID, itemCode, amount, context, add, remove, }: {
-        userID: string;
-        itemCode: string;
-        amount?: number | undefined;
-        context?: string | undefined;
-        add?: boolean | undefined;
-        remove?: boolean | undefined;
-    }): Promise<void>;
-    updateUserItems({ userID, items, context, }: {
-        userID: string;
+    getUserItems(userId: string, context?: string | undefined): Promise<Inventory[]>;
+    updateOrCreateUserItems({ userId, items, context, }: {
+        userId: string;
         items: {
             code: string;
             amount: number;
@@ -29,7 +22,32 @@ export declare const InventoriesService: {
         itemCode: string;
         amount: number;
         context: string | undefined;
-    }[] | undefined>;
+    }[]>;
+    addUserItems({ userId, items, context, }: {
+        userId: string;
+        items: {
+            code: string;
+            amount: number;
+        }[];
+        context?: string | undefined;
+    }): Promise<any[]>;
+    removeUserItem({ userId, items, context, }: {
+        userId: string;
+        items: {
+            code: string;
+            amount: number;
+        }[];
+        context?: string | undefined;
+    }): Promise<any[]>;
+    updateUserItemAmounts({ userId, items, context, }: {
+        userId: string;
+        items: {
+            code: string;
+            addAmount?: number;
+            subtractAmount?: number;
+        }[];
+        context?: string | undefined;
+    }): Promise<any[]>;
     serialize(items: InventoryRecord[]): {
         itemCode: string;
         amount: number;

@@ -10,8 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemsService = exports.ItemsFields = void 0;
-const supabase_client_1 = require("../../../common/supabase-client");
-const items = () => supabase_client_1.supabase.from('items');
+const DB_1 = require("../../../common/DB");
 var ItemsFields;
 (function (ItemsFields) {
     ItemsFields["category_id"] = "category_id";
@@ -30,35 +29,45 @@ var ItemsFields;
 exports.ItemsService = new class {
     find({ code, chance, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = items()
-                .select();
+            const query = DB_1.DB.items();
             if (code)
-                query.eq(ItemsFields.code, code);
+                query.where(ItemsFields.code, code);
             if (chance)
                 query
-                    .lte(ItemsFields.chance_min, chance)
-                    .gte(ItemsFields.chance_max, chance);
-            const { data, error } = yield query;
-            if (error)
-                throw error;
-            // TODO: Flip condition
-            return !data || data.length === 0 ? [] : this.serialize(data);
+                    .and.where(ItemsFields.chance_min, '<', chance)
+                    .and.where(ItemsFields.chance_max, '>', chance);
+            const data = yield query;
+            return this.serialize(data);
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    findRandom({ code, chance, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = DB_1.DB.items();
+            if (code)
+                query.where(ItemsFields.code, code);
+            if (chance)
+                query
+                    .and.where(ItemsFields.chance_min, '<', chance)
+                    .and.where(ItemsFields.chance_max, '>', chance);
+            const data = yield query
+                .orderByRaw('RANDOM()')
+                .limit(1);
+            return this.serialize(data).pop();
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     findByCodes(codes) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { data, error } = yield items()
-                .select()
-                .in(ItemsFields.code, codes);
-            if (error)
-                throw error;
-            // TODO: Flip condition
-            return !data || data.length === 0 ? [] : this.serialize(data);
+            const data = yield DB_1.DB.items()
+                .whereIn(ItemsFields.code, codes);
+            return this.serialize(data);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     serialize(items) {
+        if (!items)
+            return [];
         return items.map(({ category_id, code, name, chance_min, chance_max, price, image, emote }) => ({
             categoryID: category_id,
             code,

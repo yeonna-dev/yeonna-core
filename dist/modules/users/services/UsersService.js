@@ -10,9 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = exports.UsersFields = void 0;
-const supabase_client_1 = require("../../../common/supabase-client");
+const DB_1 = require("../../../common/DB");
 const nanoid_1 = require("../../../common/nanoid");
-const users = () => supabase_client_1.supabase.from('users');
 var UsersFields;
 (function (UsersFields) {
     UsersFields["id"] = "id";
@@ -34,9 +33,7 @@ exports.UsersService = new class {
                 [UsersFields.discord_id]: discordID,
                 [UsersFields.twitch_id]: twitchID,
             };
-            const { data, error } = yield users().insert(user);
-            if (error)
-                throw error;
+            const data = yield DB_1.DB.users().insert(user).returning('*');
             const createdUser = data === null || data === void 0 ? void 0 : data.pop();
             if (!createdUser)
                 throw new Error('User not created');
@@ -46,14 +43,11 @@ exports.UsersService = new class {
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     findByID(ids) {
         return __awaiter(this, void 0, void 0, function* () {
-            ids = `(${(Array.isArray(ids) ? ids : [ids]).join(',')})`;
-            const { data, error } = yield users()
-                .select()
-                .or(`${UsersFields.id}.in.${ids},`
-                + `${UsersFields.discord_id}.in.${ids},`
-                + `${UsersFields.twitch_id}.in.${ids}`);
-            if (error)
-                throw error;
+            ids = Array.isArray(ids) ? ids : [ids];
+            const data = yield DB_1.DB.users()
+                .or.whereIn(UsersFields.id, ids)
+                .or.whereIn(UsersFields.discord_id, ids)
+                .or.whereIn(UsersFields.twitch_id, ids);
             if (!data || data.length === 0)
                 return [];
             return data.map(user => ({
@@ -66,17 +60,14 @@ exports.UsersService = new class {
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     find({ ids, discordIDs, twitchIDs, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = users()
-                .select();
+            const query = DB_1.DB.users();
             if (ids)
-                query.in(UsersFields.id, Array.isArray(ids) ? ids : [ids]);
+                query.whereIn(UsersFields.id, Array.isArray(ids) ? ids : [ids]);
             if (discordIDs)
-                query.in(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [discordIDs]);
+                query.whereIn(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [discordIDs]);
             if (twitchIDs)
-                query.in(UsersFields.twitch_id, Array.isArray(twitchIDs) ? twitchIDs : [twitchIDs]);
-            const { data, error } = yield query;
-            if (error)
-                throw error;
+                query.whereIn(UsersFields.twitch_id, Array.isArray(twitchIDs) ? twitchIDs : [twitchIDs]);
+            const data = yield query;
             if (!data || data.length === 0)
                 return [];
             return data.map(user => ({
@@ -94,11 +85,9 @@ exports.UsersService = new class {
                 updateData[UsersFields.discord_id] = discordID;
             if (twitchID)
                 updateData[UsersFields.twitch_id] = twitchID;
-            const { error } = yield users()
+            yield DB_1.DB.users()
                 .update(updateData)
-                .match({ [UsersFields.id]: id });
-            if (error)
-                throw error;
+                .where(UsersFields.id, id);
         });
     }
 };

@@ -1,4 +1,7 @@
 export declare function removeUserBits({ userIdentifier, bitID }: {
     userIdentifier: string;
     bitID: string;
-}): Promise<any[]>;
+}): Promise<{
+    userID: any;
+    bitID: any;
+}[]>;

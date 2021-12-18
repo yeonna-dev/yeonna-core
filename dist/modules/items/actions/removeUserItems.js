@@ -17,13 +17,13 @@ const errors_1 = require("../../../common/errors");
 function removeUserItems({ userIdentifier, itemsToRemove = [], discordGuildID, twitchChannelID, }) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Get the user with the given identifier. */
-        const userID = yield actions_1.findUser(userIdentifier);
-        if (!userID)
+        const userId = yield actions_1.findUser(userIdentifier);
+        if (!userId)
             throw new errors_1.UserNotFound();
         /* Update the user's inventory to remove the given items. */
         const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
-        return InventoriesService_1.InventoriesService.updateUserItems({
-            userID,
+        return InventoriesService_1.InventoriesService.removeUserItem({
+            userId,
             items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),
             context,
         });

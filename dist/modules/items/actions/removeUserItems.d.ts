@@ -6,8 +6,4 @@ export declare function removeUserItems({ userIdentifier, itemsToRemove, discord
     }[];
     discordGuildID?: string;
     twitchChannelID?: string;
-}): Promise<{
-    itemCode: string;
-    amount: number;
-    context: string | undefined;
-}[] | undefined>;
+}): Promise<any[]>;

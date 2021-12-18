@@ -50,21 +50,21 @@ function transferObtainables({ fromUserIdentifier, toUserIdentifier, amount, isC
         });
         const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
         if (!targetObtainables)
-            yield ObtainableService_1.ObtainableService.createObtainable({
+            yield ObtainableService_1.ObtainableService.create({
                 userID: target,
                 amount,
                 isCollectible,
                 context,
             });
         else
-            yield ObtainableService_1.ObtainableService.updateObtainables({
+            yield ObtainableService_1.ObtainableService.update({
                 userID: target,
                 amount: targetObtainables + amount,
                 isCollectible,
                 context,
             });
         /* Subtract obtainables from the source user. */
-        yield ObtainableService_1.ObtainableService.updateObtainables({
+        yield ObtainableService_1.ObtainableService.update({
             userID: source,
             amount: sourceObtainables - amount,
             isCollectible,

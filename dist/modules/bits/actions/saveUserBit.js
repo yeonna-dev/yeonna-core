@@ -13,8 +13,9 @@ exports.saveUserBit = void 0;
 const BitsService_1 = require("../services/BitsService");
 const UsersBitsService_1 = require("../services/UsersBitsService");
 const actions_1 = require("../../users/actions");
+const _1 = require(".");
 const errors_1 = require("../../../common/errors");
-function saveUserBit({ userIdentifier, content, discordGuildID, }) {
+function saveUserBit({ userIdentifier, content, tags, discordGuildID, }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!content)
             throw new errors_1.NoBitContentProvided();
@@ -31,11 +32,20 @@ function saveUserBit({ userIdentifier, content, discordGuildID, }) {
         /* Get the user by the given user identifier. */
         const userID = yield actions_1.findOrCreateUser({ userIdentifier, discordGuildID });
         /* Check if the bit has been added to the user. */
-        const [userBit] = yield UsersBitsService_1.UsersBitsService.find({ userIDs: [userID], bitIDs: [bitID] });
-        /* Save the bit for the user if the user does not have the bit. */
+        const [userBit] = yield UsersBitsService_1.UsersBitsService.find({
+            userIDs: [userID],
+            bitIDs: [bitID],
+        });
+        /* If the user already has the bit, do not save it. */
         if (userBit)
-            return;
-        const [createdUserBit] = yield UsersBitsService_1.UsersBitsService.create([{ userID, bitID }]);
+            return userBit;
+        /* Find the tags by the given tag names. */
+        let tagIDs = [];
+        if (tags) {
+            const createdTags = yield _1.createTags(tags);
+            tagIDs = createdTags.map(({ id }) => id);
+        }
+        const [createdUserBit] = yield UsersBitsService_1.UsersBitsService.create([{ userID, bitID, tagIDs }]);
         return createdUserBit;
     });
 }

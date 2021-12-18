@@ -10,8 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ObtainableService = exports.ObtainableFields = void 0;
-const supabase_client_1 = require("../../../common/supabase-client");
-const obtainables = () => supabase_client_1.supabase.from('obtainables');
+const DB_1 = require("../../../common/DB");
 var ObtainableFields;
 (function (ObtainableFields) {
     ObtainableFields["user_id"] = "user_id";
@@ -23,8 +22,23 @@ var ObtainableFields;
     ObtainableFields["deleted_at"] = "deleted_at";
 })(ObtainableFields = exports.ObtainableFields || (exports.ObtainableFields = {}));
 exports.ObtainableService = new class {
+    find({ userID, isCollectible, context, }) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = DB_1.DB.obtainables()
+                .where(ObtainableFields.user_id, userID)
+                .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
+            if (context)
+                query.and.where(ObtainableFields.context, context);
+            const data = yield query;
+            const amount = (_a = data === null || data === void 0 ? void 0 : data.pop()) === null || _a === void 0 ? void 0 : _a.amount;
+            if (amount)
+                return Number(amount);
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     /* Creates an obtainable record */
-    createObtainable({ userID, amount = 0, isCollectible, context, }) {
+    create({ userID, amount = 0, isCollectible, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const insertData = {
                 user_id: userID,
@@ -33,9 +47,7 @@ exports.ObtainableService = new class {
             };
             if (context)
                 insertData.context = context;
-            const { data, error } = yield obtainables().insert(insertData);
-            if (error)
-                throw error;
+            const data = yield DB_1.DB.obtainables().insert(insertData).returning('*');
             const obtainableRecord = data === null || data === void 0 ? void 0 : data.pop();
             if (!obtainableRecord)
                 throw new Error('Obtainable record not created');
@@ -43,51 +55,32 @@ exports.ObtainableService = new class {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    getObtainable({ userID, isCollectible, context, }) {
+    update({ userID, amount, isCollectible, context, }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const query = obtainables()
-                .select()
-                .eq(ObtainableFields.user_id, userID)
-                .is(ObtainableFields.is_collectible, isCollectible ? true : false);
-            if (context)
-                query.eq(ObtainableFields.context, context);
-            const { data, error } = yield query;
-            if (error)
-                throw error;
-            return (_a = data === null || data === void 0 ? void 0 : data.pop()) === null || _a === void 0 ? void 0 : _a.amount;
-        });
-    }
-    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    updateObtainables({ userID, amount, isCollectible, context, }) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const query = obtainables()
+            const query = DB_1.DB.obtainables()
                 .update({ [ObtainableFields.amount]: amount })
-                .match({ [ObtainableFields.user_id]: userID })
-                .is(ObtainableFields.is_collectible, isCollectible ? true : false);
+                .returning('*')
+                .where(ObtainableFields.user_id, userID)
+                .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
             if (context)
-                query.eq(ObtainableFields.context, context);
-            const { data, error } = yield query;
-            if (error)
-                throw error;
-            return (_a = data === null || data === void 0 ? void 0 : data.pop()) === null || _a === void 0 ? void 0 : _a.amount;
+                query.and.where(ObtainableFields.context, context);
+            const data = yield query;
+            const resultAmount = (_a = data === null || data === void 0 ? void 0 : data.pop()) === null || _a === void 0 ? void 0 : _a.amount;
+            if (resultAmount)
+                return Number(resultAmount);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     getTop({ count, isCollectible, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = obtainables()
-                .select()
-                .order(ObtainableFields.amount, { ascending: false })
-                .is(ObtainableFields.is_collectible, isCollectible ? true : false)
+            const query = DB_1.DB.obtainables()
+                .orderBy(ObtainableFields.amount, 'desc')
+                .where(ObtainableFields.is_collectible, Boolean(isCollectible))
                 .limit(count);
             if (context)
-                query.eq(ObtainableFields.context, context);
-            const { data, error } = yield query;
-            if (error)
-                throw error;
-            return data;
+                query.and.where(ObtainableFields.context, context);
+            return query;
         });
     }
 };

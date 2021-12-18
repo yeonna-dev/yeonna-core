@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoriesService = exports.InventoriesFields = void 0;
-const supabase_client_1 = require("../../../common/supabase-client");
-const inventories = () => supabase_client_1.supabase.from('inventories');
+const DB_1 = require("../../../common/DB");
 var InventoriesFields;
 (function (InventoriesFields) {
     InventoriesFields["pk_id"] = "pk_id";
     InventoriesFields["user_id"] = "user_id";
     InventoriesFields["item_code"] = "item_code";
+    InventoriesFields["user_id_item_code"] = "user_id_item_code";
     InventoriesFields["amount"] = "amount";
     InventoriesFields["context"] = "context";
     InventoriesFields["created_at"] = "created_at";
@@ -24,108 +24,97 @@ var InventoriesFields;
     InventoriesFields["deleted_at"] = "deleted_at";
 })(InventoriesFields = exports.InventoriesFields || (exports.InventoriesFields = {}));
 ;
+const createUserIdItemCodeKey = (userId, itemCode) => `${userId}:${itemCode}`;
 exports.InventoriesService = new class {
-    getUserItems(userID, context) {
+    getUserItems(userId, context) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = inventories()
-                .select()
-                .eq(InventoriesFields.user_id, userID);
+            const query = DB_1.DB.inventories()
+                .where(InventoriesFields.user_id, userId);
             if (context)
-                query.eq(InventoriesFields.context, context);
-            const { data, error } = yield query;
-            if (error)
-                throw error;
-            // TODO: Flip condition
-            return !data || data.length === 0 ? [] : this.serialize(data);
+                query.andWhere(InventoriesFields.context, context);
+            const data = yield query;
+            return data && data.length !== 0 ? this.serialize(data) : [];
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    // TODO: Use upsert
-    updateOrCreateUserItem({ userID, itemCode, amount = 1, context, add, remove, }) {
+    updateOrCreateUserItems({ userId, items, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const match = {
-                [InventoriesFields.item_code]: itemCode,
-                [InventoriesFields.user_id]: userID,
-            };
-            /* Get the user's current item. */
-            const { data: itemRecords, error: getError } = yield inventories()
-                .select()
-                .match(match);
-            if (getError)
-                throw getError;
-            /* If the user doesn't have the item, create the inventory record. */
-            const [item] = itemRecords || [];
-            if (!item && !remove) {
-                const { error } = yield inventories()
-                    .insert({
-                    [InventoriesFields.item_code]: itemCode,
-                    [InventoriesFields.user_id]: userID,
+            const upsertData = [];
+            for (const { code, amount } of items) {
+                if (amount === 0)
+                    continue;
+                upsertData.push({
+                    [InventoriesFields.user_id]: userId,
+                    [InventoriesFields.item_code]: code,
+                    [InventoriesFields.user_id_item_code]: createUserIdItemCodeKey(userId, code),
                     [InventoriesFields.amount]: amount,
                     [InventoriesFields.context]: context,
                 });
-                if (error)
-                    throw error;
-                return;
             }
-            /* Update the user's item amount. */
-            const previousAmount = item[InventoriesFields.amount];
-            let newAmount = amount;
-            if (add)
-                newAmount += previousAmount;
-            if (remove)
-                newAmount = previousAmount === 0 ? 0 : previousAmount - 1;
-            const { error } = yield inventories()
-                .update({ [InventoriesFields.amount]: newAmount })
-                .match(match);
-            if (error)
-                throw error;
+            const data = yield DB_1.DB.inventories()
+                .insert(upsertData)
+                .returning('*')
+                .onConflict(InventoriesFields.user_id_item_code)
+                .merge([InventoriesFields.amount]);
+            return data && data.length !== 0 ? this.serialize(data) : [];
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    updateUserItems({ userID, items, context, }) {
+    addUserItems({ userId, items, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const amountsMap = {};
-            for (const { code, amount } of items)
-                amountsMap[code] = amount;
-            const { data: userItems, error: getError } = yield inventories()
-                .select()
-                .eq(InventoriesFields.user_id, userID)
-                .in(InventoriesFields.item_code, items.map(({ code }) => code));
-            if (getError)
-                throw getError;
-            if (!userItems)
-                return;
-            const upsertDataMap = {};
-            for (const item of userItems) {
-                const code = item[InventoriesFields.item_code];
-                upsertDataMap[code] =
-                    {
-                        [InventoriesFields.pk_id]: item[InventoriesFields.pk_id],
-                        [InventoriesFields.user_id]: userID,
-                        [InventoriesFields.item_code]: code,
-                        [InventoriesFields.amount]: amountsMap[code],
-                        [InventoriesFields.context]: context,
-                    };
-            }
-            for (const code in amountsMap) {
-                if (upsertDataMap[code])
+            const updatedItems = yield this.updateUserItemAmounts({
+                userId,
+                items: items.map(({ code, amount }) => ({ code, addAmount: amount })),
+                context,
+            });
+            if (updatedItems.length !== 0)
+                return updatedItems;
+            return this.updateOrCreateUserItems({
+                userId,
+                items,
+                context,
+            });
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    removeUserItem({ userId, items, context, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.updateUserItemAmounts({
+                userId,
+                items: items.map(({ code, amount }) => ({ code, subtractAmount: amount })),
+                context,
+            });
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    updateUserItemAmounts({ userId, items, context, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let whenClauses = [];
+            const userIdItemCodeKeys = [];
+            for (const { code, addAmount, subtractAmount } of items) {
+                if (addAmount === 0 || subtractAmount === 0)
                     continue;
-                upsertDataMap[code] =
-                    {
-                        // TODO: Add unique column for upsert
-                        [InventoriesFields.pk_id]: 9999,
-                        [InventoriesFields.user_id]: userID,
-                        [InventoriesFields.item_code]: code,
-                        [InventoriesFields.amount]: amountsMap[code],
-                        [InventoriesFields.context]: context,
-                    };
+                const userIdItemCode = createUserIdItemCodeKey(userId, code);
+                userIdItemCodeKeys.push(userIdItemCode);
+                if (subtractAmount)
+                    whenClauses.push(`
+          WHEN (${InventoriesFields.user_id_item_code} = '${userIdItemCode}')
+          AND (${InventoriesFields.amount} >= ${subtractAmount})
+          THEN ${InventoriesFields.amount} - ${subtractAmount}
+        `);
+                else
+                    whenClauses.push(`
+          WHEN ${InventoriesFields.user_id_item_code} = '${userIdItemCode}'
+          THEN ${InventoriesFields.amount} + ${addAmount}
+        `);
             }
-            const { data, error } = yield inventories()
-                .upsert(Object.values(upsertDataMap));
-            if (error)
-                throw error;
-            // TODO: Flip condition
-            return !data || data.length === 0 ? [] : this.serialize(data);
+            if (whenClauses.length === 0)
+                return [];
+            const updateQuery = `(CASE ${whenClauses.join(' ')} ELSE 0 END)`;
+            return DB_1.DB.inventories()
+                .update({ [InventoriesFields.amount]: DB_1.DB.knex.raw(updateQuery) })
+                .whereIn(InventoriesFields.user_id_item_code, userIdItemCodeKeys)
+                .returning('*');
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

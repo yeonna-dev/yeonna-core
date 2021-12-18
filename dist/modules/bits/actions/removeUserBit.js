@@ -18,11 +18,11 @@ function removeUserBits({ userIdentifier, bitID }) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Check if bit is existing. */
         const [foundBit] = yield BitsService_1.BitsService.find({ ids: [bitID] });
+        bitID = foundBit.id;
         if (!foundBit)
             throw new errors_1.BitNotFound();
         /* Get the user by the given identifier. */
         const userID = yield actions_1.findUser(userIdentifier);
-        bitID = foundBit.id;
         /* Check if the bit has been added to the user. */
         const [userBit] = yield UsersBitsService_1.UsersBitsService.find({ userIDs: [userID], bitIDs: [bitID] });
         if (!userBit)

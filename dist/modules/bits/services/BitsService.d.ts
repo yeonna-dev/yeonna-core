@@ -3,11 +3,11 @@ export declare enum BitsFields {
     content = "content"
 }
 export declare const BitsService: {
-    tableName: string;
+    table: string;
     find({ ids, search, content, }: {
         ids?: string | string[] | undefined;
         search?: string | undefined;
         content?: string | undefined;
-    }): Promise<BitRecord[]>;
-    create(content: string | string[]): Promise<string[]>;
+    }): Promise<any[]>;
+    create(content: string | string[]): Promise<any[]>;
 };

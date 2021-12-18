@@ -23,14 +23,14 @@ function updateObtainables({ userIdentifier, amount, isCollectible, add, subtrac
             throw new Error('Cannot update user points');
         /* Check if the user's obtainable record is already created. */
         const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
-        const obtainables = yield ObtainableService_1.ObtainableService.getObtainable({
+        const obtainables = yield ObtainableService_1.ObtainableService.find({
             userID,
             isCollectible,
             context,
         });
         /* Create the obtainable record if not existing. */
         if (obtainables === undefined)
-            yield ObtainableService_1.ObtainableService.createObtainable({
+            yield ObtainableService_1.ObtainableService.create({
                 userID,
                 amount,
                 isCollectible,
@@ -42,7 +42,7 @@ function updateObtainables({ userIdentifier, amount, isCollectible, add, subtrac
                 newPoints = obtainables + amount;
             if (subtract)
                 newPoints = obtainables - amount;
-            return ObtainableService_1.ObtainableService.updateObtainables({
+            return ObtainableService_1.ObtainableService.update({
                 userID,
                 amount: newPoints,
                 isCollectible,

@@ -13,3 +13,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./findUserBits"), exports);
 __exportStar(require("./saveUserBit"), exports);
 __exportStar(require("./removeUserBit"), exports);
+__exportStar(require("./createTags"), exports);
+__exportStar(require("./deleteTags"), exports);

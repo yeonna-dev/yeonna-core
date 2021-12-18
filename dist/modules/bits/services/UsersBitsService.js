@@ -10,87 +10,84 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersBitsService = exports.UsersBitsFields = void 0;
-const supabase_client_1 = require("../../../common/supabase-client");
+const DB_1 = require("../../../common/DB");
 const BitsService_1 = require("./BitsService");
-const usersBits = () => supabase_client_1.supabase.from('users_bits');
 var UsersBitsFields;
 (function (UsersBitsFields) {
     UsersBitsFields["user_id"] = "user_id";
     UsersBitsFields["bit_id"] = "bit_id";
-    UsersBitsFields["bit"] = "bit";
+    UsersBitsFields["tag_ids"] = "tag_ids";
 })(UsersBitsFields = exports.UsersBitsFields || (exports.UsersBitsFields = {}));
 ;
 exports.UsersBitsService = new class {
     find({ userIDs, bitIDs, search, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = usersBits()
-                .select(`
-        ${UsersBitsFields.user_id},
-        ${UsersBitsFields.bit_id},
-        ${UsersBitsFields.bit}:${BitsService_1.BitsService.tableName} (
-          ${BitsService_1.BitsFields.content}
-        )
-      `);
+            const query = DB_1.DB.usersBits()
+                .join(BitsService_1.BitsService.table, UsersBitsFields.bit_id, BitsService_1.BitsFields.id);
             if (userIDs)
-                query.in(UsersBitsFields.user_id, userIDs);
+                query.whereIn(UsersBitsFields.user_id, userIDs);
             if (bitIDs)
-                query.in(UsersBitsFields.bit_id, bitIDs);
+                query.and.whereIn(UsersBitsFields.bit_id, bitIDs);
             if (search)
-                query.like(`${UsersBitsFields.bit}.${BitsService_1.BitsFields.content}`, `%${search}%`);
-            let { data, error } = yield query;
-            if (error)
-                throw error;
+                query.and.where(`${BitsService_1.BitsService.table}.${BitsService_1.BitsFields.content}`, 'LIKE', `%${search}%`);
+            const data = yield query;
             if (!data || data.length === 0)
                 return [];
-            /* Remove duplicate data from result and filter results
-              that only have bits if a search query was given. */
-            const filtered = [];
-            for (const userBit of data) {
-                const isUnique = !filtered.some(element => element[UsersBitsFields.bit_id] === userBit[UsersBitsFields.bit_id]);
-                if (!isUnique)
-                    continue;
-                if (search && !userBit[UsersBitsFields.bit])
-                    continue;
-                filtered.push(userBit);
-            }
-            return this.serialize(filtered);
+            return this.serialize(data);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     create(usersBitsData) {
         return __awaiter(this, void 0, void 0, function* () {
-            const insertData = usersBitsData.map(({ userID, bitID }) => ({
-                [UsersBitsFields.user_id]: userID,
-                [UsersBitsFields.bit_id]: bitID,
-            }));
-            const { data, error } = yield usersBits().insert(insertData);
-            if (error)
-                throw error;
+            const insertData = usersBitsData.map(({ userID, bitID, tagIDs }) => {
+                const data = {
+                    [UsersBitsFields.user_id]: userID,
+                    [UsersBitsFields.bit_id]: bitID,
+                };
+                if (tagIDs && tagIDs.length !== 0)
+                    data[UsersBitsFields.tag_ids] = tagIDs.join(',');
+                return data;
+            });
+            const data = yield DB_1.DB.usersBits()
+                .insert(insertData)
+                .returning('*');
             return this.serialize(data);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     remove({ userID, bitID }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { data, error } = yield usersBits()
-                .delete({ returning: 'representation' })
-                .match({ [UsersBitsFields.user_id]: userID, [UsersBitsFields.bit_id]: bitID });
-            if (error)
-                throw error;
-            return this.serialize(data);
+            const data = yield DB_1.DB.usersBits()
+                .delete()
+                .where({ [UsersBitsFields.user_id]: userID, [UsersBitsFields.bit_id]: bitID })
+                .returning('*');
+            return data.map((deletedUserBit) => ({
+                userID: deletedUserBit[UsersBitsFields.user_id],
+                bitID: deletedUserBit[UsersBitsFields.bit_id],
+            }));
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    addTags({ userID, bitID, tagIDs }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return DB_1.DB.usersBits()
+                .update({ [UsersBitsFields.tag_ids]: tagIDs.join(',') })
+                .where({
+                [UsersBitsFields.user_id]: userID,
+                [UsersBitsFields.bit_id]: bitID,
+            })
+                .returning('*');
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     serialize(usersBits) {
         const data = [];
-        for (const userBit of (usersBits || [])) {
-            const serialized = {
-                user: { id: userBit[UsersBitsFields.user_id] },
-                bit: { id: userBit[UsersBitsFields.bit_id] },
-            };
-            const bit = userBit[UsersBitsFields.bit];
-            if (bit)
-                serialized.bit.content = bit[BitsService_1.BitsFields.content];
+        for (const userBit of usersBits || []) {
+            const serialized = { user: { id: userBit[UsersBitsFields.user_id] } };
+            serialized.bit = { id: userBit[UsersBitsFields.bit_id] };
+            const content = userBit[BitsService_1.BitsFields.content];
+            if (content)
+                serialized.bit.content = content;
             data.push(serialized);
         }
         return data;

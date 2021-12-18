@@ -10,9 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BitsService = exports.BitsFields = void 0;
-const supabase_client_1 = require("../../../common/supabase-client");
+const DB_1 = require("../../../common/DB");
 const nanoid_1 = require("../../../common/nanoid");
-const bits = () => supabase_client_1.supabase.from('bits');
 var BitsFields;
 (function (BitsFields) {
     BitsFields["id"] = "id";
@@ -21,22 +20,21 @@ var BitsFields;
 ;
 exports.BitsService = new class {
     constructor() {
-        this.tableName = 'bits';
+        /* Table name is added here to be able to use in joins in other services. */
+        this.table = 'bits';
     }
     find({ ids, search, content, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const idsArray = Array.isArray(ids) ? ids : [ids];
-            const query = bits()
-                .select();
-            if (ids)
-                query.in(BitsFields.id, idsArray);
+            const query = DB_1.DB.bits();
+            if (ids) {
+                const idsArray = Array.isArray(ids) ? ids : [ids];
+                query.whereIn(BitsFields.id, idsArray);
+            }
             if (search)
-                query.like(BitsFields.content, `%${search}%`);
+                query.and.where(BitsFields.content, 'LIKE', `%${search}%`);
             if (content)
-                query.eq(BitsFields.content, content);
-            const { data, error } = yield query;
-            if (error)
-                throw error;
+                query.and.where(BitsFields.content, content);
+            const data = yield query;
             return data || [];
         });
     }
@@ -50,9 +48,9 @@ exports.BitsService = new class {
                 [BitsFields.id]: nanoid_1.nanoid(15),
                 [BitsFields.content]: content,
             }));
-            const { data, error } = yield bits().insert(bitsData);
-            if (error)
-                throw error;
+            const data = yield DB_1.DB.bits()
+                .insert(bitsData)
+                .returning('*');
             return data ? data.map(bit => bit[BitsFields.id]) : [];
         });
     }

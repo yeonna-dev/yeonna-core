@@ -14,5 +14,4 @@ require('dotenv').config();
 __exportStar(require("./modules/users/actions"), exports);
 __exportStar(require("./modules/items/actions"), exports);
 __exportStar(require("./modules/bits/actions"), exports);
-__exportStar(require("./common/supabase-client"), exports);
 __exportStar(require("./common/errors"), exports);

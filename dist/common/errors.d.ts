@@ -19,3 +19,6 @@ export declare class UserBitNotFound extends Error {
 export declare class NoBitContentProvided extends Error {
     constructor();
 }
+export declare class TagsNotFound extends Error {
+    constructor();
+}

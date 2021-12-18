@@ -25,6 +25,19 @@ export declare const ItemsService: {
         image: string | undefined;
         emote: string | undefined;
     }[]>;
+    findRandom({ code, chance, }: {
+        code?: string | undefined;
+        chance?: number | undefined;
+    }): Promise<{
+        categoryID: string | undefined;
+        code: string;
+        name: string;
+        chanceMin: number | undefined;
+        chanceMax: number | undefined;
+        price: number | undefined;
+        image: string | undefined;
+        emote: string | undefined;
+    } | undefined>;
     findByCodes(codes: string[]): Promise<{
         categoryID: string | undefined;
         code: string;

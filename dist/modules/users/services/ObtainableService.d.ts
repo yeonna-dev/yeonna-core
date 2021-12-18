@@ -8,18 +8,18 @@ export declare enum ObtainableFields {
     deleted_at = "deleted_at"
 }
 export declare const ObtainableService: {
-    createObtainable({ userID, amount, isCollectible, context, }: {
+    find({ userID, isCollectible, context, }: {
+        userID: string;
+        isCollectible?: boolean | undefined;
+        context?: string | undefined;
+    }): Promise<number | undefined>;
+    create({ userID, amount, isCollectible, context, }: {
         userID: string;
         amount: number;
         isCollectible?: boolean | undefined;
         context?: string | undefined;
     }): Promise<Boolean>;
-    getObtainable({ userID, isCollectible, context, }: {
-        userID: string;
-        isCollectible?: boolean | undefined;
-        context?: string | undefined;
-    }): Promise<number | undefined>;
-    updateObtainables({ userID, amount, isCollectible, context, }: {
+    update({ userID, amount, isCollectible, context, }: {
         userID: string;
         amount: number;
         isCollectible?: boolean | undefined;
@@ -29,5 +29,5 @@ export declare const ObtainableService: {
         count: number;
         isCollectible?: boolean | undefined;
         context?: string | undefined;
-    }): Promise<ObtainableRecord[] | null>;
+    }): Promise<any[]>;
 };

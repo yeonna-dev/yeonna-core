@@ -1,7 +1,7 @@
 export declare enum UsersBitsFields {
     user_id = "user_id",
     bit_id = "bit_id",
-    bit = "bit"
+    tag_ids = "tag_ids"
 }
 export declare const UsersBitsService: {
     find({ userIDs, bitIDs, search, }: {
@@ -12,10 +12,19 @@ export declare const UsersBitsService: {
     create(usersBitsData: {
         userID: string;
         bitID: string;
+        tagIDs: string[];
     }[]): Promise<any[]>;
     remove({ userID, bitID }: {
         userID: string;
         bitID: string;
+    }): Promise<{
+        userID: any;
+        bitID: any;
+    }[]>;
+    addTags({ userID, bitID, tagIDs }: {
+        userID: string;
+        bitID: string;
+        tagIDs: string[];
     }): Promise<any[]>;
-    serialize(usersBits: UserBitRecord[] | null): any[];
+    serialize(usersBits: any[] | null): any[];
 };

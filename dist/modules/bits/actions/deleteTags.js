@@ -9,16 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeItemFromInventory = void 0;
-const ItemsService_1 = require("../services/ItemsService");
-const errors_1 = require("../../../common/errors");
-function removeItemFromInventory(itemCode) {
+exports.deleteTags = void 0;
+const TagsService_1 = require("../services/TagsService");
+function deleteTags(names) {
     return __awaiter(this, void 0, void 0, function* () {
-        /* Get the item with the given code. */
-        const [item] = yield ItemsService_1.ItemsService.find({ code: itemCode });
-        if (!item)
-            throw new errors_1.ItemNotFound();
-        /* Update the user's inventory to remove  */
+        return TagsService_1.TagsService.remove(names);
     });
 }
-exports.removeItemFromInventory = removeItemFromInventory;
+exports.deleteTags = deleteTags;

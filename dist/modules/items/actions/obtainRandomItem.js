@@ -19,21 +19,19 @@ function obtainRandomItem({ userIdentifier, discordGuildID, twitchChannelID, }) 
     return __awaiter(this, void 0, void 0, function* () {
         /* Get a random item. */
         const chance = Math.random() * 100;
-        const items = yield ItemsService_1.ItemsService.find({ chance });
-        const randomItem = items[Math.floor(Math.random() * items.length)];
+        const randomItem = yield ItemsService_1.ItemsService.findRandom({ chance });
         if (!randomItem)
             return;
         /* Get the user with the given identifier. */
-        const userID = yield actions_1.findUser(userIdentifier);
-        if (!userID)
+        const userId = yield actions_1.findUser(userIdentifier);
+        if (!userId)
             throw new errors_1.UserNotFound();
         /* Add item to the user. */
         const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
-        yield InventoriesService_1.InventoriesService.updateOrCreateUserItem({
-            itemCode: randomItem.code,
-            userID,
+        yield InventoriesService_1.InventoriesService.addUserItems({
+            userId,
+            items: [{ code: randomItem.code, amount: 1 }],
             context,
-            add: true,
         });
         return randomItem;
     });

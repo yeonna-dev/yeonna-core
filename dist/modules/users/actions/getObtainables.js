@@ -22,7 +22,7 @@ function getObtainables({ userIdentifier, isCollectible, discordGuildID, twitchC
         const userID = yield findUser_1.findUser(userIdentifier);
         if (!userID)
             throw new errors_1.UserNotFound();
-        const obtainables = yield ObtainableService_1.ObtainableService.getObtainable({
+        const obtainables = yield ObtainableService_1.ObtainableService.find({
             userID,
             isCollectible,
             context: ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID }),
