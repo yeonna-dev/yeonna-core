@@ -4,3 +4,4 @@ import './users/collectibles.test';
 import './items/items.test';
 import './bits/bits.test';
 import './bits/tags.test';
+import './discord/role-requests.test';
