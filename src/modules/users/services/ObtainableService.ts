@@ -1,4 +1,5 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
+import { UsersFields, UsersService } from './UsersService';
 
 export enum ObtainableFields
 {
@@ -14,11 +15,20 @@ export interface ObtainableRecord extends TimestampedRecord
   [ObtainableFields.amount]: number;
   [ObtainableFields.is_collectible]?: boolean;
   [ObtainableFields.context]?: string;
+
+  /* Joined fields from `users` table */
+  [UsersFields.discord_id]?: string;
+  [UsersFields.twitch_id]?: string;
 }
 
 export interface Obtainable
 {
-  userId: string;
+  user:
+  {
+    id: string;
+    discordId?: string;
+    twitchId?: string;
+  };
   amount: number;
   context?: string;
   isCollectible?: boolean;
@@ -135,10 +145,40 @@ export class ObtainableService
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+  static async getTopWithUsers({
+    count,
+    isCollectible,
+    context,
+  }: {
+    count: number,
+    isCollectible?: boolean,
+    context?: string,
+  })
+  {
+    const query = DB.obtainables()
+      .orderBy(ObtainableFields.amount, 'desc')
+      .join(UsersService.table, ObtainableFields.user_id, UsersFields.id)
+      .where(ObtainableFields.is_collectible, Boolean(isCollectible))
+      .limit(count);
+
+    if(context)
+      query.and.where(ObtainableFields.context, context);
+
+    const data = await query;
+    return data.map(ObtainableService.serialize);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
   static serialize(obtainableRecord: ObtainableRecord): Obtainable
   {
     return {
-      userId: obtainableRecord[ObtainableFields.user_id],
+      user:
+      {
+        id: obtainableRecord[ObtainableFields.user_id],
+        discordId: obtainableRecord[UsersFields.discord_id],
+        twitchId: obtainableRecord[UsersFields.twitch_id],
+      },
       amount: obtainableRecord[ObtainableFields.amount],
       context: obtainableRecord[ObtainableFields.context],
       isCollectible: obtainableRecord[ObtainableFields.is_collectible],

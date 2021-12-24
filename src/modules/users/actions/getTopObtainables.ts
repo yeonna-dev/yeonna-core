@@ -1,16 +1,14 @@
 import { ObtainableService } from '../services/ObtainableService';
-import { UsersService } from '../services/UsersService';
 
 import { ContextUtil } from '../../../common/ContextUtil';
 
 type TopObtainables = {
   userId: string;
-  discordId?: string | null;
-  twitchId?: string | null;
+  discordId?: string;
+  twitchId?: string;
   amount: number;
 };
 
-// TODO: Join getting users with obtainables
 export async function getTopObtainables({
   count,
   isCollectible,
@@ -26,48 +24,18 @@ export async function getTopObtainables({
   const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
 
   /* Get top points. */
-  const topObtainables = await ObtainableService.getTop({
+  const topObtainables = await ObtainableService.getTopWithUsers({
     count,
     isCollectible,
     context,
   });
 
-  if(!topObtainables)
-    return [];
-
-  /* Get users of top points. */
-  const userIds = topObtainables.map(({ userId }) => userId);
-  const users = await UsersService.find({ ids: userIds });
-  if(!users || !Array.isArray(users))
-    return [];
-
-  /* Get the user of each top record. */
-  const topObtainablesWithUser: TopObtainables[] = [];
-  for(const { userId, amount } of topObtainables)
-  {
-    /* Find the user of the points. */
-    let pointsUser;
-    for(const user of users)
-    {
-      if(user.id === userId)
-      {
-        pointsUser = user;
-        break;
-      }
-    }
-
-    if(!pointsUser)
-      continue;
-
-    topObtainablesWithUser.push({
-      userId: pointsUser.id,
-      discordId: pointsUser.discordId,
-      twitchId: pointsUser.twitchId,
-      amount,
-    });
-  }
-
-  return topObtainablesWithUser;
+  return topObtainables.map(({ user, amount }) => ({
+    userId: user.id,
+    discordId: user.discordId,
+    twitchId: user.twitchId,
+    amount,
+  }));
 }
 
 export function getTopPoints({

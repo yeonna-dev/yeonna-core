@@ -11,19 +11,22 @@ export enum UsersFields
 export interface UserRecord extends TimestampedRecord
 {
   [UsersFields.id]: string;
-  [UsersFields.discord_id]: string | null;
-  [UsersFields.twitch_id]: string | null;
+  [UsersFields.discord_id]?: string;
+  [UsersFields.twitch_id]?: string;
 }
 
 export interface User
 {
   id: string;
-  discordId?: string | null;
-  twitchId?: string | null;
+  discordId?: string;
+  twitchId?: string;
 }
 
 export class UsersService
 {
+  /* Table name is added here to be able to use in joins in other services. */
+  static table = 'users';
+
   /* Creates a user record. */
   static async create({
     discordId,
