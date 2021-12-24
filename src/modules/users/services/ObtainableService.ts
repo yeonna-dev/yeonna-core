@@ -6,17 +6,14 @@ export enum ObtainableFields
   amount = 'amount',
   is_collectible = 'is_collectible',
   context = 'context',
-  created_at = 'created_at',
-  updated_at = 'updated_at',
-  deleted_at = 'deleted_at',
 }
 
 export interface ObtainableRecord extends TimestampedRecord
 {
-  user_id: string;
-  amount: number;
-  context?: string;
-  is_collectible?: boolean;
+  [ObtainableFields.user_id]: string;
+  [ObtainableFields.amount]: number;
+  [ObtainableFields.is_collectible]?: boolean;
+  [ObtainableFields.context]?: string;
 }
 
 export interface Obtainable

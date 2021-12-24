@@ -6,16 +6,13 @@ export enum UsersFields
   id = 'id',
   discord_id = 'discord_id',
   twitch_id = 'twitch_id',
-  created_at = 'created_at',
-  updated_at = 'updated_at',
-  deleted_at = 'deleted_at',
 };
 
 export interface UserRecord extends TimestampedRecord
 {
-  id: string;
-  discord_id: string | null;
-  twitch_id: string | null;
+  [UsersFields.id]: string;
+  [UsersFields.discord_id]: string | null;
+  [UsersFields.twitch_id]: string | null;
 }
 
 export interface User

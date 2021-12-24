@@ -9,8 +9,8 @@ export enum BitsFields
 
 export interface BitRecord extends TimestampedRecord
 {
-  id: string;
-  content: string;
+  [BitsFields.id]: string;
+  [BitsFields.content]: string;
 }
 
 export interface Bit

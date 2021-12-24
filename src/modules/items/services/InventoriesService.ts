@@ -1,5 +1,5 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
-import { ItemsFields, ItemsService, Item } from './ItemsService';
+import { ItemsFields, ItemsService } from './ItemsService';
 
 export enum InventoriesFields
 {
@@ -12,21 +12,21 @@ export enum InventoriesFields
 
 export interface InventoryRecord extends TimestampedRecord
 {
-  user_id: string;
-  item_code: string;
-  user_id_item_code: string;
-  amount: number;
-  context?: string;
+  [InventoriesFields.user_id]: string;
+  [InventoriesFields.item_code]: string;
+  [InventoriesFields.user_id_item_code]: string;
+  [InventoriesFields.amount]: number;
+  [InventoriesFields.context]?: string;
 
   /* Joined fields from `items` table */
-  code?: string;
-  name?: string;
-  chance_min?: number;
-  chance_max?: number;
-  price?: number;
-  image?: string;
-  emote?: string;
-  category_id?: string;
+  [ItemsFields.code]?: string;
+  [ItemsFields.name]?: string;
+  [ItemsFields.chance_min]?: number;
+  [ItemsFields.chance_max]?: number;
+  [ItemsFields.price]?: number;
+  [ItemsFields.image]?: string;
+  [ItemsFields.emote]?: string;
+  [ItemsFields.category_id]?: string;
 }
 
 export interface InventoryItem

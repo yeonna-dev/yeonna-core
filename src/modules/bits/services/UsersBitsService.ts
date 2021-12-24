@@ -10,10 +10,10 @@ export enum UsersBitsFields
 
 export interface UserBitRecord extends TimestampedRecord
 {
-  user_id: string;
-  bit_id: string;
-  tag_ids?: string;
-  content?: string;
+  [UsersBitsFields.user_id]: string;
+  [UsersBitsFields.bit_id]: string;
+  [UsersBitsFields.tag_ids]?: string;
+  [BitsFields.content]?: string;
 }
 
 export interface UserBit
