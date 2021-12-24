@@ -1,6 +1,6 @@
 /* Users */
 export * from './findUser';
-export * from './connectIDtoUser';
+export * from './connectIdToUser';
 
 /* Obtainables */
 export * from './getObtainables';

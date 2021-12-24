@@ -1,4 +1,4 @@
-import { DB } from '../../../common/DB';
+import { DB, TimestampedRecord } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
 export enum UsersFields
@@ -11,25 +11,39 @@ export enum UsersFields
   deleted_at = 'deleted_at',
 };
 
-export const UsersService = new class
+export interface UserRecord extends TimestampedRecord
+{
+  id: string;
+  discord_id: string | null;
+  twitch_id: string | null;
+}
+
+export interface User
+{
+  id: string;
+  discordId?: string | null;
+  twitchId?: string | null;
+}
+
+export class UsersService
 {
   /* Creates a user record. */
-  async create({
-    discordID,
-    twitchID,
+  static async create({
+    discordId,
+    twitchId,
   }: {
-    discordID?: string,
-    twitchID?: string,
+    discordId?: string,
+    twitchId?: string,
   } = {}): Promise<string>
   {
-    if(!discordID && !twitchID)
+    if(!discordId && !twitchId)
       throw new Error('No Discord or Twitch ID provided.');
 
     const user =
     {
       [UsersFields.id]: nanoid(15),
-      [UsersFields.discord_id]: discordID,
-      [UsersFields.twitch_id]: twitchID,
+      [UsersFields.discord_id]: discordId,
+      [UsersFields.twitch_id]: twitchId,
     };
 
     const data = await DB.users().insert(user).returning('*');
@@ -42,7 +56,7 @@ export const UsersService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async findByID(ids: string | string[]): Promise<User[]>
+  static async findById(ids: string | string[]): Promise<User[]>
   {
     ids = Array.isArray(ids) ? ids : [ids];
 
@@ -56,32 +70,32 @@ export const UsersService = new class
 
     return data.map(user => ({
       id: user[UsersFields.id],
-      discordID: user[UsersFields.discord_id],
-      twitchID: user[UsersFields.twitch_id],
+      discordId: user[UsersFields.discord_id],
+      twitchId: user[UsersFields.twitch_id],
     }));
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async find({
+  static async find({
     ids,
-    discordIDs,
-    twitchIDs,
+    discordIds,
+    twitchIds,
   }: {
     ids?: string | string[],
-    discordIDs?: string | string[],
-    twitchIDs?: string | string[],
+    discordIds?: string | string[],
+    twitchIds?: string | string[],
   }): Promise<User[]>
   {
     const query = DB.users();
     if(ids)
       query.whereIn(UsersFields.id, Array.isArray(ids) ? ids : [ids]);
 
-    if(discordIDs)
-      query.whereIn(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [discordIDs]);
+    if(discordIds)
+      query.whereIn(UsersFields.discord_id, Array.isArray(discordIds) ? discordIds : [discordIds]);
 
-    if(twitchIDs)
-      query.whereIn(UsersFields.twitch_id, Array.isArray(twitchIDs) ? twitchIDs : [twitchIDs]);
+    if(twitchIds)
+      query.whereIn(UsersFields.twitch_id, Array.isArray(twitchIds) ? twitchIds : [twitchIds]);
 
     const data = await query;
     if(!data || data.length === 0)
@@ -89,24 +103,24 @@ export const UsersService = new class
 
     return data.map(user => ({
       id: user[UsersFields.id],
-      discordID: user[UsersFields.discord_id],
-      twitchID: user[UsersFields.twitch_id],
+      discordId: user[UsersFields.discord_id],
+      twitchId: user[UsersFields.twitch_id],
     }));
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async updateByID(
+  static async updateById(
     id: string,
-    { discordID, twitchID }: { discordID?: string, twitchID?: string; }
+    { discordId, twitchId }: { discordId?: string, twitchId?: string; }
   )
   {
     const updateData: any = {};
-    if(discordID)
-      updateData[UsersFields.discord_id] = discordID;
+    if(discordId)
+      updateData[UsersFields.discord_id] = discordId;
 
-    if(twitchID)
-      updateData[UsersFields.twitch_id] = twitchID;
+    if(twitchId)
+      updateData[UsersFields.twitch_id] = twitchId;
 
     await DB.users()
       .update(updateData)

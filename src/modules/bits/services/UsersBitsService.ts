@@ -1,4 +1,4 @@
-import { DB } from '../../../common/DB';
+import { DB, TimestampedRecord } from '../../../common/DB';
 import { BitsFields, BitsService } from './BitsService';
 
 export enum UsersBitsFields
@@ -8,26 +8,55 @@ export enum UsersBitsFields
   tag_ids = 'tag_ids',
 };
 
-export const UsersBitsService = new class
+export interface UserBitRecord extends TimestampedRecord
 {
-  async find({
-    userIDs,
-    bitIDs,
+  user_id: string;
+  bit_id: string;
+  tag_ids?: string;
+  content?: string;
+}
+
+export interface UserBit
+{
+  user: {
+    id: string;
+  };
+  bit: {
+    id: string;
+    content?: string;
+  };
+  tags?: {
+    id: string;
+    name?: string;
+  }[];
+}
+
+export interface DeletedUserBit
+{
+  userId: string;
+  bitId: string;
+}
+
+export class UsersBitsService
+{
+  static async find({
+    userIds,
+    bitIds,
     search,
   }: {
-    userIDs?: string[],
-    bitIDs?: string[],
+    userIds?: string[],
+    bitIds?: string[],
     search?: string,
   })
   {
     const query = DB.usersBits()
       .join(BitsService.table, UsersBitsFields.bit_id, BitsFields.id);
 
-    if(userIDs)
-      query.whereIn(UsersBitsFields.user_id, userIDs);
+    if(userIds)
+      query.whereIn(UsersBitsFields.user_id, userIds);
 
-    if(bitIDs)
-      query.and.whereIn(UsersBitsFields.bit_id, bitIDs);
+    if(bitIds)
+      query.and.whereIn(UsersBitsFields.bit_id, bitIds);
 
     if(search)
       query.and.where(`${BitsService.table}.${BitsFields.content}`, 'LIKE', `%${search}%`);
@@ -36,79 +65,103 @@ export const UsersBitsService = new class
     if(!data || data.length === 0)
       return [];
 
-    return this.serialize(data);
+    return data.map(UsersBitsService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async create(usersBitsData: { userID: string, bitID: string, tagIDs: string[]; }[])
+  static async create(usersBitsData: {
+    userId: string,
+    bitId: string,
+    tagIds: string[],
+  }[])
   {
-    const insertData = usersBitsData.map(({ userID, bitID, tagIDs }) =>
+    const insertData = [];
+    for(const { userId, bitId, tagIds } of usersBitsData)
     {
-      const data: any =
+      const data: UserBitRecord =
       {
-        [UsersBitsFields.user_id]: userID,
-        [UsersBitsFields.bit_id]: bitID,
+        [UsersBitsFields.user_id]: userId,
+        [UsersBitsFields.bit_id]: bitId,
       };
 
-      if(tagIDs && tagIDs.length !== 0)
-        data[UsersBitsFields.tag_ids] = tagIDs.join(',');
+      if(tagIds && tagIds.length !== 0)
+        data[UsersBitsFields.tag_ids] = tagIds.join(',');
 
-      return data;
-    });
+      insertData.push(data);
+    }
 
     const data = await DB.usersBits()
       .insert(insertData)
       .returning('*');
 
-    return this.serialize(data);
+    return data.map(UsersBitsService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async remove({ userID, bitID }: { userID: string, bitID: string; })
+  static async remove({
+    userId,
+    bitId,
+  }: {
+    userId: string,
+    bitId: string,
+  }): Promise<DeletedUserBit[]>
   {
     const data = await DB.usersBits()
       .delete()
-      .where({ [UsersBitsFields.user_id]: userID, [UsersBitsFields.bit_id]: bitID })
+      .where({ [UsersBitsFields.user_id]: userId, [UsersBitsFields.bit_id]: bitId })
       .returning('*');
 
-    return data.map((deletedUserBit) => ({
-      userID: deletedUserBit[UsersBitsFields.user_id],
-      bitID: deletedUserBit[UsersBitsFields.bit_id],
+    return data.map(deletedUserBit => ({
+      userId: deletedUserBit[UsersBitsFields.user_id],
+      bitId: deletedUserBit[UsersBitsFields.bit_id],
     }));
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async addTags({ userID, bitID, tagIDs }: { userID: string, bitID: string, tagIDs: string[]; })
+  static async addTags({
+    userId,
+    bitId,
+    tagIds,
+  }: {
+    userId: string,
+    bitId: string,
+    tagIds: string[],
+  })
   {
-    return DB.usersBits()
-      .update({ [UsersBitsFields.tag_ids]: tagIDs.join(',') })
+    const data = await DB.usersBits()
+      .update({ [UsersBitsFields.tag_ids]: tagIds.join(',') })
       .where({
-        [UsersBitsFields.user_id]: userID,
-        [UsersBitsFields.bit_id]: bitID,
+        [UsersBitsFields.user_id]: userId,
+        [UsersBitsFields.bit_id]: bitId,
       })
       .returning('*');
+
+    return data.map(UsersBitsService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  serialize(usersBits: any[] | null)
+  static serialize(userBitRecord: UserBitRecord): UserBit
   {
-    const data = [];
-    for(const userBit of usersBits || [])
+    const serialized: UserBit =
     {
-      const serialized: any = { user: { id: userBit[UsersBitsFields.user_id] } };
-      serialized.bit = { id: userBit[UsersBitsFields.bit_id] };
+      user: { id: userBitRecord[UsersBitsFields.user_id] },
+      bit: { id: userBitRecord[UsersBitsFields.bit_id] },
+    };
 
-      const content = userBit[BitsFields.content];
-      if(content)
-        serialized.bit.content = content;
+    /* Set the `bit` property of the object if the `content` field has a value. */
+    const content = userBitRecord[BitsFields.content];
+    if(content)
+      serialized.bit.content = content;
 
-      data.push(serialized);
-    }
+    /* Set the `tags` property of the object if the `tag_ids` field has a value. */
+    const tagIds = userBitRecord[UsersBitsFields.tag_ids];
+    if(tagIds)
+      serialized.tags = tagIds.split(',').map(id => ({ id }));
 
-    return data;
+    return serialized;
   }
 };

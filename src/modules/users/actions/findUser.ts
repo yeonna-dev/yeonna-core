@@ -3,8 +3,8 @@ import { UsersService } from '../services/UsersService';
 
 export async function findUser(userIdentifier: string): Promise<string>
 {
-  const [ user ] = await UsersService.findByID(userIdentifier);
-  if(! user)
+  const [user] = await UsersService.findById(userIdentifier);
+  if(!user)
     throw new UserNotFound();
 
   return user.id;
@@ -12,46 +12,46 @@ export async function findUser(userIdentifier: string): Promise<string>
 
 export async function findOrCreateUser({
   userIdentifier,
-  discordGuildID,
-  twitchChannelID,
-} : {
+  discordGuildId,
+  twitchChannelId,
+}: {
   userIdentifier: string,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
   // TODO: Try to use actual objects for the params instead of dynamic key names.
   let userFindKey = 'ids';
   let userCreateKey;
 
-  if(discordGuildID)
+  if(discordGuildId)
   {
-    userFindKey = 'discordIDs';
-    userCreateKey = 'discordID';
+    userFindKey = 'discordIds';
+    userCreateKey = 'discordId';
   }
-  if(twitchChannelID)
+  if(twitchChannelId)
   {
-    userFindKey = 'twitchIDs';
-    userCreateKey = 'twitchID';
+    userFindKey = 'twitchIds';
+    userCreateKey = 'twitchId';
   }
 
   /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
   const result = await UsersService.find({ [userFindKey]: userIdentifier });
-  const [ user ] = result;
-  if(! user)
+  const [user] = result;
+  if(!user)
   {
     const createUserParams = userCreateKey ? { [userCreateKey]: userIdentifier } : {};
-    const createdUserID = await UsersService.create(createUserParams);
-    if(! createdUserID)
+    const createdUserId = await UsersService.create(createUserParams);
+    if(!createdUserId)
       throw new Error('User not saved');
 
-    return createdUserID;
+    return createdUserId;
   }
 
-  if(! user)
+  if(!user)
     return;
 
-  if(! Array.isArray(user))
+  if(!Array.isArray(user))
     return user.id;
 
   if(user.length === 0)

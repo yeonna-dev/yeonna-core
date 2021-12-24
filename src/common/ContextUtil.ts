@@ -4,22 +4,20 @@ export enum ContextPlatforms
   Twitch = 'twitch',
 }
 
-class ContextUtilClass
+export class ContextUtil
 {
-  createContext({
-    discordGuildID,
-    twitchChannelID,
-  } : {
-    discordGuildID?: string,
-    twitchChannelID?: string,
+  static createContext({
+    discordGuildId,
+    twitchChannelId,
+  }: {
+    discordGuildId?: string,
+    twitchChannelId?: string,
   })
   {
-    if(! discordGuildID && ! twitchChannelID)
+    if(!discordGuildId && !twitchChannelId)
       return;
 
-    const platform = discordGuildID ? ContextPlatforms.Discord : ContextPlatforms.Twitch;
-    return `${platform}:${discordGuildID || twitchChannelID}`;
+    const platform = discordGuildId ? ContextPlatforms.Discord : ContextPlatforms.Twitch;
+    return `${platform}:${discordGuildId || twitchChannelId}`;
   }
 }
-
-export const ContextUtil = new ContextUtilClass();

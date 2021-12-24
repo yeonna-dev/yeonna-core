@@ -1,4 +1,4 @@
-import { TagsService } from '../services/TagsService';
+import { Tag, TagsService } from '../services/TagsService';
 
 export async function createTags(names: string[])
 {
@@ -8,10 +8,10 @@ export async function createTags(names: string[])
   */
   const found = await TagsService.find({ names });
   const foundNames = found.map(({ name }) => name);
-  const newTags = names.filter(name => ! foundNames.includes(name));
-  let created: Tag[] = [];
+  const newTags = names.filter(name => !foundNames.includes(name));
+  let createdTags: Tag[] = [];
   if(newTags.length !== 0)
-    created = await TagsService.create(newTags);
+    createdTags = await TagsService.create(newTags);
 
-  return created.concat(found);
+  return createdTags.concat(found);
 }

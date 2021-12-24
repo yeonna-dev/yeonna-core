@@ -7,20 +7,20 @@ import { UserNotFound } from '../../../common/errors';
 
 export async function getUserItems({
   userIdentifier,
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   userIdentifier: string,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
   /* Get the user with the given identifier. */
-  const userID = await findUser(userIdentifier);
-  if(!userID)
+  const userId = await findUser(userIdentifier);
+  if(!userId)
     throw new UserNotFound();
 
-  const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
-  const inventory = await InventoriesService.getUserItems(userID, context);
+  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
+  const inventory = await InventoriesService.getUserItems(userId, context);
   return inventory;
 }

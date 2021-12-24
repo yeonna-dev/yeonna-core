@@ -13,7 +13,7 @@ describe('Bits', function()
   this.timeout(20000);
 
   const discordUser1 = '247955535620472844'; /* esfox#2053 Discord ID */
-  let createdBitID;
+  let createdBitId;
 
   it('should create a bit with tags for a user', async () =>
   {
@@ -21,10 +21,10 @@ describe('Bits', function()
       userIdentifier: discordUser1,
       content: 'test-content',
       tags: ['Fox', 'Dog'],
-      discordGuildID: '504135117296500746',
+      discordGuildId: '504135117296500746',
     });
 
-    createdBitID = createdBit.bit.id;
+    createdBitId = createdBit.bit.id;
   });
 
   it('should get the bits of a user', async () =>
@@ -42,7 +42,7 @@ describe('Bits', function()
 
   it('should remove the bit of the user', async () =>
   {
-    const data = await removeUserBits({ userIdentifier: discordUser1, bitID: createdBitID });
-    assert.strictEqual(true, data.every(userBit => userBit.bitID === createdBitID));
+    const data = await removeUserBits({ userIdentifier: discordUser1, bitId: createdBitId });
+    assert.strictEqual(true, data.every(userBit => userBit.bitId === createdBitId));
   });
 });

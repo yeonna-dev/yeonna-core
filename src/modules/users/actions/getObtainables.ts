@@ -8,27 +8,27 @@ import { UserNotFound } from '../../../common/errors';
 export async function getObtainables({
   userIdentifier,
   isCollectible,
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   userIdentifier: string,
   isCollectible?: boolean,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
-  if(!discordGuildID && !twitchChannelID)
+  if(!discordGuildId && !twitchChannelId)
     throw new Error('No Discord Guild ID or Twitch Channel ID provided');
 
   /* Check if the user is existing. */
-  const userID = await findUser(userIdentifier);
-  if(!userID)
+  const userId = await findUser(userIdentifier);
+  if(!userId)
     throw new UserNotFound();
 
   const obtainables = await ObtainableService.find({
-    userID,
+    userId,
     isCollectible,
-    context: ContextUtil.createContext({ discordGuildID, twitchChannelID }),
+    context: ContextUtil.createContext({ discordGuildId, twitchChannelId }),
   });
 
   return obtainables || 0;
@@ -36,35 +36,35 @@ export async function getObtainables({
 
 export async function getUserPoints({
   userIdentifier,
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   userIdentifier: string,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
   return getObtainables({
     userIdentifier,
-    discordGuildID,
-    twitchChannelID,
+    discordGuildId,
+    twitchChannelId,
   });
 }
 
 export async function getUserCollectibles({
   userIdentifier,
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   userIdentifier: string,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
   return getObtainables({
     userIdentifier,
     isCollectible: true,
-    discordGuildID,
-    twitchChannelID,
+    discordGuildId,
+    twitchChannelId,
   });
 }

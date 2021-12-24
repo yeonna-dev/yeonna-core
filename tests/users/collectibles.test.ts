@@ -24,31 +24,31 @@ describe('Collectibles', function()
   const updateAmount = 5;
   const addAmount = 1;
 
-  const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
-  const twitchChannelID = '193202362'; /* esfox316 Twitch Channel ID */
+  const discordGuildId = '504135117296500746'; /* Yeonna server Discord ID */
+  const twitchChannelId = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the collectibles of a Discord user in a Discord server', async () =>
-    await getUserCollectibles({ userIdentifier: discordUser1, discordGuildID })
+    await getUserCollectibles({ userIdentifier: discordUser1, discordGuildId })
   );
 
   it('should get the collectibles of a Twitch user in a Twitch channel', async () =>
-    await getUserCollectibles({ userIdentifier: twitchUser1, twitchChannelID })
+    await getUserCollectibles({ userIdentifier: twitchUser1, twitchChannelId })
   );
 
   it('should set the collectibles of a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ userIdentifier: discordUser2, amount: updateAmount, discordGuildID })
+    await updateUserCollectibles({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
   );
 
   it('should set the collectibles of a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelID })
+    await updateUserCollectibles({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
   );
 
   it('should add a collectible to a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ userIdentifier: discordUser1, amount: addAmount, discordGuildID, add: true })
+    await updateUserCollectibles({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
   );
 
   it('should add a collectible to a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelID, add: true })
+    await updateUserCollectibles({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
   );
 
   it('should transfer the collectibles of a Discord user to another', async () =>
@@ -56,7 +56,7 @@ describe('Collectibles', function()
       fromUserIdentifier: discordUser2,
       toUserIdentifier: discordUser1,
       amount: addAmount,
-      discordGuildID,
+      discordGuildId,
     })
   );
 
@@ -65,7 +65,7 @@ describe('Collectibles', function()
       fromUserIdentifier: twitchUser2,
       toUserIdentifier: twitchUser1,
       amount: addAmount,
-      twitchChannelID,
+      twitchChannelId,
     })
   );
 
@@ -73,12 +73,12 @@ describe('Collectibles', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await getUserCollectibles({ userIdentifier: discordUser1, discordGuildID });
+        const sourcePoints = await getUserCollectibles({ userIdentifier: discordUser1, discordGuildId });
         await transferUserCollectibles({
           fromUserIdentifier: discordUser1,
           toUserIdentifier: discordUser2,
           amount: sourcePoints + 1,
-          discordGuildID,
+          discordGuildId,
         });
       },
       new NotEnoughCollectibles(),
@@ -87,18 +87,18 @@ describe('Collectibles', function()
 
   it('should get the top user collectibles of a Discord server', async () =>
   {
-    const topUsers = await getTopCollectibles({ count: 10, discordGuildID });
+    const topUsers = await getTopCollectibles({ count: 10, discordGuildId });
     assert.strictEqual(
-      topUsers.every(user => user.userID && typeof user.amount === 'number'),
+      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });
 
   it('should get the top user collectibles of a Twitch channel', async () =>
   {
-    const topUsers = await getTopCollectibles({ count: 10, twitchChannelID });
+    const topUsers = await getTopCollectibles({ count: 10, twitchChannelId });
     assert.strictEqual(
-      topUsers.every(user => user.userID && typeof user.amount === 'number'),
+      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });

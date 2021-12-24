@@ -8,8 +8,8 @@ import { UserNotFound } from '../../../common/errors';
 export async function removeUserItems({
   userIdentifier,
   itemsToRemove = [],
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   userIdentifier: string,
   itemsToRemove:
@@ -17,8 +17,8 @@ export async function removeUserItems({
     code: string,
     amount: number,
   }[],
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
   /* Get the user with the given identifier. */
@@ -27,7 +27,7 @@ export async function removeUserItems({
     throw new UserNotFound();
 
   /* Update the user's inventory to remove the given items. */
-  const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
+  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
   return InventoriesService.removeUserItem({
     userId,
     items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),

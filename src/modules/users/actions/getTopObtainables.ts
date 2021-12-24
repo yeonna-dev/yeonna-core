@@ -1,12 +1,12 @@
-import { ObtainableService, ObtainableFields } from '../services/ObtainableService';
+import { ObtainableService } from '../services/ObtainableService';
 import { UsersService } from '../services/UsersService';
 
 import { ContextUtil } from '../../../common/ContextUtil';
 
 type TopObtainables = {
-  userID: string;
-  discordID?: string | null;
-  twitchID?: string | null;
+  userId: string;
+  discordId?: string | null;
+  twitchId?: string | null;
   amount: number;
 };
 
@@ -14,42 +14,42 @@ type TopObtainables = {
 export async function getTopObtainables({
   count,
   isCollectible,
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   count: number,
   isCollectible?: boolean,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 }): Promise<TopObtainables[]>
 {
-  const context = ContextUtil.createContext({ discordGuildID, twitchChannelID });
+  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
 
   /* Get top points. */
-  const top = await ObtainableService.getTop({
+  const topObtainables = await ObtainableService.getTop({
     count,
     isCollectible,
     context,
   });
 
-  if(!top)
+  if(!topObtainables)
     return [];
 
   /* Get users of top points. */
-  const userIDs = top.map(user => user[ObtainableFields.user_id]);
-  const users = await UsersService.find({ ids: userIDs });
+  const userIds = topObtainables.map(({ userId }) => userId);
+  const users = await UsersService.find({ ids: userIds });
   if(!users || !Array.isArray(users))
     return [];
 
   /* Get the user of each top record. */
-  const topUsers: TopObtainables[] = [];
-  for(const amounts of top)
+  const topObtainablesWithUser: TopObtainables[] = [];
+  for(const { userId, amount } of topObtainables)
   {
     /* Find the user of the points. */
     let pointsUser;
     for(const user of users)
     {
-      if(user.id === amounts[ObtainableFields.user_id])
+      if(user.id === userId)
       {
         pointsUser = user;
         break;
@@ -59,39 +59,39 @@ export async function getTopObtainables({
     if(!pointsUser)
       continue;
 
-    topUsers.push({
-      userID: pointsUser.id,
-      discordID: pointsUser.discordID,
-      twitchID: pointsUser.twitchID,
-      amount: amounts[ObtainableFields.amount],
+    topObtainablesWithUser.push({
+      userId: pointsUser.id,
+      discordId: pointsUser.discordId,
+      twitchId: pointsUser.twitchId,
+      amount,
     });
   }
 
-  return topUsers;
+  return topObtainablesWithUser;
 }
 
 export function getTopPoints({
   count,
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   count: number,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
-  return getTopObtainables({ count, discordGuildID, twitchChannelID });
+  return getTopObtainables({ count, discordGuildId, twitchChannelId });
 }
 
 export function getTopCollectibles({
   count,
-  discordGuildID,
-  twitchChannelID,
+  discordGuildId,
+  twitchChannelId,
 }: {
   count: number,
-  discordGuildID?: string,
-  twitchChannelID?: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
 })
 {
-  return getTopObtainables({ count, isCollectible: true, discordGuildID, twitchChannelID });
+  return getTopObtainables({ count, isCollectible: true, discordGuildId, twitchChannelId });
 }

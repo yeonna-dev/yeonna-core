@@ -3,25 +3,25 @@ import { findUser } from '../../users/actions';
 import { BitsService } from '../services/BitsService';
 import { UsersBitsService } from '../services/UsersBitsService';
 
-export async function removeUserBits({ userIdentifier, bitID }: {
+export async function removeUserBits({ userIdentifier, bitId }: {
   userIdentifier: string,
-  bitID: string,
+  bitId: string,
 })
 {
   /* Check if bit is existing. */
-  const [foundBit] = await BitsService.find({ ids: [bitID] });
-  bitID = foundBit.id;
+  const [foundBit] = await BitsService.find({ ids: [bitId] });
+  bitId = foundBit.id;
 
   if(!foundBit)
     throw new BitNotFound();
 
   /* Get the user by the given identifier. */
-  const userID = await findUser(userIdentifier);
+  const userId = await findUser(userIdentifier);
 
   /* Check if the bit has been added to the user. */
-  const [userBit] = await UsersBitsService.find({ userIDs: [userID], bitIDs: [bitID] });
+  const [userBit] = await UsersBitsService.find({ userIds: [userId], bitIds: [bitId] });
   if(!userBit)
     throw new UserBitNotFound();
 
-  return UsersBitsService.remove({ userID, bitID });
+  return UsersBitsService.remove({ userId, bitId });
 }

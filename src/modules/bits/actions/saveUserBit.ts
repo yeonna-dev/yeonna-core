@@ -10,12 +10,12 @@ export async function saveUserBit({
   userIdentifier,
   content,
   tags,
-  discordGuildID,
+  discordGuildId,
 }: {
   userIdentifier: string,
   content: string,
   tags?: string[],
-  discordGuildID?: string,
+  discordGuildId?: string,
 })
 {
   if(!content)
@@ -25,36 +25,36 @@ export async function saveUserBit({
   const [foundBit] = await BitsService.find({ content });
 
   /* Create the bit if not existing. */
-  let bitID;
+  let bitId;
   if(foundBit)
-    bitID = foundBit.id;
+    bitId = foundBit.id;
   else
   {
     const [createdBit] = await BitsService.create([content]);
-    bitID = createdBit;
+    bitId = createdBit.id;
   }
 
   /* Get the user by the given user identifier. */
-  const userID = await findOrCreateUser({ userIdentifier, discordGuildID });
+  const userId = await findOrCreateUser({ userIdentifier, discordGuildId });
 
   /* Check if the bit has been added to the user. */
   const [userBit] = await UsersBitsService.find({
-    userIDs: [userID],
-    bitIDs: [bitID],
+    userIds: [userId],
+    bitIds: [bitId],
   });
+
+  /* Find the tags by the given tag names. */
+  let tagIds: string[] = [];
+  if(tags)
+  {
+    const createdTags = await createTags(tags);
+    tagIds = createdTags.map(({ id }) => id);
+  }
 
   /* If the user already has the bit, do not save it. */
   if(userBit)
     return userBit;
 
-  /* Find the tags by the given tag names. */
-  let tagIDs: string[] = [];
-  if(tags)
-  {
-    const createdTags = await createTags(tags);
-    tagIDs = createdTags.map(({ id }) => id);
-  }
-
-  const [createdUserBit] = await UsersBitsService.create([{ userID, bitID, tagIDs }]);
+  const [createdUserBit] = await UsersBitsService.create([{ userId, bitId, tagIds }]);
   return createdUserBit;
 }

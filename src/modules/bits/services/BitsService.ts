@@ -1,4 +1,4 @@
-import { DB } from '../../../common/DB';
+import { DB, TimestampedRecord } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
 export enum BitsFields
@@ -7,12 +7,24 @@ export enum BitsFields
   content = 'content',
 };
 
-export const BitsService = new class
+export interface BitRecord extends TimestampedRecord
+{
+  id: string;
+  content: string;
+}
+
+export interface Bit
+{
+  id: string;
+  content: string;
+}
+
+export class BitsService
 {
   /* Table name is added here to be able to use in joins in other services. */
-  table = 'bits';
+  static table = 'bits';
 
-  async find({
+  static async find({
     ids,
     search,
     content,
@@ -36,12 +48,12 @@ export const BitsService = new class
       query.and.where(BitsFields.content, content);
 
     const data = await query;
-    return data || [];
+    return data.map(BitsService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async create(content: string | string[])
+  static async create(content: string | string[])
   {
     content = Array.isArray(content) ? content : [content];
 
@@ -57,6 +69,16 @@ export const BitsService = new class
       .insert(bitsData)
       .returning('*');
 
-    return data ? data.map(bit => bit[BitsFields.id]) : [];
+    return data.map(BitsService.serialize);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  static serialize(bitRecord: BitRecord): Bit
+  {
+    return {
+      id: bitRecord[BitsFields.id],
+      content: bitRecord[BitsFields.content],
+    };
   }
 };

@@ -1,4 +1,4 @@
-import { DB } from '../../../common/DB';
+import { DB, TimestampedRecord } from '../../../common/DB';
 
 export enum ObtainableFields
 {
@@ -11,20 +11,36 @@ export enum ObtainableFields
   deleted_at = 'deleted_at',
 }
 
-export const ObtainableService = new class
+export interface ObtainableRecord extends TimestampedRecord
 {
-  async find({
-    userID,
+  user_id: string;
+  amount: number;
+  context?: string;
+  is_collectible?: boolean;
+}
+
+export interface Obtainable
+{
+  userId: string;
+  amount: number;
+  context?: string;
+  isCollectible?: boolean;
+}
+
+export class ObtainableService
+{
+  static async find({
+    userId,
     isCollectible,
     context,
   }: {
-    userID: string,
+    userId: string,
     isCollectible?: boolean,
     context?: string,
   })
   {
     const query = DB.obtainables()
-      .where(ObtainableFields.user_id, userID)
+      .where(ObtainableFields.user_id, userId)
       .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
 
     if(context)
@@ -38,13 +54,13 @@ export const ObtainableService = new class
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   /* Creates an obtainable record */
-  async create({
-    userID,
+  static async create({
+    userId,
     amount = 0,
     isCollectible,
     context,
   }: {
-    userID: string,
+    userId: string,
     amount: number,
     isCollectible?: boolean,
     context?: string,
@@ -52,13 +68,13 @@ export const ObtainableService = new class
   {
     const insertData: ObtainableRecord =
     {
-      user_id: userID,
-      amount,
-      is_collectible: isCollectible,
+      [ObtainableFields.user_id]: userId,
+      [ObtainableFields.amount]: amount,
+      [ObtainableFields.is_collectible]: isCollectible,
     };
 
     if(context)
-      insertData.context = context;
+      insertData[ObtainableFields.context] = context;
 
     const data = await DB.obtainables().insert(insertData).returning('*');
     const obtainableRecord = data?.pop();
@@ -70,13 +86,13 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async update({
-    userID,
+  static async update({
+    userId,
     amount,
     isCollectible,
     context,
   }: {
-    userID: string,
+    userId: string,
     amount: number,
     isCollectible?: boolean,
     context?: string,
@@ -85,7 +101,7 @@ export const ObtainableService = new class
     const query = DB.obtainables()
       .update({ [ObtainableFields.amount]: amount })
       .returning('*')
-      .where(ObtainableFields.user_id, userID)
+      .where(ObtainableFields.user_id, userId)
       .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
 
     if(context)
@@ -98,7 +114,7 @@ export const ObtainableService = new class
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async getTop({
+  static async getTop({
     count,
     isCollectible,
     context,
@@ -116,6 +132,19 @@ export const ObtainableService = new class
     if(context)
       query.and.where(ObtainableFields.context, context);
 
-    return query;
+    const data = await query;
+    return data.map(ObtainableService.serialize);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  static serialize(obtainableRecord: ObtainableRecord): Obtainable
+  {
+    return {
+      userId: obtainableRecord[ObtainableFields.user_id],
+      amount: obtainableRecord[ObtainableFields.amount],
+      context: obtainableRecord[ObtainableFields.context],
+      isCollectible: obtainableRecord[ObtainableFields.is_collectible],
+    };
   }
 };

@@ -1,4 +1,4 @@
-import { DB } from '../../../common/DB';
+import { DB, TimestampedRecord } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
 export enum TagsFields
@@ -7,11 +7,23 @@ export enum TagsFields
   name = 'name',
 };
 
-export const TagsService = new class
+export interface TagRecord extends TimestampedRecord
 {
-  tableName = 'tags';
+  id: string;
+  name: string;
+}
 
-  async find({
+export interface Tag
+{
+  id: string;
+  name: string;
+}
+
+export class TagsService
+{
+  static tableName = 'tags';
+
+  static async find({
     ids,
     search,
     names,
@@ -35,12 +47,12 @@ export const TagsService = new class
       query.and.whereIn(TagsFields.name, names);
 
     const data = await query;
-    return this.serialize(data);
+    return data.map(TagsService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async create(names: string | string[])
+  static async create(names: string | string[])
   {
     names = Array.isArray(names) ? names : [names];
     if(!names || names.length === 0)
@@ -55,12 +67,12 @@ export const TagsService = new class
       .insert(tagsData)
       .returning('*');
 
-    return this.serialize(data);
+    return data.map(TagsService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  async remove(names: string | string[])
+  static async remove(names: string | string[])
   {
     names = Array.isArray(names) ? names : [names];
     if(!names || names.length === 0)
@@ -71,16 +83,16 @@ export const TagsService = new class
       .whereIn(TagsFields.name, names)
       .returning('*');
 
-    return this.serialize(data);
+    return data.map(TagsService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  serialize(tags: TagRecord[] | null)
+  static serialize(tagRecord: TagRecord): Tag
   {
-    return (tags || []).map(tag => ({
-      id: tag[TagsFields.id],
-      name: tag[TagsFields.name],
-    }));
+    return {
+      id: tagRecord[TagsFields.id],
+      name: tagRecord[TagsFields.name],
+    };
   }
 };

@@ -24,3 +24,10 @@ export class DB
   static usersBits = () => db('users_bits');
   static tags = () => db('tags');
 }
+
+export interface TimestampedRecord
+{
+  created_at?: string;
+  updated_at?: string | null;
+  deleted_at?: string | null;
+}

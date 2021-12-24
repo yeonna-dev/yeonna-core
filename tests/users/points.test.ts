@@ -25,31 +25,31 @@ describe('Points', function()
   const addAmount = 100;
   const transferAmount = 50;
 
-  const discordGuildID = '504135117296500746'; /* Yeonna server Discord ID */
-  const twitchChannelID = '193202362'; /* esfox316 Twitch Channel ID */
+  const discordGuildId = '504135117296500746'; /* Yeonna server Discord ID */
+  const twitchChannelId = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the points of a Discord user in a Discord server', async () =>
-    await getUserPoints({ userIdentifier: discordUser1, discordGuildID })
+    await getUserPoints({ userIdentifier: discordUser1, discordGuildId })
   );
 
   it('should get the points of a Twitch user in a Twitch channel', async () =>
-    await getUserPoints({ userIdentifier: twitchUser1, twitchChannelID })
+    await getUserPoints({ userIdentifier: twitchUser1, twitchChannelId })
   );
 
   it('should set the points of a Discord user in a Discord server', async () =>
-    await updateUserPoints({ userIdentifier: discordUser2, amount: updateAmount, discordGuildID })
+    await updateUserPoints({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
   );
 
   it('should set the points of a Twitch user in a Twitch channel', async () =>
-    await updateUserPoints({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelID })
+    await updateUserPoints({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
   );
 
   it('should add points to a Discord user in a Discord server', async () =>
-    await updateUserPoints({ userIdentifier: discordUser1, amount: addAmount, discordGuildID, add: true })
+    await updateUserPoints({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
   );
 
   it('should add points to a Twitch user in a Twitch channel', async () =>
-    await updateUserPoints({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelID, add: true })
+    await updateUserPoints({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
   );
 
   it('should transfer the points of a Discord user to another', async () =>
@@ -57,7 +57,7 @@ describe('Points', function()
       fromUserIdentifier: discordUser2,
       toUserIdentifier: discordUser1,
       amount: transferAmount,
-      discordGuildID,
+      discordGuildId,
     })
   );
 
@@ -66,7 +66,7 @@ describe('Points', function()
       fromUserIdentifier: twitchUser2,
       toUserIdentifier: twitchUser1,
       amount: transferAmount,
-      twitchChannelID,
+      twitchChannelId,
     })
   );
 
@@ -74,12 +74,12 @@ describe('Points', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await getUserPoints({ userIdentifier: discordUser1, discordGuildID });
+        const sourcePoints = await getUserPoints({ userIdentifier: discordUser1, discordGuildId });
         await transferUserPoints({
           fromUserIdentifier: discordUser1,
           toUserIdentifier: discordUser2,
           amount: sourcePoints + 1,
-          discordGuildID,
+          discordGuildId,
         });
       },
       new NotEnoughPoints(),
@@ -88,18 +88,18 @@ describe('Points', function()
 
   it('should get the top user points of a Discord server', async () =>
   {
-    const topUsers = await getTopPoints({ count: 10, discordGuildID });
+    const topUsers = await getTopPoints({ count: 10, discordGuildId });
     assert.strictEqual(
-      topUsers.every(user => user.userID && typeof user.amount === 'number'),
+      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });
 
   it('should get the top user points of a Twitch channel', async () =>
   {
-    const topUsers = await getTopPoints({ count: 10, twitchChannelID });
+    const topUsers = await getTopPoints({ count: 10, twitchChannelId });
     assert.strictEqual(
-      topUsers.every(user => user.userID && typeof user.amount === 'number'),
+      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });

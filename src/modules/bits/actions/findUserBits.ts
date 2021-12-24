@@ -10,8 +10,8 @@ export async function findUserBits({
 })
 {
   /* Get user with the given user identifier. */
-  const userID = await findUser(userIdentifier);
+  const userId = await findUser(userIdentifier);
 
   /* Get the user's bits and do a search by the search query if given.  */
-  return UsersBitsService.find({ userIDs: [userID], search });
+  return UsersBitsService.find({ userIds: [userId], search });
 }

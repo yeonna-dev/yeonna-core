@@ -15,15 +15,19 @@ describe('Items', function()
   this.timeout(20000);
 
   const userIdentifier = '247955535620472844';
-  const discordGuildID = '504135117296500746';
+  const discordGuildId = '504135117296500746';
   const itemCode = 'c';
 
   it('should get the items of a Discord user', async () =>
   {
-    const userItems = await getUserItems({ userIdentifier, discordGuildID });
+    const userItems = await getUserItems({ userIdentifier, discordGuildId });
     assert.deepStrictEqual(
       true,
-      userItems.every(item => item.code && item.name && item.amount !== undefined),
+      userItems.every(userItem =>
+        userItem.code &&
+        userItem.name &&
+        userItem.amount !== undefined
+      ),
     );
   });
 
@@ -34,7 +38,7 @@ describe('Items', function()
     {
       item = await obtainRandomItem({
         userIdentifier,
-        discordGuildID,
+        discordGuildId,
       });
     }
 
@@ -77,7 +81,7 @@ describe('Items', function()
             amount: 1,
           },
         ],
-      discordGuildID,
+      discordGuildId,
     })
   );
 });
