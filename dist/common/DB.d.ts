@@ -75,6 +75,6 @@ export declare class DB {
 }
 export interface TimestampedRecord {
     created_at?: string;
-    updated_at?: string | null;
-    deleted_at?: string | null;
+    updated_at?: string;
+    deleted_at?: string;
 }

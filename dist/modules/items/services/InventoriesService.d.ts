@@ -1,4 +1,5 @@
 import { TimestampedRecord } from '../../../common/DB';
+import { ItemsFields } from './ItemsService';
 export declare enum InventoriesFields {
     user_id = "user_id",
     item_code = "item_code",
@@ -7,19 +8,19 @@ export declare enum InventoriesFields {
     context = "context"
 }
 export interface InventoryRecord extends TimestampedRecord {
-    user_id: string;
-    item_code: string;
-    user_id_item_code: string;
-    amount: number;
-    context?: string;
-    code?: string;
-    name?: string;
-    chance_min?: number;
-    chance_max?: number;
-    price?: number;
-    image?: string;
-    emote?: string;
-    category_id?: string;
+    [InventoriesFields.user_id]: string;
+    [InventoriesFields.item_code]: string;
+    [InventoriesFields.user_id_item_code]: string;
+    [InventoriesFields.amount]: number;
+    [InventoriesFields.context]?: string;
+    [ItemsFields.code]?: string;
+    [ItemsFields.name]?: string;
+    [ItemsFields.chance_min]?: number;
+    [ItemsFields.chance_max]?: number;
+    [ItemsFields.price]?: number;
+    [ItemsFields.image]?: string;
+    [ItemsFields.emote]?: string;
+    [ItemsFields.category_id]?: string;
 }
 export interface InventoryItem {
     amount: number;

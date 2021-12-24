@@ -1,14 +1,15 @@
 import { TimestampedRecord } from '../../../common/DB';
+import { BitsFields } from './BitsService';
 export declare enum UsersBitsFields {
     user_id = "user_id",
     bit_id = "bit_id",
     tag_ids = "tag_ids"
 }
 export interface UserBitRecord extends TimestampedRecord {
-    user_id: string;
-    bit_id: string;
-    tag_ids?: string;
-    content?: string;
+    [UsersBitsFields.user_id]: string;
+    [UsersBitsFields.bit_id]: string;
+    [UsersBitsFields.tag_ids]?: string;
+    [BitsFields.content]?: string;
 }
 export interface UserBit {
     user: {

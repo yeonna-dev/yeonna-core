@@ -17,9 +17,6 @@ var UsersFields;
     UsersFields["id"] = "id";
     UsersFields["discord_id"] = "discord_id";
     UsersFields["twitch_id"] = "twitch_id";
-    UsersFields["created_at"] = "created_at";
-    UsersFields["updated_at"] = "updated_at";
-    UsersFields["deleted_at"] = "deleted_at";
 })(UsersFields = exports.UsersFields || (exports.UsersFields = {}));
 ;
 class UsersService {
@@ -92,4 +89,6 @@ class UsersService {
     }
 }
 exports.UsersService = UsersService;
+/* Table name is added here to be able to use in joins in other services. */
+UsersService.table = 'users';
 ;

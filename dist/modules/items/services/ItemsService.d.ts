@@ -1,23 +1,23 @@
 import { TimestampedRecord } from '../../../common/DB';
 export declare enum ItemsFields {
-    category_id = "category_id",
     code = "code",
     name = "name",
     chance_min = "chance_min",
     chance_max = "chance_max",
     price = "price",
     image = "image",
-    emote = "emote"
+    emote = "emote",
+    category_id = "category_id"
 }
 export interface ItemRecord extends TimestampedRecord {
-    category_id?: string;
-    code: string;
-    name: string;
-    chance_min?: number;
-    chance_max?: number;
-    price?: number;
-    image?: string;
-    emote?: string;
+    [ItemsFields.code]: string;
+    [ItemsFields.name]: string;
+    [ItemsFields.chance_min]?: number;
+    [ItemsFields.chance_max]?: number;
+    [ItemsFields.price]?: number;
+    [ItemsFields.image]?: string;
+    [ItemsFields.emote]?: string;
+    [ItemsFields.category_id]?: string;
 }
 export interface Item {
     code: string;

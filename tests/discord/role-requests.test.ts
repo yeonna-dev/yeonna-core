@@ -4,7 +4,7 @@ import assert from 'assert';
 import { approveRoleRequest, createRoleRequest, declinedRoleRequest } from '../../src';
 import { RoleRequest } from '../../src/modules/discord/services/RoleRequestsService';
 
-describe('Users', function()
+describe('Role Requests', function()
 {
   this.timeout(20000);
 

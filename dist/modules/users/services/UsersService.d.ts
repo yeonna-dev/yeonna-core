@@ -2,22 +2,20 @@ import { TimestampedRecord } from '../../../common/DB';
 export declare enum UsersFields {
     id = "id",
     discord_id = "discord_id",
-    twitch_id = "twitch_id",
-    created_at = "created_at",
-    updated_at = "updated_at",
-    deleted_at = "deleted_at"
+    twitch_id = "twitch_id"
 }
 export interface UserRecord extends TimestampedRecord {
-    id: string;
-    discord_id: string | null;
-    twitch_id: string | null;
+    [UsersFields.id]: string;
+    [UsersFields.discord_id]?: string;
+    [UsersFields.twitch_id]?: string;
 }
 export interface User {
     id: string;
-    discordId?: string | null;
-    twitchId?: string | null;
+    discordId?: string;
+    twitchId?: string;
 }
 export declare class UsersService {
+    static table: string;
     static create({ discordId, twitchId, }?: {
         discordId?: string;
         twitchId?: string;

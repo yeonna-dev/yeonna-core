@@ -1,6 +1,6 @@
-export declare function createRoleRequest({ roleName, roleColor, discordGuildID, requesterDiscordID, }: {
+export declare function createRoleRequest({ roleName, roleColor, discordGuildId, requesterDiscordId, }: {
     roleName?: string;
     roleColor?: string;
-    discordGuildID: string;
-    requesterDiscordID: string;
-}): Promise<import("../services/RoleRequestsService").RoleRequest[]>;
+    discordGuildId: string;
+    requesterDiscordId: string;
+}): Promise<import("../services/RoleRequestsService").RoleRequest>;

@@ -4,8 +4,8 @@ export declare enum TagsFields {
     name = "name"
 }
 export interface TagRecord extends TimestampedRecord {
-    id: string;
-    name: string;
+    [TagsFields.id]: string;
+    [TagsFields.name]: string;
 }
 export interface Tag {
     id: string;

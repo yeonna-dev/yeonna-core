@@ -13,7 +13,6 @@ exports.ItemsService = exports.ItemsFields = void 0;
 const DB_1 = require("../../../common/DB");
 var ItemsFields;
 (function (ItemsFields) {
-    ItemsFields["category_id"] = "category_id";
     ItemsFields["code"] = "code";
     ItemsFields["name"] = "name";
     ItemsFields["chance_min"] = "chance_min";
@@ -21,6 +20,7 @@ var ItemsFields;
     ItemsFields["price"] = "price";
     ItemsFields["image"] = "image";
     ItemsFields["emote"] = "emote";
+    ItemsFields["category_id"] = "category_id";
 })(ItemsFields = exports.ItemsFields || (exports.ItemsFields = {}));
 ;
 class ItemsService {

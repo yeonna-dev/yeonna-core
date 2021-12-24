@@ -11,15 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ObtainableService = exports.ObtainableFields = void 0;
 const DB_1 = require("../../../common/DB");
+const UsersService_1 = require("./UsersService");
 var ObtainableFields;
 (function (ObtainableFields) {
     ObtainableFields["user_id"] = "user_id";
     ObtainableFields["amount"] = "amount";
     ObtainableFields["is_collectible"] = "is_collectible";
     ObtainableFields["context"] = "context";
-    ObtainableFields["created_at"] = "created_at";
-    ObtainableFields["updated_at"] = "updated_at";
-    ObtainableFields["deleted_at"] = "deleted_at";
 })(ObtainableFields = exports.ObtainableFields || (exports.ObtainableFields = {}));
 class ObtainableService {
     static find({ userId, isCollectible, context, }) {
@@ -85,9 +83,27 @@ class ObtainableService {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    static getTopWithUsers({ count, isCollectible, context, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = DB_1.DB.obtainables()
+                .orderBy(ObtainableFields.amount, 'desc')
+                .join(UsersService_1.UsersService.table, ObtainableFields.user_id, UsersService_1.UsersFields.id)
+                .where(ObtainableFields.is_collectible, Boolean(isCollectible))
+                .limit(count);
+            if (context)
+                query.and.where(ObtainableFields.context, context);
+            const data = yield query;
+            return data.map(ObtainableService.serialize);
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     static serialize(obtainableRecord) {
         return {
-            userId: obtainableRecord[ObtainableFields.user_id],
+            user: {
+                id: obtainableRecord[ObtainableFields.user_id],
+                discordId: obtainableRecord[UsersService_1.UsersFields.discord_id],
+                twitchId: obtainableRecord[UsersService_1.UsersFields.twitch_id],
+            },
             amount: obtainableRecord[ObtainableFields.amount],
             context: obtainableRecord[ObtainableFields.context],
             isCollectible: obtainableRecord[ObtainableFields.is_collectible],

@@ -9,20 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRoleRequest = void 0;
+exports.approveRoleRequest = void 0;
 const RoleRequestsService_1 = require("../services/RoleRequestsService");
-function createRoleRequest({ roleName, roleColor, discordGuildId, requesterDiscordId, }) {
+function approveRoleRequest({ requestId, approverDiscordId, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!discordGuildId)
-            throw new Error('No Discord Guild ID provided');
-        if (!requesterDiscordId)
-            throw new Error('No requester Discord ID provided');
-        return RoleRequestsService_1.RoleRequestsService.create({
-            roleName,
-            roleColor,
-            discordGuildId: discordGuildId,
-            requesterDiscordId: requesterDiscordId,
-        });
+        if (!requestId)
+            throw new Error('No role request ID provided');
+        return RoleRequestsService_1.RoleRequestsService.approve({ requestId, approverDiscordId });
     });
 }
-exports.createRoleRequest = createRoleRequest;
+exports.approveRoleRequest = approveRoleRequest;

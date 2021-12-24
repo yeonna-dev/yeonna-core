@@ -21,9 +21,6 @@ var RoleRequestsFields;
     RoleRequestsFields["role_color"] = "role_color";
     RoleRequestsFields["status"] = "status";
     RoleRequestsFields["approver_discord_id"] = "approver_discord_id";
-    RoleRequestsFields["created_at"] = "created_at";
-    RoleRequestsFields["updated_at"] = "updated_at";
-    RoleRequestsFields["deleted_at"] = "deleted_at";
 })(RoleRequestsFields = exports.RoleRequestsFields || (exports.RoleRequestsFields = {}));
 ;
 var RoleRequestStatus;
@@ -33,31 +30,64 @@ var RoleRequestStatus;
     RoleRequestStatus["DECLINED"] = "DECLINED";
 })(RoleRequestStatus = exports.RoleRequestStatus || (exports.RoleRequestStatus = {}));
 class RoleRequestsService {
-    static create({ roleName, roleColor, discordGuildID, requesterDiscordID, }) {
+    static create({ roleName, roleColor, discordGuildId, requesterDiscordId, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const roleRequestRecord = yield DB_1.DB.discordRoleRequests()
+            const [roleRequestRecord] = yield DB_1.DB.discordRoleRequests()
                 .insert({
                 [RoleRequestsFields.request_id]: nanoid_1.nanoid(15),
-                [RoleRequestsFields.requester_discord_id]: requesterDiscordID,
+                [RoleRequestsFields.requester_discord_id]: requesterDiscordId,
                 [RoleRequestsFields.role_name]: roleName,
                 [RoleRequestsFields.role_color]: roleColor,
-                [RoleRequestsFields.guild_id]: discordGuildID,
+                [RoleRequestsFields.guild_id]: discordGuildId,
             })
                 .returning('*');
             return RoleRequestsService.serialize(roleRequestRecord);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    static serialize(roleRequests) {
-        return (roleRequests || []).map(roleRequest => ({
+    static approve({ requestId, approverDiscordId, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return RoleRequestsService.updateStatus({
+                requestId,
+                approverDiscordId,
+                status: RoleRequestStatus.APPROVED,
+            });
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    static decline({ requestId, approverDiscordId, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return RoleRequestsService.updateStatus({
+                requestId,
+                approverDiscordId,
+                status: RoleRequestStatus.DECLINED,
+            });
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    static updateStatus({ requestId, approverDiscordId, status, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [updatedData] = yield DB_1.DB.discordRoleRequests()
+                .update({
+                [RoleRequestsFields.status]: status,
+                [RoleRequestsFields.approver_discord_id]: approverDiscordId,
+            })
+                .where({ [RoleRequestsFields.request_id]: requestId })
+                .returning('*');
+            return RoleRequestsService.serialize(updatedData);
+        });
+    }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    static serialize(roleRequest) {
+        return {
             id: roleRequest[RoleRequestsFields.request_id],
-            requesterDiscordID: roleRequest[RoleRequestsFields.requester_discord_id],
+            requesterDiscordId: roleRequest[RoleRequestsFields.requester_discord_id],
             roleName: roleRequest[RoleRequestsFields.role_name],
             roleColor: roleRequest[RoleRequestsFields.role_color],
-            guildID: roleRequest[RoleRequestsFields.guild_id],
+            guildId: roleRequest[RoleRequestsFields.guild_id],
             status: roleRequest[RoleRequestsFields.status],
-            approverDiscordID: roleRequest[RoleRequestsFields.approver_discord_id],
-        }));
+            approverDiscordId: roleRequest[RoleRequestsFields.approver_discord_id],
+        };
     }
 }
 exports.RoleRequestsService = RoleRequestsService;

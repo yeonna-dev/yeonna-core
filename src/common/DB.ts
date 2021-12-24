@@ -23,6 +23,8 @@ export class DB
   static bits = () => db('bits');
   static usersBits = () => db('users_bits');
   static tags = () => db('tags');
+
+  static discordRoleRequests = () => db('discord_role_requests');
 }
 
 export interface TimestampedRecord

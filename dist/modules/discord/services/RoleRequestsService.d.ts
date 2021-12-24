@@ -1,3 +1,4 @@
+import { TimestampedRecord } from '../../../common/DB';
 export declare enum RoleRequestsFields {
     request_id = "request_id",
     requester_discord_id = "requester_discord_id",
@@ -5,43 +6,50 @@ export declare enum RoleRequestsFields {
     role_name = "role_name",
     role_color = "role_color",
     status = "status",
-    approver_discord_id = "approver_discord_id",
-    created_at = "created_at",
-    updated_at = "updated_at",
-    deleted_at = "deleted_at"
+    approver_discord_id = "approver_discord_id"
 }
 export declare enum RoleRequestStatus {
     PENDING = "PENDING",
     APPROVED = "APPROVED",
     DECLINED = "DECLINED"
 }
-export interface RoleRequestRecord {
-    request_id: string;
-    requester_discord_id: string;
-    guild_id: string;
-    role_name: string;
-    role_color: string;
-    status: RoleRequestStatus;
-    approver_discord_id: string;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string;
+export interface RoleRequestRecord extends TimestampedRecord {
+    [RoleRequestsFields.request_id]: string;
+    [RoleRequestsFields.requester_discord_id]: string;
+    [RoleRequestsFields.guild_id]: string;
+    [RoleRequestsFields.role_name]: string;
+    [RoleRequestsFields.role_color]: string;
+    [RoleRequestsFields.status]: RoleRequestStatus;
+    [RoleRequestsFields.approver_discord_id]: string;
 }
 export interface RoleRequest {
     id: string;
-    requesterDiscordID: string;
+    requesterDiscordId: string;
     roleName: string;
     roleColor: string;
-    guildID: string;
+    guildId: string;
     status: RoleRequestStatus;
-    approverDiscordID: string;
+    approverDiscordId: string;
 }
 export declare class RoleRequestsService {
-    static create({ roleName, roleColor, discordGuildID, requesterDiscordID, }: {
+    static create({ roleName, roleColor, discordGuildId, requesterDiscordId, }: {
         roleName?: string;
         roleColor?: string;
-        discordGuildID: string;
-        requesterDiscordID: string;
-    }): Promise<RoleRequest[]>;
-    static serialize(roleRequests: RoleRequestRecord[] | null): RoleRequest[];
+        discordGuildId: string;
+        requesterDiscordId: string;
+    }): Promise<RoleRequest>;
+    static approve({ requestId, approverDiscordId, }: {
+        requestId: string;
+        approverDiscordId?: string;
+    }): Promise<RoleRequest>;
+    static decline({ requestId, approverDiscordId, }: {
+        requestId: string;
+        approverDiscordId?: string;
+    }): Promise<RoleRequest>;
+    static updateStatus({ requestId, approverDiscordId, status, }: {
+        requestId: string;
+        approverDiscordId?: string;
+        status: RoleRequestStatus;
+    }): Promise<RoleRequest>;
+    static serialize(roleRequest: RoleRequestRecord): RoleRequest;
 }

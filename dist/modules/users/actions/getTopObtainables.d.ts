@@ -1,7 +1,7 @@
 declare type TopObtainables = {
     userId: string;
-    discordId?: string | null;
-    twitchId?: string | null;
+    discordId?: string;
+    twitchId?: string;
     amount: number;
 };
 export declare function getTopObtainables({ count, isCollectible, discordGuildId, twitchChannelId, }: {
