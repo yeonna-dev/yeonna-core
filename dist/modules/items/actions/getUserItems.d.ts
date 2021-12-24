@@ -1,5 +1,5 @@
-export declare function getUserItems({ userIdentifier, discordGuildID, twitchChannelID, }: {
+export declare function getUserItems({ userIdentifier, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
-    discordGuildID?: string;
-    twitchChannelID?: string;
-}): Promise<Inventory[]>;
+    discordGuildId?: string;
+    twitchChannelId?: string;
+}): Promise<import("../services/InventoriesService").InventoryItem[]>;

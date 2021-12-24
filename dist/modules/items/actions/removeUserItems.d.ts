@@ -1,9 +1,9 @@
-export declare function removeUserItems({ userIdentifier, itemsToRemove, discordGuildID, twitchChannelID, }: {
+export declare function removeUserItems({ userIdentifier, itemsToRemove, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
     itemsToRemove: {
         code: string;
         amount: number;
     }[];
-    discordGuildID?: string;
-    twitchChannelID?: string;
-}): Promise<any[]>;
+    discordGuildId?: string;
+    twitchChannelId?: string;
+}): Promise<import("../services/InventoriesService").InventoryItem[]>;

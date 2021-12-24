@@ -1,4 +1,1 @@
-export declare function deleteTags(names: string[]): Promise<{
-    id: string;
-    name: string;
-}[]>;
+export declare function deleteTags(names: string[]): Promise<import("../services/TagsService").Tag[]>;

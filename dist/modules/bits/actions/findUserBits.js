@@ -15,9 +15,9 @@ const UsersBitsService_1 = require("../services/UsersBitsService");
 function findUserBits({ userIdentifier, search, }) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Get user with the given user identifier. */
-        const userID = yield actions_1.findUser(userIdentifier);
+        const userId = yield actions_1.findUser(userIdentifier);
         /* Get the user's bits and do a search by the search query if given.  */
-        return UsersBitsService_1.UsersBitsService.find({ userIDs: [userID], search });
+        return UsersBitsService_1.UsersBitsService.find({ userIds: [userId], search });
     });
 }
 exports.findUserBits = findUserBits;

@@ -21,17 +21,10 @@ var ItemsFields;
     ItemsFields["price"] = "price";
     ItemsFields["image"] = "image";
     ItemsFields["emote"] = "emote";
-    ItemsFields["created_at"] = "created_at";
-    ItemsFields["updated_at"] = "updated_at";
-    ItemsFields["deleted_at"] = "deleted_at";
 })(ItemsFields = exports.ItemsFields || (exports.ItemsFields = {}));
 ;
-exports.ItemsService = new class {
-    constructor() {
-        /* Table name is added here to be able to use in joins in other services. */
-        this.table = 'items';
-    }
-    find({ code, chance, }) {
+class ItemsService {
+    static find({ code, chance, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.items();
             if (code)
@@ -41,11 +34,11 @@ exports.ItemsService = new class {
                     .and.where(ItemsFields.chance_min, '<', chance)
                     .and.where(ItemsFields.chance_max, '>', chance);
             const data = yield query;
-            return this.serialize(data);
+            return data.map(ItemsService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    findRandom({ code, chance, }) {
+    static findRandom({ code, chance, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.items();
             if (code)
@@ -54,33 +47,37 @@ exports.ItemsService = new class {
                 query
                     .and.where(ItemsFields.chance_min, '<', chance)
                     .and.where(ItemsFields.chance_max, '>', chance);
-            const data = yield query
+            const [data] = yield query
                 .orderByRaw('RANDOM()')
                 .limit(1);
-            return this.serialize(data).pop();
+            if (!data)
+                return;
+            return ItemsService.serialize(data);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    findByCodes(codes) {
+    static findByCodes(codes) {
         return __awaiter(this, void 0, void 0, function* () {
             const data = yield DB_1.DB.items()
                 .whereIn(ItemsFields.code, codes);
-            return this.serialize(data);
+            return data.map(ItemsService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    serialize(items) {
-        if (!items)
-            return [];
-        return items.map(({ category_id, code, name, chance_min, chance_max, price, image, emote }) => ({
-            categoryID: category_id,
-            code,
-            name,
-            chanceMin: chance_min,
-            chanceMax: chance_max,
-            price,
-            image,
-            emote,
-        }));
+    static serialize(item) {
+        return {
+            code: item[ItemsFields.code],
+            name: item[ItemsFields.name],
+            chanceMin: item[ItemsFields.chance_min],
+            chanceMax: item[ItemsFields.chance_max],
+            price: item[ItemsFields.price],
+            image: item[ItemsFields.image],
+            emote: item[ItemsFields.emote],
+            categoryId: item[ItemsFields.category_id],
+        };
     }
-};
+}
+exports.ItemsService = ItemsService;
+/* Table name is added here to be able to use in joins in other services. */
+ItemsService.table = 'items';
+;

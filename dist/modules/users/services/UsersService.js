@@ -22,16 +22,16 @@ var UsersFields;
     UsersFields["deleted_at"] = "deleted_at";
 })(UsersFields = exports.UsersFields || (exports.UsersFields = {}));
 ;
-exports.UsersService = new class {
+class UsersService {
     /* Creates a user record. */
-    create({ discordID, twitchID, } = {}) {
+    static create({ discordId, twitchId, } = {}) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!discordID && !twitchID)
+            if (!discordId && !twitchId)
                 throw new Error('No Discord or Twitch ID provided.');
             const user = {
                 [UsersFields.id]: nanoid_1.nanoid(15),
-                [UsersFields.discord_id]: discordID,
-                [UsersFields.twitch_id]: twitchID,
+                [UsersFields.discord_id]: discordId,
+                [UsersFields.twitch_id]: twitchId,
             };
             const data = yield DB_1.DB.users().insert(user).returning('*');
             const createdUser = data === null || data === void 0 ? void 0 : data.pop();
@@ -41,7 +41,7 @@ exports.UsersService = new class {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    findByID(ids) {
+    static findById(ids) {
         return __awaiter(this, void 0, void 0, function* () {
             ids = Array.isArray(ids) ? ids : [ids];
             const data = yield DB_1.DB.users()
@@ -52,42 +52,44 @@ exports.UsersService = new class {
                 return [];
             return data.map(user => ({
                 id: user[UsersFields.id],
-                discordID: user[UsersFields.discord_id],
-                twitchID: user[UsersFields.twitch_id],
+                discordId: user[UsersFields.discord_id],
+                twitchId: user[UsersFields.twitch_id],
             }));
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    find({ ids, discordIDs, twitchIDs, }) {
+    static find({ ids, discordIds, twitchIds, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.users();
             if (ids)
                 query.whereIn(UsersFields.id, Array.isArray(ids) ? ids : [ids]);
-            if (discordIDs)
-                query.whereIn(UsersFields.discord_id, Array.isArray(discordIDs) ? discordIDs : [discordIDs]);
-            if (twitchIDs)
-                query.whereIn(UsersFields.twitch_id, Array.isArray(twitchIDs) ? twitchIDs : [twitchIDs]);
+            if (discordIds)
+                query.whereIn(UsersFields.discord_id, Array.isArray(discordIds) ? discordIds : [discordIds]);
+            if (twitchIds)
+                query.whereIn(UsersFields.twitch_id, Array.isArray(twitchIds) ? twitchIds : [twitchIds]);
             const data = yield query;
             if (!data || data.length === 0)
                 return [];
             return data.map(user => ({
                 id: user[UsersFields.id],
-                discordID: user[UsersFields.discord_id],
-                twitchID: user[UsersFields.twitch_id],
+                discordId: user[UsersFields.discord_id],
+                twitchId: user[UsersFields.twitch_id],
             }));
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    updateByID(id, { discordID, twitchID }) {
+    static updateById(id, { discordId, twitchId }) {
         return __awaiter(this, void 0, void 0, function* () {
             const updateData = {};
-            if (discordID)
-                updateData[UsersFields.discord_id] = discordID;
-            if (twitchID)
-                updateData[UsersFields.twitch_id] = twitchID;
+            if (discordId)
+                updateData[UsersFields.discord_id] = discordId;
+            if (twitchId)
+                updateData[UsersFields.twitch_id] = twitchId;
             yield DB_1.DB.users()
                 .update(updateData)
                 .where(UsersFields.id, id);
         });
     }
-};
+}
+exports.UsersService = UsersService;
+;

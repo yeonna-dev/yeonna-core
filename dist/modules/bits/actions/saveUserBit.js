@@ -15,37 +15,37 @@ const UsersBitsService_1 = require("../services/UsersBitsService");
 const actions_1 = require("../../users/actions");
 const _1 = require(".");
 const errors_1 = require("../../../common/errors");
-function saveUserBit({ userIdentifier, content, tags, discordGuildID, }) {
+function saveUserBit({ userIdentifier, content, tags, discordGuildId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!content)
             throw new errors_1.NoBitContentProvided();
         /* Check if a bit with the same content is existing. */
         const [foundBit] = yield BitsService_1.BitsService.find({ content });
         /* Create the bit if not existing. */
-        let bitID;
+        let bitId;
         if (foundBit)
-            bitID = foundBit.id;
+            bitId = foundBit.id;
         else {
             const [createdBit] = yield BitsService_1.BitsService.create([content]);
-            bitID = createdBit;
+            bitId = createdBit.id;
         }
         /* Get the user by the given user identifier. */
-        const userID = yield actions_1.findOrCreateUser({ userIdentifier, discordGuildID });
+        const userId = yield actions_1.findOrCreateUser({ userIdentifier, discordGuildId });
         /* Check if the bit has been added to the user. */
         const [userBit] = yield UsersBitsService_1.UsersBitsService.find({
-            userIDs: [userID],
-            bitIDs: [bitID],
+            userIds: [userId],
+            bitIds: [bitId],
         });
+        /* Find the tags by the given tag names. */
+        let tagIds = [];
+        if (tags) {
+            const createdTags = yield _1.createTags(tags);
+            tagIds = createdTags.map(({ id }) => id);
+        }
         /* If the user already has the bit, do not save it. */
         if (userBit)
             return userBit;
-        /* Find the tags by the given tag names. */
-        let tagIDs = [];
-        if (tags) {
-            const createdTags = yield _1.createTags(tags);
-            tagIDs = createdTags.map(({ id }) => id);
-        }
-        const [createdUserBit] = yield UsersBitsService_1.UsersBitsService.create([{ userID, bitID, tagIDs }]);
+        const [createdUserBit] = yield UsersBitsService_1.UsersBitsService.create([{ userId, bitId, tagIds }]);
         return createdUserBit;
     });
 }

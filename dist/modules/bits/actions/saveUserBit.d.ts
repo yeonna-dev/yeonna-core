@@ -1,6 +1,6 @@
-export declare function saveUserBit({ userIdentifier, content, tags, discordGuildID, }: {
+export declare function saveUserBit({ userIdentifier, content, tags, discordGuildId, }: {
     userIdentifier: string;
     content: string;
     tags?: string[];
-    discordGuildID?: string;
-}): Promise<any>;
+    discordGuildId?: string;
+}): Promise<import("../services/UsersBitsService").UserBit>;

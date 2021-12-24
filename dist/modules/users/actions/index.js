@@ -12,7 +12,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 /* Users */
 __exportStar(require("./findUser"), exports);
-__exportStar(require("./connectIDtoUser"), exports);
+__exportStar(require("./connectIdToUser"), exports);
 /* Obtainables */
 __exportStar(require("./getObtainables"), exports);
 __exportStar(require("./updateObtainables"), exports);

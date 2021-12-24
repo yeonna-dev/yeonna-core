@@ -26,3 +26,4 @@ DB.inventories = () => db('inventories');
 DB.bits = () => db('bits');
 DB.usersBits = () => db('users_bits');
 DB.tags = () => db('tags');
+DB.discordRoleRequests = () => db('discord_role_requests');

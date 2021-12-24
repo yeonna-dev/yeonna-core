@@ -1,3 +1,4 @@
+import { TimestampedRecord } from '../../../common/DB';
 export declare enum ObtainableFields {
     user_id = "user_id",
     amount = "amount",
@@ -7,27 +8,40 @@ export declare enum ObtainableFields {
     updated_at = "updated_at",
     deleted_at = "deleted_at"
 }
-export declare const ObtainableService: {
-    find({ userID, isCollectible, context, }: {
-        userID: string;
-        isCollectible?: boolean | undefined;
-        context?: string | undefined;
+export interface ObtainableRecord extends TimestampedRecord {
+    user_id: string;
+    amount: number;
+    context?: string;
+    is_collectible?: boolean;
+}
+export interface Obtainable {
+    userId: string;
+    amount: number;
+    context?: string;
+    isCollectible?: boolean;
+}
+export declare class ObtainableService {
+    static find({ userId, isCollectible, context, }: {
+        userId: string;
+        isCollectible?: boolean;
+        context?: string;
     }): Promise<number | undefined>;
-    create({ userID, amount, isCollectible, context, }: {
-        userID: string;
+    static create({ userId, amount, isCollectible, context, }: {
+        userId: string;
         amount: number;
-        isCollectible?: boolean | undefined;
-        context?: string | undefined;
+        isCollectible?: boolean;
+        context?: string;
     }): Promise<Boolean>;
-    update({ userID, amount, isCollectible, context, }: {
-        userID: string;
+    static update({ userId, amount, isCollectible, context, }: {
+        userId: string;
         amount: number;
-        isCollectible?: boolean | undefined;
-        context?: string | undefined;
+        isCollectible?: boolean;
+        context?: string;
     }): Promise<number | undefined>;
-    getTop({ count, isCollectible, context, }: {
+    static getTop({ count, isCollectible, context, }: {
         count: number;
-        isCollectible?: boolean | undefined;
-        context?: string | undefined;
-    }): Promise<any[]>;
-};
+        isCollectible?: boolean;
+        context?: string;
+    }): Promise<Obtainable[]>;
+    static serialize(obtainableRecord: ObtainableRecord): Obtainable;
+}

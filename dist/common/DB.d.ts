@@ -63,4 +63,18 @@ export declare class DB {
         _intersectProps: {};
         _unionProps: never;
     }[]>;
+    static discordRoleRequests: () => import("knex").Knex.QueryBuilder<any, {
+        _base: any;
+        _hasSelection: false;
+        _keys: never;
+        _aliases: {};
+        _single: false;
+        _intersectProps: {};
+        _unionProps: never;
+    }[]>;
+}
+export interface TimestampedRecord {
+    created_at?: string;
+    updated_at?: string | null;
+    deleted_at?: string | null;
 }

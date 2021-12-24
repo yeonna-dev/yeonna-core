@@ -1,27 +1,24 @@
+import { TimestampedRecord } from '../../../common/DB';
 export declare enum TagsFields {
     id = "id",
     name = "name"
 }
-export declare const TagsService: {
-    tableName: string;
-    find({ ids, search, names, }: {
-        ids?: string | string[] | undefined;
-        search?: string | undefined;
-        names?: string[] | undefined;
-    }): Promise<{
-        id: string;
-        name: string;
-    }[]>;
-    create(names: string | string[]): Promise<{
-        id: string;
-        name: string;
-    }[]>;
-    remove(names: string | string[]): Promise<{
-        id: string;
-        name: string;
-    }[]>;
-    serialize(tags: TagRecord[] | null): {
-        id: string;
-        name: string;
-    }[];
-};
+export interface TagRecord extends TimestampedRecord {
+    id: string;
+    name: string;
+}
+export interface Tag {
+    id: string;
+    name: string;
+}
+export declare class TagsService {
+    static tableName: string;
+    static find({ ids, search, names, }: {
+        ids?: string | string[];
+        search?: string;
+        names?: string[];
+    }): Promise<Tag[]>;
+    static create(names: string | string[]): Promise<Tag[]>;
+    static remove(names: string | string[]): Promise<Tag[]>;
+    static serialize(tagRecord: TagRecord): Tag;
+}

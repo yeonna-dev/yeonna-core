@@ -15,7 +15,7 @@ const InventoriesService_1 = require("../services/InventoriesService");
 const actions_1 = require("../../users/actions");
 const errors_1 = require("../../../common/errors");
 const ContextUtil_1 = require("../../../common/ContextUtil");
-function obtainRandomItem({ userIdentifier, discordGuildID, twitchChannelID, }) {
+function obtainRandomItem({ userIdentifier, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Get a random item. */
         const chance = Math.random() * 100;
@@ -27,7 +27,7 @@ function obtainRandomItem({ userIdentifier, discordGuildID, twitchChannelID, }) 
         if (!userId)
             throw new errors_1.UserNotFound();
         /* Add item to the user. */
-        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
+        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
         yield InventoriesService_1.InventoriesService.addUserItems({
             userId,
             items: [{ code: randomItem.code, amount: 1 }],

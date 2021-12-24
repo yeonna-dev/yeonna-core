@@ -13,25 +13,25 @@ exports.updateUserCollectibles = exports.updateUserPoints = exports.updateObtain
 const findUser_1 = require("./findUser");
 const ObtainableService_1 = require("../services/ObtainableService");
 const ContextUtil_1 = require("../../../common/ContextUtil");
-function updateObtainables({ userIdentifier, amount, isCollectible, add, subtract, discordGuildID, twitchChannelID, }) {
+function updateObtainables({ userIdentifier, amount, isCollectible, add, subtract, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!discordGuildID && !twitchChannelID)
+        if (!discordGuildId && !twitchChannelId)
             throw new Error('No Discord Guild ID or Twitch Channel ID provided');
         amount = Math.abs(amount);
-        const userID = yield findUser_1.findOrCreateUser({ userIdentifier, discordGuildID, twitchChannelID });
-        if (!userID)
+        const userId = yield findUser_1.findOrCreateUser({ userIdentifier, discordGuildId, twitchChannelId });
+        if (!userId)
             throw new Error('Cannot update user points');
         /* Check if the user's obtainable record is already created. */
-        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
+        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
         const obtainables = yield ObtainableService_1.ObtainableService.find({
-            userID,
+            userId: userId,
             isCollectible,
             context,
         });
         /* Create the obtainable record if not existing. */
         if (obtainables === undefined)
             yield ObtainableService_1.ObtainableService.create({
-                userID,
+                userId: userId,
                 amount,
                 isCollectible,
                 context,
@@ -43,7 +43,7 @@ function updateObtainables({ userIdentifier, amount, isCollectible, add, subtrac
             if (subtract)
                 newPoints = obtainables - amount;
             return ObtainableService_1.ObtainableService.update({
-                userID,
+                userId: userId,
                 amount: newPoints,
                 isCollectible,
                 context,
@@ -52,20 +52,20 @@ function updateObtainables({ userIdentifier, amount, isCollectible, add, subtrac
     });
 }
 exports.updateObtainables = updateObtainables;
-function updateUserPoints({ userIdentifier, amount, add, subtract, discordGuildID, twitchChannelID, }) {
+function updateUserPoints({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         return updateObtainables({
             userIdentifier,
             amount,
             add,
             subtract,
-            discordGuildID,
-            twitchChannelID,
+            discordGuildId,
+            twitchChannelId,
         });
     });
 }
 exports.updateUserPoints = updateUserPoints;
-function updateUserCollectibles({ userIdentifier, amount, add, subtract, discordGuildID, twitchChannelID, }) {
+function updateUserCollectibles({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         return updateObtainables({
             userIdentifier,
@@ -73,8 +73,8 @@ function updateUserCollectibles({ userIdentifier, amount, add, subtract, discord
             isCollectible: true,
             add,
             subtract,
-            discordGuildID,
-            twitchChannelID,
+            discordGuildId,
+            twitchChannelId,
         });
     });
 }

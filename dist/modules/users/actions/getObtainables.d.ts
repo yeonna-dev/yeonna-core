@@ -1,16 +1,16 @@
-export declare function getObtainables({ userIdentifier, isCollectible, discordGuildID, twitchChannelID, }: {
+export declare function getObtainables({ userIdentifier, isCollectible, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
     isCollectible?: boolean;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<number>;
-export declare function getUserPoints({ userIdentifier, discordGuildID, twitchChannelID, }: {
+export declare function getUserPoints({ userIdentifier, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<number>;
-export declare function getUserCollectibles({ userIdentifier, discordGuildID, twitchChannelID, }: {
+export declare function getUserCollectibles({ userIdentifier, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<number>;

@@ -14,51 +14,51 @@ const ObtainableService_1 = require("../services/ObtainableService");
 const UsersService_1 = require("../services/UsersService");
 const ContextUtil_1 = require("../../../common/ContextUtil");
 // TODO: Join getting users with obtainables
-function getTopObtainables({ count, isCollectible, discordGuildID, twitchChannelID, }) {
+function getTopObtainables({ count, isCollectible, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
+        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
         /* Get top points. */
-        const top = yield ObtainableService_1.ObtainableService.getTop({
+        const topObtainables = yield ObtainableService_1.ObtainableService.getTop({
             count,
             isCollectible,
             context,
         });
-        if (!top)
+        if (!topObtainables)
             return [];
         /* Get users of top points. */
-        const userIDs = top.map(user => user[ObtainableService_1.ObtainableFields.user_id]);
-        const users = yield UsersService_1.UsersService.find({ ids: userIDs });
+        const userIds = topObtainables.map(({ userId }) => userId);
+        const users = yield UsersService_1.UsersService.find({ ids: userIds });
         if (!users || !Array.isArray(users))
             return [];
         /* Get the user of each top record. */
-        const topUsers = [];
-        for (const amounts of top) {
+        const topObtainablesWithUser = [];
+        for (const { userId, amount } of topObtainables) {
             /* Find the user of the points. */
             let pointsUser;
             for (const user of users) {
-                if (user.id === amounts[ObtainableService_1.ObtainableFields.user_id]) {
+                if (user.id === userId) {
                     pointsUser = user;
                     break;
                 }
             }
             if (!pointsUser)
                 continue;
-            topUsers.push({
-                userID: pointsUser.id,
-                discordID: pointsUser.discordID,
-                twitchID: pointsUser.twitchID,
-                amount: amounts[ObtainableService_1.ObtainableFields.amount],
+            topObtainablesWithUser.push({
+                userId: pointsUser.id,
+                discordId: pointsUser.discordId,
+                twitchId: pointsUser.twitchId,
+                amount,
             });
         }
-        return topUsers;
+        return topObtainablesWithUser;
     });
 }
 exports.getTopObtainables = getTopObtainables;
-function getTopPoints({ count, discordGuildID, twitchChannelID, }) {
-    return getTopObtainables({ count, discordGuildID, twitchChannelID });
+function getTopPoints({ count, discordGuildId, twitchChannelId, }) {
+    return getTopObtainables({ count, discordGuildId, twitchChannelId });
 }
 exports.getTopPoints = getTopPoints;
-function getTopCollectibles({ count, discordGuildID, twitchChannelID, }) {
-    return getTopObtainables({ count, isCollectible: true, discordGuildID, twitchChannelID });
+function getTopCollectibles({ count, discordGuildId, twitchChannelId, }) {
+    return getTopObtainables({ count, isCollectible: true, discordGuildId, twitchChannelId });
 }
 exports.getTopCollectibles = getTopCollectibles;

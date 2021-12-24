@@ -1,7 +1,4 @@
-export declare function removeUserBits({ userIdentifier, bitID }: {
+export declare function removeUserBits({ userIdentifier, bitId }: {
     userIdentifier: string;
-    bitID: string;
-}): Promise<{
-    userID: any;
-    bitID: any;
-}[]>;
+    bitId: string;
+}): Promise<import("../services/UsersBitsService").DeletedUserBit[]>;

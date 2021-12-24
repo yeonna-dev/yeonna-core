@@ -21,12 +21,12 @@ var ObtainableFields;
     ObtainableFields["updated_at"] = "updated_at";
     ObtainableFields["deleted_at"] = "deleted_at";
 })(ObtainableFields = exports.ObtainableFields || (exports.ObtainableFields = {}));
-exports.ObtainableService = new class {
-    find({ userID, isCollectible, context, }) {
+class ObtainableService {
+    static find({ userId, isCollectible, context, }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.obtainables()
-                .where(ObtainableFields.user_id, userID)
+                .where(ObtainableFields.user_id, userId)
                 .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
             if (context)
                 query.and.where(ObtainableFields.context, context);
@@ -38,15 +38,15 @@ exports.ObtainableService = new class {
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     /* Creates an obtainable record */
-    create({ userID, amount = 0, isCollectible, context, }) {
+    static create({ userId, amount = 0, isCollectible, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const insertData = {
-                user_id: userID,
-                amount,
-                is_collectible: isCollectible,
+                [ObtainableFields.user_id]: userId,
+                [ObtainableFields.amount]: amount,
+                [ObtainableFields.is_collectible]: isCollectible,
             };
             if (context)
-                insertData.context = context;
+                insertData[ObtainableFields.context] = context;
             const data = yield DB_1.DB.obtainables().insert(insertData).returning('*');
             const obtainableRecord = data === null || data === void 0 ? void 0 : data.pop();
             if (!obtainableRecord)
@@ -55,13 +55,13 @@ exports.ObtainableService = new class {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    update({ userID, amount, isCollectible, context, }) {
+    static update({ userId, amount, isCollectible, context, }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.obtainables()
                 .update({ [ObtainableFields.amount]: amount })
                 .returning('*')
-                .where(ObtainableFields.user_id, userID)
+                .where(ObtainableFields.user_id, userId)
                 .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
             if (context)
                 query.and.where(ObtainableFields.context, context);
@@ -72,7 +72,7 @@ exports.ObtainableService = new class {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    getTop({ count, isCollectible, context, }) {
+    static getTop({ count, isCollectible, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.obtainables()
                 .orderBy(ObtainableFields.amount, 'desc')
@@ -80,7 +80,19 @@ exports.ObtainableService = new class {
                 .limit(count);
             if (context)
                 query.and.where(ObtainableFields.context, context);
-            return query;
+            const data = yield query;
+            return data.map(ObtainableService.serialize);
         });
     }
-};
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    static serialize(obtainableRecord) {
+        return {
+            userId: obtainableRecord[ObtainableFields.user_id],
+            amount: obtainableRecord[ObtainableFields.amount],
+            context: obtainableRecord[ObtainableFields.context],
+            isCollectible: obtainableRecord[ObtainableFields.is_collectible],
+        };
+    }
+}
+exports.ObtainableService = ObtainableService;
+;

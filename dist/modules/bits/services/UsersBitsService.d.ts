@@ -1,30 +1,51 @@
+import { TimestampedRecord } from '../../../common/DB';
 export declare enum UsersBitsFields {
     user_id = "user_id",
     bit_id = "bit_id",
     tag_ids = "tag_ids"
 }
-export declare const UsersBitsService: {
-    find({ userIDs, bitIDs, search, }: {
-        userIDs?: string[] | undefined;
-        bitIDs?: string[] | undefined;
-        search?: string | undefined;
-    }): Promise<any[]>;
-    create(usersBitsData: {
-        userID: string;
-        bitID: string;
-        tagIDs: string[];
-    }[]): Promise<any[]>;
-    remove({ userID, bitID }: {
-        userID: string;
-        bitID: string;
-    }): Promise<{
-        userID: any;
-        bitID: any;
-    }[]>;
-    addTags({ userID, bitID, tagIDs }: {
-        userID: string;
-        bitID: string;
-        tagIDs: string[];
-    }): Promise<any[]>;
-    serialize(usersBits: any[] | null): any[];
-};
+export interface UserBitRecord extends TimestampedRecord {
+    user_id: string;
+    bit_id: string;
+    tag_ids?: string;
+    content?: string;
+}
+export interface UserBit {
+    user: {
+        id: string;
+    };
+    bit: {
+        id: string;
+        content?: string;
+    };
+    tags?: {
+        id: string;
+        name?: string;
+    }[];
+}
+export interface DeletedUserBit {
+    userId: string;
+    bitId: string;
+}
+export declare class UsersBitsService {
+    static find({ userIds, bitIds, search, }: {
+        userIds?: string[];
+        bitIds?: string[];
+        search?: string;
+    }): Promise<UserBit[]>;
+    static create(usersBitsData: {
+        userId: string;
+        bitId: string;
+        tagIds: string[];
+    }[]): Promise<UserBit[]>;
+    static remove({ userId, bitId, }: {
+        userId: string;
+        bitId: string;
+    }): Promise<DeletedUserBit[]>;
+    static addTags({ userId, bitId, tagIds, }: {
+        userId: string;
+        bitId: string;
+        tagIds: string[];
+    }): Promise<UserBit[]>;
+    static serialize(userBitRecord: UserBitRecord): UserBit;
+}

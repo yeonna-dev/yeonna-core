@@ -14,36 +14,36 @@ const errors_1 = require("../../../common/errors");
 const UsersService_1 = require("../services/UsersService");
 function findUser(userIdentifier) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [user] = yield UsersService_1.UsersService.findByID(userIdentifier);
+        const [user] = yield UsersService_1.UsersService.findById(userIdentifier);
         if (!user)
             throw new errors_1.UserNotFound();
         return user.id;
     });
 }
 exports.findUser = findUser;
-function findOrCreateUser({ userIdentifier, discordGuildID, twitchChannelID, }) {
+function findOrCreateUser({ userIdentifier, discordGuildId, twitchChannelId, }) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: Try to use actual objects for the params instead of dynamic key names.
         let userFindKey = 'ids';
         let userCreateKey;
-        if (discordGuildID) {
-            userFindKey = 'discordIDs';
-            userCreateKey = 'discordID';
+        if (discordGuildId) {
+            userFindKey = 'discordIds';
+            userCreateKey = 'discordId';
         }
-        if (twitchChannelID) {
-            userFindKey = 'twitchIDs';
-            userCreateKey = 'twitchID';
+        if (twitchChannelId) {
+            userFindKey = 'twitchIds';
+            userCreateKey = 'twitchId';
         }
         /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
         const result = yield UsersService_1.UsersService.find({ [userFindKey]: userIdentifier });
         const [user] = result;
         if (!user) {
             const createUserParams = userCreateKey ? { [userCreateKey]: userIdentifier } : {};
-            const createdUserID = yield UsersService_1.UsersService.create(createUserParams);
-            if (!createdUserID)
+            const createdUserId = yield UsersService_1.UsersService.create(createUserParams);
+            if (!createdUserId)
                 throw new Error('User not saved');
-            return createdUserID;
+            return createdUserId;
         }
         if (!user)
             return;

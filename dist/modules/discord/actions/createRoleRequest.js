@@ -9,20 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserItems = void 0;
-const InventoriesService_1 = require("../services/InventoriesService");
-const actions_1 = require("../../users/actions");
-const ContextUtil_1 = require("../../../common/ContextUtil");
-const errors_1 = require("../../../common/errors");
-function getUserItems({ userIdentifier, discordGuildId, twitchChannelId, }) {
+exports.createRoleRequest = void 0;
+const RoleRequestsService_1 = require("../services/RoleRequestsService");
+function createRoleRequest({ roleName, roleColor, discordGuildID, requesterDiscordID, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        /* Get the user with the given identifier. */
-        const userId = yield actions_1.findUser(userIdentifier);
-        if (!userId)
-            throw new errors_1.UserNotFound();
-        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
-        const inventory = yield InventoriesService_1.InventoriesService.getUserItems(userId, context);
-        return inventory;
+        if (!discordGuildID)
+            throw new Error('No Discord Guild ID provided');
+        if (!requesterDiscordID)
+            throw new Error('No requester Discord ID provided');
+        return RoleRequestsService_1.RoleRequestsService.create({
+            roleName,
+            roleColor,
+            discordGuildID,
+            requesterDiscordID,
+        });
     });
 }
-exports.getUserItems = getUserItems;
+exports.createRoleRequest = createRoleRequest;

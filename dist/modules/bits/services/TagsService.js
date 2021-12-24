@@ -18,11 +18,8 @@ var TagsFields;
     TagsFields["name"] = "name";
 })(TagsFields = exports.TagsFields || (exports.TagsFields = {}));
 ;
-exports.TagsService = new class {
-    constructor() {
-        this.tableName = 'tags';
-    }
-    find({ ids, search, names, }) {
+class TagsService {
+    static find({ ids, search, names, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.tags();
             if (ids) {
@@ -34,11 +31,11 @@ exports.TagsService = new class {
             if (names)
                 query.and.whereIn(TagsFields.name, names);
             const data = yield query;
-            return this.serialize(data);
+            return data.map(TagsService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    create(names) {
+    static create(names) {
         return __awaiter(this, void 0, void 0, function* () {
             names = Array.isArray(names) ? names : [names];
             if (!names || names.length === 0)
@@ -50,11 +47,11 @@ exports.TagsService = new class {
             const data = yield DB_1.DB.tags()
                 .insert(tagsData)
                 .returning('*');
-            return this.serialize(data);
+            return data.map(TagsService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    remove(names) {
+    static remove(names) {
         return __awaiter(this, void 0, void 0, function* () {
             names = Array.isArray(names) ? names : [names];
             if (!names || names.length === 0)
@@ -63,14 +60,17 @@ exports.TagsService = new class {
                 .delete()
                 .whereIn(TagsFields.name, names)
                 .returning('*');
-            return this.serialize(data);
+            return data.map(TagsService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    serialize(tags) {
-        return (tags || []).map(tag => ({
-            id: tag[TagsFields.id],
-            name: tag[TagsFields.name],
-        }));
+    static serialize(tagRecord) {
+        return {
+            id: tagRecord[TagsFields.id],
+            name: tagRecord[TagsFields.name],
+        };
     }
-};
+}
+exports.TagsService = TagsService;
+TagsService.tableName = 'tags';
+;

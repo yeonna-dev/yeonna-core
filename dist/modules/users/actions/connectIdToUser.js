@@ -9,17 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectIDtoUser = void 0;
+exports.connectIdToUser = void 0;
 const UsersService_1 = require("../services/UsersService");
 const findUser_1 = require("./findUser");
-function connectIDtoUser({ userIdentifier, newDiscordID, newTwitchID, }) {
+function connectIdToUser({ userIdentifier, newDiscordId, newTwitchId, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!newDiscordID && !newTwitchID)
+        if (!newDiscordId && !newTwitchId)
             throw new Error('No new Discord or Twitch ID provided');
         /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
         const user = yield findUser_1.findUser(userIdentifier);
         /* Update the user record */
-        yield UsersService_1.UsersService.updateByID(user, { discordID: newDiscordID, twitchID: newTwitchID });
+        yield UsersService_1.UsersService.updateById(user, { discordId: newDiscordId, twitchId: newTwitchId });
     });
 }
-exports.connectIDtoUser = connectIDtoUser;
+exports.connectIdToUser = connectIdToUser;

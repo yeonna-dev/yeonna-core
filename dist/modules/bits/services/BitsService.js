@@ -18,12 +18,8 @@ var BitsFields;
     BitsFields["content"] = "content";
 })(BitsFields = exports.BitsFields || (exports.BitsFields = {}));
 ;
-exports.BitsService = new class {
-    constructor() {
-        /* Table name is added here to be able to use in joins in other services. */
-        this.table = 'bits';
-    }
-    find({ ids, search, content, }) {
+class BitsService {
+    static find({ ids, search, content, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.bits();
             if (ids) {
@@ -35,11 +31,11 @@ exports.BitsService = new class {
             if (content)
                 query.and.where(BitsFields.content, content);
             const data = yield query;
-            return data || [];
+            return data.map(BitsService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    create(content) {
+    static create(content) {
         return __awaiter(this, void 0, void 0, function* () {
             content = Array.isArray(content) ? content : [content];
             if (!content || content.length === 0)
@@ -51,7 +47,18 @@ exports.BitsService = new class {
             const data = yield DB_1.DB.bits()
                 .insert(bitsData)
                 .returning('*');
-            return data ? data.map(bit => bit[BitsFields.id]) : [];
+            return data.map(BitsService.serialize);
         });
     }
-};
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    static serialize(bitRecord) {
+        return {
+            id: bitRecord[BitsFields.id],
+            content: bitRecord[BitsFields.content],
+        };
+    }
+}
+exports.BitsService = BitsService;
+/* Table name is added here to be able to use in joins in other services. */
+BitsService.table = 'bits';
+;

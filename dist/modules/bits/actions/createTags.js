@@ -20,10 +20,10 @@ function createTags(names) {
         const found = yield TagsService_1.TagsService.find({ names });
         const foundNames = found.map(({ name }) => name);
         const newTags = names.filter(name => !foundNames.includes(name));
-        let created = [];
+        let createdTags = [];
         if (newTags.length !== 0)
-            created = yield TagsService_1.TagsService.create(newTags);
-        return created.concat(found);
+            createdTags = yield TagsService_1.TagsService.create(newTags);
+        return createdTags.concat(found);
     });
 }
 exports.createTags = createTags;

@@ -1,3 +1,4 @@
+import { TimestampedRecord } from '../../../common/DB';
 export declare enum ItemsFields {
     category_id = "category_id",
     code = "code",
@@ -6,57 +7,38 @@ export declare enum ItemsFields {
     chance_max = "chance_max",
     price = "price",
     image = "image",
-    emote = "emote",
-    created_at = "created_at",
-    updated_at = "updated_at",
-    deleted_at = "deleted_at"
+    emote = "emote"
 }
-export declare const ItemsService: {
-    table: string;
-    find({ code, chance, }: {
-        code?: string | undefined;
-        chance?: number | undefined;
-    }): Promise<{
-        categoryID: string | undefined;
-        code: string;
-        name: string;
-        chanceMin: number | undefined;
-        chanceMax: number | undefined;
-        price: number | undefined;
-        image: string | undefined;
-        emote: string | undefined;
-    }[]>;
-    findRandom({ code, chance, }: {
-        code?: string | undefined;
-        chance?: number | undefined;
-    }): Promise<{
-        categoryID: string | undefined;
-        code: string;
-        name: string;
-        chanceMin: number | undefined;
-        chanceMax: number | undefined;
-        price: number | undefined;
-        image: string | undefined;
-        emote: string | undefined;
-    } | undefined>;
-    findByCodes(codes: string[]): Promise<{
-        categoryID: string | undefined;
-        code: string;
-        name: string;
-        chanceMin: number | undefined;
-        chanceMax: number | undefined;
-        price: number | undefined;
-        image: string | undefined;
-        emote: string | undefined;
-    }[]>;
-    serialize(items: ItemRecord[]): {
-        categoryID: string | undefined;
-        code: string;
-        name: string;
-        chanceMin: number | undefined;
-        chanceMax: number | undefined;
-        price: number | undefined;
-        image: string | undefined;
-        emote: string | undefined;
-    }[];
-};
+export interface ItemRecord extends TimestampedRecord {
+    category_id?: string;
+    code: string;
+    name: string;
+    chance_min?: number;
+    chance_max?: number;
+    price?: number;
+    image?: string;
+    emote?: string;
+}
+export interface Item {
+    code: string;
+    name: string;
+    chanceMin?: number;
+    chanceMax?: number;
+    price?: number;
+    image?: string;
+    emote?: string;
+    categoryId?: string;
+}
+export declare class ItemsService {
+    static table: string;
+    static find({ code, chance, }: {
+        code?: string;
+        chance?: number;
+    }): Promise<Item[]>;
+    static findRandom({ code, chance, }: {
+        code?: string;
+        chance?: number;
+    }): Promise<Item | undefined>;
+    static findByCodes(codes: string[]): Promise<Item[]>;
+    static serialize(item: ItemRecord): Item;
+}

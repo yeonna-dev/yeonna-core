@@ -1,6 +1,6 @@
 export declare function findUser(userIdentifier: string): Promise<string>;
-export declare function findOrCreateUser({ userIdentifier, discordGuildID, twitchChannelID, }: {
+export declare function findOrCreateUser({ userIdentifier, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<any>;

@@ -1,22 +1,22 @@
-export declare function transferObtainables({ fromUserIdentifier, toUserIdentifier, amount, isCollectible, discordGuildID, twitchChannelID, }: {
+export declare function transferObtainables({ fromUserIdentifier, toUserIdentifier, amount, isCollectible, discordGuildId, twitchChannelId, }: {
     fromUserIdentifier: string;
     toUserIdentifier: string;
     amount: number;
     isCollectible?: boolean;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<void>;
-export declare function transferUserPoints({ fromUserIdentifier, toUserIdentifier, amount, discordGuildID, twitchChannelID, }: {
+export declare function transferUserPoints({ fromUserIdentifier, toUserIdentifier, amount, discordGuildId, twitchChannelId, }: {
     fromUserIdentifier: string;
     toUserIdentifier: string;
     amount: number;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<void>;
-export declare function transferUserCollectibles({ fromUserIdentifier, toUserIdentifier, amount, discordGuildID, twitchChannelID, }: {
+export declare function transferUserCollectibles({ fromUserIdentifier, toUserIdentifier, amount, discordGuildId, twitchChannelId, }: {
     fromUserIdentifier: string;
     toUserIdentifier: string;
     amount: number;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<void>;

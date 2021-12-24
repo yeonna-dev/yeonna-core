@@ -1,23 +1,23 @@
 declare type TopObtainables = {
-    userID: string;
-    discordID?: string | null;
-    twitchID?: string | null;
+    userId: string;
+    discordId?: string | null;
+    twitchId?: string | null;
     amount: number;
 };
-export declare function getTopObtainables({ count, isCollectible, discordGuildID, twitchChannelID, }: {
+export declare function getTopObtainables({ count, isCollectible, discordGuildId, twitchChannelId, }: {
     count: number;
     isCollectible?: boolean;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<TopObtainables[]>;
-export declare function getTopPoints({ count, discordGuildID, twitchChannelID, }: {
+export declare function getTopPoints({ count, discordGuildId, twitchChannelId, }: {
     count: number;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<TopObtainables[]>;
-export declare function getTopCollectibles({ count, discordGuildID, twitchChannelID, }: {
+export declare function getTopCollectibles({ count, discordGuildId, twitchChannelId, }: {
     count: number;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<TopObtainables[]>;
 export {};

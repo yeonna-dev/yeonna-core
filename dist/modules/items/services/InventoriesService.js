@@ -14,20 +14,16 @@ const DB_1 = require("../../../common/DB");
 const ItemsService_1 = require("./ItemsService");
 var InventoriesFields;
 (function (InventoriesFields) {
-    InventoriesFields["pk_id"] = "pk_id";
     InventoriesFields["user_id"] = "user_id";
     InventoriesFields["item_code"] = "item_code";
     InventoriesFields["user_id_item_code"] = "user_id_item_code";
     InventoriesFields["amount"] = "amount";
     InventoriesFields["context"] = "context";
-    InventoriesFields["created_at"] = "created_at";
-    InventoriesFields["updated_at"] = "updated_at";
-    InventoriesFields["deleted_at"] = "deleted_at";
 })(InventoriesFields = exports.InventoriesFields || (exports.InventoriesFields = {}));
 ;
 const createUserIdItemCodeKey = (userId, itemCode) => `${userId}:${itemCode}`;
-exports.InventoriesService = new class {
-    getUserItems(userId, context) {
+class InventoriesService {
+    static getUserItems(userId, context) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.inventories()
                 .join(ItemsService_1.ItemsService.table, InventoriesFields.item_code, ItemsService_1.ItemsFields.code)
@@ -35,11 +31,11 @@ exports.InventoriesService = new class {
             if (context)
                 query.and.where(InventoriesFields.context, context);
             const data = yield query;
-            return this.serialize(data);
+            return data.map(InventoriesService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    updateOrCreateUserItems({ userId, items, context, }) {
+    static updateOrCreateUserItems({ userId, items, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const upsertData = [];
             for (const { code, amount } of items) {
@@ -58,13 +54,13 @@ exports.InventoriesService = new class {
                 .returning('*')
                 .onConflict(InventoriesFields.user_id_item_code)
                 .merge([InventoriesFields.amount]);
-            return this.serialize(data);
+            return data.map(InventoriesService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    addUserItems({ userId, items, context, }) {
+    static addUserItems({ userId, items, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const updatedItems = yield this.updateUserItemAmounts({
+            const updatedItems = yield InventoriesService.updateUserItemAmounts({
                 userId,
                 items: items.map(({ code, amount }) => ({ code, addAmount: amount })),
                 context,
@@ -73,7 +69,7 @@ exports.InventoriesService = new class {
               it means that there are no new items to be added. */
             if (updatedItems.length === items.length)
                 return updatedItems;
-            return this.updateOrCreateUserItems({
+            return InventoriesService.updateOrCreateUserItems({
                 userId,
                 items,
                 context,
@@ -81,9 +77,9 @@ exports.InventoriesService = new class {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    removeUserItem({ userId, items, context, }) {
+    static removeUserItem({ userId, items, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.updateUserItemAmounts({
+            return InventoriesService.updateUserItemAmounts({
                 userId,
                 items: items.map(({ code, amount }) => ({ code, subtractAmount: amount })),
                 context,
@@ -91,7 +87,7 @@ exports.InventoriesService = new class {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    updateUserItemAmounts({ userId, items, context, }) {
+    static updateUserItemAmounts({ userId, items, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
             let whenClauses = [];
             const userIdItemCodeKeys = [];
@@ -115,15 +111,23 @@ exports.InventoriesService = new class {
             if (whenClauses.length === 0)
                 return [];
             const updateQuery = `(CASE ${whenClauses.join(' ')} ELSE 0 END)`;
-            const data = yield DB_1.DB.inventories()
+            const query = DB_1.DB.inventories()
                 .update({ [InventoriesFields.amount]: DB_1.DB.knex.raw(updateQuery) })
                 .whereIn(InventoriesFields.user_id_item_code, userIdItemCodeKeys)
                 .returning('*');
-            return this.serialize(data);
+            if (context)
+                query.and.where({ [InventoriesFields.context]: context });
+            const data = yield query;
+            return data.map(InventoriesService.serialize);
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    serialize(userItems) {
+    static serialize(userItem) {
+        const serialized = {
+            amount: userItem[InventoriesFields.amount],
+            context: userItem[InventoriesFields.context],
+            code: userItem[InventoriesFields.item_code],
+        };
         const itemFieldsMapping = {
             [ItemsService_1.ItemsFields.code]: 'code',
             [ItemsService_1.ItemsFields.name]: 'name',
@@ -132,23 +136,16 @@ exports.InventoriesService = new class {
             [ItemsService_1.ItemsFields.price]: 'price',
             [ItemsService_1.ItemsFields.image]: 'image',
             [ItemsService_1.ItemsFields.emote]: 'emote',
-            [ItemsService_1.ItemsFields.category_id]: 'categoryID',
+            [ItemsService_1.ItemsFields.category_id]: 'categoryId',
         };
-        const data = [];
-        for (const userItem of userItems || []) {
-            const serialized = {
-                amount: userItem[InventoriesFields.amount],
-                context: userItem[InventoriesFields.context],
-            };
-            for (const field in itemFieldsMapping) {
-                const serializedKey = itemFieldsMapping[field];
-                const property = userItem[field];
-                if (property)
-                    serialized[serializedKey] = property;
-            }
-            data.push(serialized);
+        for (const field in itemFieldsMapping) {
+            const serializedKey = itemFieldsMapping[field];
+            const property = userItem[field];
+            if (property)
+                serialized[serializedKey] = property;
         }
-        ;
-        return data;
+        return serialized;
     }
-};
+}
+exports.InventoriesService = InventoriesService;
+;

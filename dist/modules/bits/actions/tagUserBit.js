@@ -17,7 +17,7 @@ function tagUserBit({ userIdentifier, bitContent, tags, }) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Get the bit with the given content. */
         const bit = yield BitsService_1.BitsService.find({ content: bitContent });
-        if (!bit)
+        if (bit.length === 0)
             throw new __1.BitNotFound();
         /* Get the tags with the given names. */
         const foundTags = yield TagsService_1.TagsService.find({ names: tags });

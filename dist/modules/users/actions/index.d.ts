@@ -1,5 +1,5 @@
 export * from './findUser';
-export * from './connectIDtoUser';
+export * from './connectIdToUser';
 export * from './getObtainables';
 export * from './updateObtainables';
 export * from './transferObtainables';

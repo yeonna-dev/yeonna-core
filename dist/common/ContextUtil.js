@@ -6,12 +6,12 @@ var ContextPlatforms;
     ContextPlatforms["Discord"] = "discord";
     ContextPlatforms["Twitch"] = "twitch";
 })(ContextPlatforms = exports.ContextPlatforms || (exports.ContextPlatforms = {}));
-class ContextUtilClass {
-    createContext({ discordGuildID, twitchChannelID, }) {
-        if (!discordGuildID && !twitchChannelID)
+class ContextUtil {
+    static createContext({ discordGuildId, twitchChannelId, }) {
+        if (!discordGuildId && !twitchChannelId)
             return;
-        const platform = discordGuildID ? ContextPlatforms.Discord : ContextPlatforms.Twitch;
-        return `${platform}:${discordGuildID || twitchChannelID}`;
+        const platform = discordGuildId ? ContextPlatforms.Discord : ContextPlatforms.Twitch;
+        return `${platform}:${discordGuildId || twitchChannelId}`;
     }
 }
-exports.ContextUtil = new ContextUtilClass();
+exports.ContextUtil = ContextUtil;

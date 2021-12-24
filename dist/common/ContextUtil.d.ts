@@ -2,11 +2,9 @@ export declare enum ContextPlatforms {
     Discord = "discord",
     Twitch = "twitch"
 }
-declare class ContextUtilClass {
-    createContext({ discordGuildID, twitchChannelID, }: {
-        discordGuildID?: string;
-        twitchChannelID?: string;
+export declare class ContextUtil {
+    static createContext({ discordGuildId, twitchChannelId, }: {
+        discordGuildId?: string;
+        twitchChannelId?: string;
     }): string | undefined;
 }
-export declare const ContextUtil: ContextUtilClass;
-export {};

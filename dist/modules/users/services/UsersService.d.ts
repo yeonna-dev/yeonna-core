@@ -1,3 +1,4 @@
+import { TimestampedRecord } from '../../../common/DB';
 export declare enum UsersFields {
     id = "id",
     discord_id = "discord_id",
@@ -6,19 +7,29 @@ export declare enum UsersFields {
     updated_at = "updated_at",
     deleted_at = "deleted_at"
 }
-export declare const UsersService: {
-    create({ discordID, twitchID, }?: {
-        discordID?: string | undefined;
-        twitchID?: string | undefined;
+export interface UserRecord extends TimestampedRecord {
+    id: string;
+    discord_id: string | null;
+    twitch_id: string | null;
+}
+export interface User {
+    id: string;
+    discordId?: string | null;
+    twitchId?: string | null;
+}
+export declare class UsersService {
+    static create({ discordId, twitchId, }?: {
+        discordId?: string;
+        twitchId?: string;
     }): Promise<string>;
-    findByID(ids: string | string[]): Promise<User[]>;
-    find({ ids, discordIDs, twitchIDs, }: {
-        ids?: string | string[] | undefined;
-        discordIDs?: string | string[] | undefined;
-        twitchIDs?: string | string[] | undefined;
+    static findById(ids: string | string[]): Promise<User[]>;
+    static find({ ids, discordIds, twitchIds, }: {
+        ids?: string | string[];
+        discordIds?: string | string[];
+        twitchIds?: string | string[];
     }): Promise<User[]>;
-    updateByID(id: string, { discordID, twitchID }: {
-        discordID?: string | undefined;
-        twitchID?: string | undefined;
+    static updateById(id: string, { discordId, twitchId }: {
+        discordId?: string;
+        twitchId?: string;
     }): Promise<void>;
-};
+}

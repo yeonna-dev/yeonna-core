@@ -14,14 +14,14 @@ const InventoriesService_1 = require("../services/InventoriesService");
 const actions_1 = require("../../users/actions");
 const ContextUtil_1 = require("../../../common/ContextUtil");
 const errors_1 = require("../../../common/errors");
-function removeUserItems({ userIdentifier, itemsToRemove = [], discordGuildID, twitchChannelID, }) {
+function removeUserItems({ userIdentifier, itemsToRemove = [], discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Get the user with the given identifier. */
         const userId = yield actions_1.findUser(userIdentifier);
         if (!userId)
             throw new errors_1.UserNotFound();
         /* Update the user's inventory to remove the given items. */
-        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildID, twitchChannelID });
+        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
         return InventoriesService_1.InventoriesService.removeUserItem({
             userId,
             items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),

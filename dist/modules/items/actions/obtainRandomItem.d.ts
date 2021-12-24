@@ -1,5 +1,6 @@
-export declare function obtainRandomItem({ userIdentifier, discordGuildID, twitchChannelID, }: {
+import { Item } from '../services/ItemsService';
+export declare function obtainRandomItem({ userIdentifier, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
-    discordGuildID?: string;
-    twitchChannelID?: string;
+    discordGuildId?: string;
+    twitchChannelId?: string;
 }): Promise<Item | undefined>;
