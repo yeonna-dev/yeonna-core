@@ -119,8 +119,14 @@ export class RoleRequestsService
         [RoleRequestsFields.status]: status,
         [RoleRequestsFields.approver_discord_id]: approverDiscordId,
       })
-      .where({ [RoleRequestsFields.request_id]: requestId })
+      .where({
+        [RoleRequestsFields.request_id]: requestId,
+        [RoleRequestsFields.status]: RoleRequestStatus.PENDING,
+      })
       .returning('*');
+
+    if(!updatedData)
+      return;
 
     return RoleRequestsService.serialize(updatedData);
   }

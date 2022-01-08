@@ -1,8 +1,8 @@
 import 'mocha';
 import assert from 'assert';
 
-import { approveRoleRequest, createRoleRequest, declinedRoleRequest } from '../../src';
-import { RoleRequest } from '../../src/modules/discord/services/RoleRequestsService';
+import { approveRoleRequest, createRoleRequest, declineRoleRequest, NonPendingRoleRequest } from '../../src';
+import { assertThrowsAsync } from '../helpers/assertThrowsAsync';
 
 describe('Role Requests', function()
 {
@@ -10,39 +10,72 @@ describe('Role Requests', function()
 
   const discordGuildId = '504135117296500746'; /* Yeonna server Discord ID */
   const requesterDiscordId = '247955535620472844'; /* esfox316#2053 Discord ID */
-  let createdRoleRequest: RoleRequest;
+  let approvedRoleRequestId: string;
+  let declinedRoleRequestId: string;
 
-  it('should create a role request', async () =>
+  function create()
   {
-    const roleRequest = await createRoleRequest({
+    return createRoleRequest({
       discordGuildId,
       requesterDiscordId,
       roleName: 'test role',
       roleColor: '#ffffff',
     });
+  }
 
-    createdRoleRequest = roleRequest;
-
+  it('should create a role request', async () =>
+  {
+    const roleRequest = await create();
     assert.strictEqual(roleRequest.id !== undefined, true);
   });
 
-  it('should approve a role request', async () =>
+  it('should create and approve a role request', async () =>
   {
-    const roleRequest = await approveRoleRequest({
-      requestId: createdRoleRequest.id,
+    const roleRequest = await create();
+    const approvedRoleRequest = await approveRoleRequest({
+      requestId: roleRequest.id,
       approverDiscordId: requesterDiscordId,
     });
 
-    assert.strictEqual(roleRequest.id !== undefined, true);
+    approvedRoleRequestId = approvedRoleRequest.id;
+    assert.strictEqual(approvedRoleRequest.id !== undefined, true);
   });
 
-  it('should decline a role request', async () =>
+  it('should create and decline a role request', async () =>
   {
-    const roleRequest = await declinedRoleRequest({
-      requestId: createdRoleRequest.id,
+    const roleRequest = await create();
+    const declinedRoleRequest = await declineRoleRequest({
+      requestId: roleRequest.id,
       approverDiscordId: requesterDiscordId,
     });
 
-    assert.strictEqual(roleRequest.id !== undefined, true);
+    declinedRoleRequestId = declinedRoleRequest.id;
+    assert.strictEqual(declinedRoleRequest.id !== undefined, true);
   });
+
+  it('should not approve a non-pending role request', async () =>
+    await assertThrowsAsync(
+      async () =>
+      {
+        await approveRoleRequest({
+          requestId: declinedRoleRequestId,
+          approverDiscordId: requesterDiscordId,
+        });
+      },
+      new NonPendingRoleRequest(),
+    )
+  );
+
+  it('should not decline a non-pending role request', async () =>
+    await assertThrowsAsync(
+      async () =>
+      {
+        await approveRoleRequest({
+          requestId: declinedRoleRequestId,
+          approverDiscordId: requesterDiscordId,
+        });
+      },
+      new NonPendingRoleRequest(),
+    )
+  );
 });

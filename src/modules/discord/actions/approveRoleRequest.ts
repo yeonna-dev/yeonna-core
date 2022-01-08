@@ -1,3 +1,4 @@
+import { NonPendingRoleRequest } from '../../..';
 import { RoleRequestsService } from '../services/RoleRequestsService';
 
 export async function approveRoleRequest({
@@ -11,5 +12,9 @@ export async function approveRoleRequest({
   if(!requestId)
     throw new Error('No role request ID provided');
 
-  return RoleRequestsService.approve({ requestId, approverDiscordId });
+  const approved = await RoleRequestsService.approve({ requestId, approverDiscordId });
+  if(!approved)
+    throw new NonPendingRoleRequest();
+
+  return approved;
 }

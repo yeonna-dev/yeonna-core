@@ -69,3 +69,13 @@ export class TagsNotFound extends Error
     super('Tags not found');
   }
 }
+
+/* Discord */
+
+export class NonPendingRoleRequest extends Error
+{
+  constructor()
+  {
+    super('Role request is not pending');
+  }
+}
