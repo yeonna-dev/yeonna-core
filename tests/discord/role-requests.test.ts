@@ -70,8 +70,8 @@ describe('Role Requests', function()
     await assertThrowsAsync(
       async () =>
       {
-        await approveRoleRequest({
-          requestId: declinedRoleRequestId,
+        await declineRoleRequest({
+          requestId: approvedRoleRequestId,
           approverDiscordId: requesterDiscordId,
         });
       },
