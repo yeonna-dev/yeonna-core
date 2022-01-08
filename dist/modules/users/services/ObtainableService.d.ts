@@ -54,3 +54,4 @@ export declare class ObtainableService {
     }): Promise<Obtainable[]>;
     static serialize(obtainableRecord: ObtainableRecord): Obtainable;
 }
+//# sourceMappingURL=ObtainableService.d.ts.map

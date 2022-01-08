@@ -4,3 +4,4 @@ export declare function obtainRandomItem({ userIdentifier, discordGuildId, twitc
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<Item | undefined>;
+//# sourceMappingURL=obtainRandomItem.d.ts.map

@@ -3,3 +3,4 @@ export declare function getUserItems({ userIdentifier, discordGuildId, twitchCha
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<import("../services/InventoriesService").InventoryItem[]>;
+//# sourceMappingURL=getUserItems.d.ts.map

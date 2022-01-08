@@ -71,3 +71,4 @@ export declare class InventoriesService {
     }): Promise<InventoryItem[]>;
     static serialize(userItem: InventoryRecord): InventoryItem;
 }
+//# sourceMappingURL=InventoriesService.d.ts.map

@@ -1,7 +1,7 @@
 "use strict";
 /* Users */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TagsNotFound = exports.NoBitContentProvided = exports.UserBitNotFound = exports.BitNotFound = exports.ItemNotFound = exports.NotEnoughCollectibles = exports.NotEnoughPoints = exports.UserNotFound = void 0;
+exports.NonPendingRoleRequest = exports.TagsNotFound = exports.NoBitContentProvided = exports.UserBitNotFound = exports.BitNotFound = exports.ItemNotFound = exports.NotEnoughCollectibles = exports.NotEnoughPoints = exports.UserNotFound = void 0;
 class UserNotFound extends Error {
     constructor() {
         super('User not found');
@@ -53,3 +53,10 @@ class TagsNotFound extends Error {
     }
 }
 exports.TagsNotFound = TagsNotFound;
+/* Discord */
+class NonPendingRoleRequest extends Error {
+    constructor() {
+        super('Role request is not pending');
+    }
+}
+exports.NonPendingRoleRequest = NonPendingRoleRequest;

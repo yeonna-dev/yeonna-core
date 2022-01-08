@@ -41,15 +41,16 @@ export declare class RoleRequestsService {
     static approve({ requestId, approverDiscordId, }: {
         requestId: string;
         approverDiscordId?: string;
-    }): Promise<RoleRequest>;
+    }): Promise<RoleRequest | undefined>;
     static decline({ requestId, approverDiscordId, }: {
         requestId: string;
         approverDiscordId?: string;
-    }): Promise<RoleRequest>;
+    }): Promise<RoleRequest | undefined>;
     static updateStatus({ requestId, approverDiscordId, status, }: {
         requestId: string;
         approverDiscordId?: string;
         status: RoleRequestStatus;
-    }): Promise<RoleRequest>;
+    }): Promise<RoleRequest | undefined>;
     static serialize(roleRequest: RoleRequestRecord): RoleRequest;
 }
+//# sourceMappingURL=RoleRequestsService.d.ts.map

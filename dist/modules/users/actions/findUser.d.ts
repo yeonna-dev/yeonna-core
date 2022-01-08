@@ -4,3 +4,4 @@ export declare function findOrCreateUser({ userIdentifier, discordGuildId, twitc
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<any>;
+//# sourceMappingURL=findUser.d.ts.map

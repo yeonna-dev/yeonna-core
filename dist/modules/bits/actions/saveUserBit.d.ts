@@ -4,3 +4,4 @@ export declare function saveUserBit({ userIdentifier, content, tags, discordGuil
     tags?: string[];
     discordGuildId?: string;
 }): Promise<import("../services/UsersBitsService").UserBit>;
+//# sourceMappingURL=saveUserBit.d.ts.map

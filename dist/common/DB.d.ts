@@ -78,3 +78,4 @@ export interface TimestampedRecord {
     updated_at?: string;
     deleted_at?: string;
 }
+//# sourceMappingURL=DB.d.ts.map

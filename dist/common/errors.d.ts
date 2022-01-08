@@ -22,3 +22,7 @@ export declare class NoBitContentProvided extends Error {
 export declare class TagsNotFound extends Error {
     constructor();
 }
+export declare class NonPendingRoleRequest extends Error {
+    constructor();
+}
+//# sourceMappingURL=errors.d.ts.map

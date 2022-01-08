@@ -42,3 +42,4 @@ export declare class ItemsService {
     static findByCodes(codes: string[]): Promise<Item[]>;
     static serialize(item: ItemRecord): Item;
 }
+//# sourceMappingURL=ItemsService.d.ts.map

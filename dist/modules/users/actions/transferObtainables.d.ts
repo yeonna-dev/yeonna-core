@@ -20,3 +20,4 @@ export declare function transferUserCollectibles({ fromUserIdentifier, toUserIde
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<void>;
+//# sourceMappingURL=transferObtainables.d.ts.map

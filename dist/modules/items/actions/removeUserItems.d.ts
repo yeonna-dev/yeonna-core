@@ -7,3 +7,4 @@ export declare function removeUserItems({ userIdentifier, itemsToRemove, discord
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<import("../services/InventoriesService").InventoryItem[]>;
+//# sourceMappingURL=removeUserItems.d.ts.map

@@ -3,3 +3,4 @@ export declare function connectIdToUser({ userIdentifier, newDiscordId, newTwitc
     newDiscordId?: string;
     newTwitchId?: string;
 }): Promise<void>;
+//# sourceMappingURL=connectIdToUser.d.ts.map

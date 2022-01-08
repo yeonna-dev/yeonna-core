@@ -31,3 +31,4 @@ export declare class UsersService {
         twitchId?: string;
     }): Promise<void>;
 }
+//# sourceMappingURL=UsersService.d.ts.map

@@ -21,3 +21,4 @@ export declare class BitsService {
     static create(content: string | string[]): Promise<Bit[]>;
     static serialize(bitRecord: BitRecord): Bit;
 }
+//# sourceMappingURL=BitsService.d.ts.map

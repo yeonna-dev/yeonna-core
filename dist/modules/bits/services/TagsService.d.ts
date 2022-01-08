@@ -22,3 +22,4 @@ export declare class TagsService {
     static remove(names: string | string[]): Promise<Tag[]>;
     static serialize(tagRecord: TagRecord): Tag;
 }
+//# sourceMappingURL=TagsService.d.ts.map

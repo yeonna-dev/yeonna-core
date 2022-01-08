@@ -4,3 +4,4 @@ export declare function createRoleRequest({ roleName, roleColor, discordGuildId,
     discordGuildId: string;
     requesterDiscordId: string;
 }): Promise<import("../services/RoleRequestsService").RoleRequest>;
+//# sourceMappingURL=createRoleRequest.d.ts.map

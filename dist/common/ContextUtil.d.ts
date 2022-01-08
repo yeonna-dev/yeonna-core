@@ -8,3 +8,4 @@ export declare class ContextUtil {
         twitchChannelId?: string;
     }): string | undefined;
 }
+//# sourceMappingURL=ContextUtil.d.ts.map

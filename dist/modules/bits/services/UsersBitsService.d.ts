@@ -50,3 +50,4 @@ export declare class UsersBitsService {
     }): Promise<UserBit[]>;
     static serialize(userBitRecord: UserBitRecord): UserBit;
 }
+//# sourceMappingURL=UsersBitsService.d.ts.map

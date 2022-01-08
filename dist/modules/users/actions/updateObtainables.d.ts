@@ -23,3 +23,4 @@ export declare function updateUserCollectibles({ userIdentifier, amount, add, su
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<number | undefined>;
+//# sourceMappingURL=updateObtainables.d.ts.map

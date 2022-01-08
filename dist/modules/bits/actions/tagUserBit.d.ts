@@ -3,3 +3,4 @@ export declare function tagUserBit({ userIdentifier, bitContent, tags, }: {
     bitContent: string;
     tags: string[];
 }): Promise<void>;
+//# sourceMappingURL=tagUserBit.d.ts.map

@@ -14,3 +14,4 @@ export declare function getUserCollectibles({ userIdentifier, discordGuildId, tw
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<number>;
+//# sourceMappingURL=getObtainables.d.ts.map

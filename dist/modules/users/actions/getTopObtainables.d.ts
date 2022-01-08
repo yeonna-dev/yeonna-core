@@ -21,3 +21,4 @@ export declare function getTopCollectibles({ count, discordGuildId, twitchChanne
     twitchChannelId?: string;
 }): Promise<TopObtainables[]>;
 export {};
+//# sourceMappingURL=getTopObtainables.d.ts.map

@@ -10,12 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.approveRoleRequest = void 0;
+const __1 = require("../../..");
 const RoleRequestsService_1 = require("../services/RoleRequestsService");
 function approveRoleRequest({ requestId, approverDiscordId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!requestId)
             throw new Error('No role request ID provided');
-        return RoleRequestsService_1.RoleRequestsService.approve({ requestId, approverDiscordId });
+        const approved = yield RoleRequestsService_1.RoleRequestsService.approve({ requestId, approverDiscordId });
+        if (!approved)
+            throw new __1.NonPendingRoleRequest();
+        return approved;
     });
 }
 exports.approveRoleRequest = approveRoleRequest;

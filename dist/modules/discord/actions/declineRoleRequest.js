@@ -9,13 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.declinedRoleRequest = void 0;
+exports.declineRoleRequest = void 0;
+const __1 = require("../../..");
 const RoleRequestsService_1 = require("../services/RoleRequestsService");
-function declinedRoleRequest({ requestId, approverDiscordId, }) {
+function declineRoleRequest({ requestId, approverDiscordId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!requestId)
             throw new Error('No role request ID provided');
-        return RoleRequestsService_1.RoleRequestsService.decline({ requestId, approverDiscordId });
+        const declined = yield RoleRequestsService_1.RoleRequestsService.decline({ requestId, approverDiscordId });
+        if (!declined)
+            throw new __1.NonPendingRoleRequest();
+        return declined;
     });
 }
-exports.declinedRoleRequest = declinedRoleRequest;
+exports.declineRoleRequest = declineRoleRequest;
