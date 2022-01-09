@@ -1,7 +1,7 @@
 import 'mocha';
 import assert from 'assert';
 
-import { connectIdToUser, findOrCreateUser, findUser } from '../../src';
+import { Core } from '../../src';
 
 describe('Users', function()
 {
@@ -17,34 +17,34 @@ describe('Users', function()
   const twitchChannelId = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should create a user with a Discord ID', async () =>
-    await findOrCreateUser({ userIdentifier: discordUser1, discordGuildId })
+    await Core.Users.findOrCreateUser({ userIdentifier: discordUser1, discordGuildId })
   );
 
   it('should create a user with a Twitch ID', async () =>
-    await findOrCreateUser({ userIdentifier: twitchUser2, twitchChannelId })
+    await Core.Users.findOrCreateUser({ userIdentifier: twitchUser2, twitchChannelId })
   );
 
   it('should find a user by a Discord ID', async () =>
   {
-    const userId = await findUser(discordUser1);
+    const userId = await Core.Users.findUser(discordUser1);
     assert.notStrictEqual(userId, undefined);
   });
 
   it('should find a user by a Twitch ID', async () =>
   {
-    const userId = await findUser(twitchUser2);
+    const userId = await Core.Users.findUser(twitchUser2);
     assert.notStrictEqual(userId, undefined);
   });
 
   it('should connect a Discord ID to a user', async () =>
-    await connectIdToUser({
+    await Core.Users.connectIdToUser({
       userIdentifier: twitchUser2,
       newDiscordId: discordUser2,
     })
   );
 
   it('should connect a Twitch ID to a user', async () =>
-    await connectIdToUser({
+    await Core.Users.connectIdToUser({
       userIdentifier: discordUser1,
       newTwitchId: twitchUser1,
     })

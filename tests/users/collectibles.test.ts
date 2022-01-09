@@ -1,13 +1,7 @@
 import 'mocha';
 import assert from 'assert';
 
-import
-{
-  getUserCollectibles,
-  updateUserCollectibles,
-  transferUserCollectibles,
-  getTopCollectibles,
-} from '../../src';
+import { Core } from '../../src';
 
 import { NotEnoughCollectibles } from '../../src/common/errors';
 import { assertThrowsAsync } from '../helpers/assertThrowsAsync';
@@ -28,31 +22,31 @@ describe('Collectibles', function()
   const twitchChannelId = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the collectibles of a Discord user in a Discord server', async () =>
-    await getUserCollectibles({ userIdentifier: discordUser1, discordGuildId })
+    await Core.Users.getUserCollectibles({ userIdentifier: discordUser1, discordGuildId })
   );
 
   it('should get the collectibles of a Twitch user in a Twitch channel', async () =>
-    await getUserCollectibles({ userIdentifier: twitchUser1, twitchChannelId })
+    await Core.Users.getUserCollectibles({ userIdentifier: twitchUser1, twitchChannelId })
   );
 
   it('should set the collectibles of a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
+    await Core.Users.updateUserCollectibles({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
   );
 
   it('should set the collectibles of a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
+    await Core.Users.updateUserCollectibles({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
   );
 
   it('should add a collectible to a Discord user in a Discord server', async () =>
-    await updateUserCollectibles({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
+    await Core.Users.updateUserCollectibles({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
   );
 
   it('should add a collectible to a Twitch user in a Twitch channel', async () =>
-    await updateUserCollectibles({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
+    await Core.Users.updateUserCollectibles({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
   );
 
   it('should transfer the collectibles of a Discord user to another', async () =>
-    await transferUserCollectibles({
+    await Core.Users.transferUserCollectibles({
       fromUserIdentifier: discordUser2,
       toUserIdentifier: discordUser1,
       amount: addAmount,
@@ -61,7 +55,7 @@ describe('Collectibles', function()
   );
 
   it('should transfer the collectibles of a Twitch user to another', async () =>
-    await transferUserCollectibles({
+    await Core.Users.transferUserCollectibles({
       fromUserIdentifier: twitchUser2,
       toUserIdentifier: twitchUser1,
       amount: addAmount,
@@ -73,8 +67,8 @@ describe('Collectibles', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await getUserCollectibles({ userIdentifier: discordUser1, discordGuildId });
-        await transferUserCollectibles({
+        const sourcePoints = await Core.Users.getUserCollectibles({ userIdentifier: discordUser1, discordGuildId });
+        await Core.Users.transferUserCollectibles({
           fromUserIdentifier: discordUser1,
           toUserIdentifier: discordUser2,
           amount: sourcePoints + 1,
@@ -87,7 +81,7 @@ describe('Collectibles', function()
 
   it('should get the top user collectibles of a Discord server', async () =>
   {
-    const topUsers = await getTopCollectibles({ count: 10, discordGuildId });
+    const topUsers = await Core.Users.getTopCollectibles({ count: 10, discordGuildId });
     assert.strictEqual(
       topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
@@ -96,7 +90,7 @@ describe('Collectibles', function()
 
   it('should get the top user collectibles of a Twitch channel', async () =>
   {
-    const topUsers = await getTopCollectibles({ count: 10, twitchChannelId });
+    const topUsers = await Core.Users.getTopCollectibles({ count: 10, twitchChannelId });
     assert.strictEqual(
       topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,

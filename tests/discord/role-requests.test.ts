@@ -1,7 +1,7 @@
 import 'mocha';
 import assert from 'assert';
 
-import { approveRoleRequest, createRoleRequest, declineRoleRequest, NonPendingRoleRequest } from '../../src';
+import { Core, NonPendingRoleRequest } from '../../src';
 import { assertThrowsAsync } from '../helpers/assertThrowsAsync';
 
 describe('Role Requests', function()
@@ -15,7 +15,7 @@ describe('Role Requests', function()
 
   function create()
   {
-    return createRoleRequest({
+    return Core.Discord.createRoleRequest({
       discordGuildId,
       requesterDiscordId,
       roleName: 'test role',
@@ -32,7 +32,7 @@ describe('Role Requests', function()
   it('should create and approve a role request', async () =>
   {
     const roleRequest = await create();
-    const approvedRoleRequest = await approveRoleRequest({
+    const approvedRoleRequest = await Core.Discord.approveRoleRequest({
       requestId: roleRequest.id,
       approverDiscordId: requesterDiscordId,
     });
@@ -44,7 +44,7 @@ describe('Role Requests', function()
   it('should create and decline a role request', async () =>
   {
     const roleRequest = await create();
-    const declinedRoleRequest = await declineRoleRequest({
+    const declinedRoleRequest = await Core.Discord.declineRoleRequest({
       requestId: roleRequest.id,
       approverDiscordId: requesterDiscordId,
     });
@@ -57,7 +57,7 @@ describe('Role Requests', function()
     await assertThrowsAsync(
       async () =>
       {
-        await approveRoleRequest({
+        await Core.Discord.approveRoleRequest({
           requestId: declinedRoleRequestId,
           approverDiscordId: requesterDiscordId,
         });
@@ -70,7 +70,7 @@ describe('Role Requests', function()
     await assertThrowsAsync(
       async () =>
       {
-        await declineRoleRequest({
+        await Core.Discord.declineRoleRequest({
           requestId: approvedRoleRequestId,
           approverDiscordId: requesterDiscordId,
         });

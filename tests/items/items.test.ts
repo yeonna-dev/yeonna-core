@@ -1,13 +1,7 @@
 import 'mocha';
 import assert from 'assert';
 
-import
-{
-  findUser,
-  getUserItems,
-  obtainRandomItem,
-  removeUserItems,
-} from '../../src';
+import { Core } from '../../src';
 import { InventoriesService } from '../../src/modules/items/services/InventoriesService';
 
 describe('Items', function()
@@ -20,7 +14,7 @@ describe('Items', function()
 
   it('should get the items of a Discord user', async () =>
   {
-    const userItems = await getUserItems({ userIdentifier, discordGuildId });
+    const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
     assert.deepStrictEqual(
       true,
       userItems.every(userItem =>
@@ -36,7 +30,7 @@ describe('Items', function()
     let item: any;
     while(!item)
     {
-      item = await obtainRandomItem({
+      item = await Core.Items.obtainRandomItem({
         userIdentifier,
         discordGuildId,
       });
@@ -50,7 +44,7 @@ describe('Items', function()
 
   it('should add to a specific item in a Discord user inventory', async () =>
   {
-    const userId = await findUser(userIdentifier);
+    const userId = await Core.Users.findUser(userIdentifier);
     await InventoriesService.addUserItems({
       userId,
       items: [
@@ -64,7 +58,7 @@ describe('Items', function()
   });
 
   it('should remove an item from a Discord user inventory', async () =>
-    await removeUserItems({
+    await Core.Items.removeUserItems({
       userIdentifier,
       itemsToRemove:
         [

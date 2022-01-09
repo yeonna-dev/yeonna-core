@@ -1,12 +1,7 @@
 import 'mocha';
 import assert from 'assert';
 
-import
-{
-  saveUserBit,
-  findUserBits,
-  removeUserBits,
-} from '../../src';
+import { Core } from '../../src';
 
 describe('Bits', function()
 {
@@ -17,7 +12,7 @@ describe('Bits', function()
 
   it('should create a bit with tags for a user', async () =>
   {
-    const createdBit = await saveUserBit({
+    const createdBit = await Core.Bits.saveUserBit({
       userIdentifier: discordUser1,
       content: 'test-content',
       tags: ['Fox', 'Dog'],
@@ -29,20 +24,20 @@ describe('Bits', function()
 
   it('should get the bits of a user', async () =>
   {
-    const data = await findUserBits({ userIdentifier: discordUser1 });
+    const data = await Core.Bits.findUserBits({ userIdentifier: discordUser1 });
     assert.strictEqual(true, data.every(userBit => userBit.user && userBit.bit));
   });
 
   it('should search the bits of a user', async () =>
   {
     const search = 'test';
-    const data = await findUserBits({ userIdentifier: discordUser1, search });
+    const data = await Core.Bits.findUserBits({ userIdentifier: discordUser1, search });
     assert.strictEqual(true, data.every(userBit => userBit.bit.content.includes(search)));
   });
 
   it('should remove the bit of the user', async () =>
   {
-    const data = await removeUserBits({ userIdentifier: discordUser1, bitId: createdBitId });
+    const data = await Core.Bits.removeUserBits({ userIdentifier: discordUser1, bitId: createdBitId });
     assert.strictEqual(true, data.every(userBit => userBit.bitId === createdBitId));
   });
 });
