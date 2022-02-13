@@ -29,7 +29,7 @@ class InventoriesService {
                 .join(ItemsService_1.ItemsService.table, InventoriesFields.item_code, ItemsService_1.ItemsFields.code)
                 .where(InventoriesFields.user_id, userId);
             if (context)
-                query.and.where(InventoriesFields.context, context);
+                query.and.where(`${InventoriesService.table}.${InventoriesFields.context}`, context);
             const data = yield query;
             return data.map(InventoriesService.serialize);
         });
@@ -148,4 +148,5 @@ class InventoriesService {
     }
 }
 exports.InventoriesService = InventoriesService;
+InventoriesService.table = 'inventories';
 ;

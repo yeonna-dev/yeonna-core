@@ -19,7 +19,8 @@ function obtainRandomItem({ userIdentifier, discordGuildId, twitchChannelId, }) 
     return __awaiter(this, void 0, void 0, function* () {
         /* Get a random item. */
         const chance = Math.random() * 100;
-        const randomItem = yield ItemsService_1.ItemsService.findRandom({ chance });
+        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
+        const randomItem = yield ItemsService_1.ItemsService.findRandom(chance, context);
         if (!randomItem)
             return;
         /* Get the user with the given identifier. */
@@ -27,7 +28,6 @@ function obtainRandomItem({ userIdentifier, discordGuildId, twitchChannelId, }) 
         if (!userId)
             throw new errors_1.UserNotFound();
         /* Add item to the user. */
-        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
         yield InventoriesService_1.InventoriesService.addUserItems({
             userId,
             items: [{ code: randomItem.code, amount: 1 }],

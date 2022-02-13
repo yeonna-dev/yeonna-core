@@ -20,6 +20,7 @@ var ItemsFields;
     ItemsFields["price"] = "price";
     ItemsFields["image"] = "image";
     ItemsFields["emote"] = "emote";
+    ItemsFields["context"] = "context";
     ItemsFields["category_id"] = "category_id";
 })(ItemsFields = exports.ItemsFields || (exports.ItemsFields = {}));
 ;
@@ -38,15 +39,13 @@ class ItemsService {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    static findRandom({ code, chance, }) {
+    static findRandom(chance, context) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = DB_1.DB.items();
-            if (code)
-                query.where(ItemsFields.code, code);
-            if (chance)
-                query
-                    .and.where(ItemsFields.chance_min, '<', chance)
-                    .and.where(ItemsFields.chance_max, '>', chance);
+            const query = DB_1.DB.items()
+                .and.where(ItemsFields.chance_min, '<', chance)
+                .and.where(ItemsFields.chance_max, '>', chance);
+            if (context)
+                query.and.where(ItemsFields.context, context);
             const [data] = yield query
                 .orderByRaw('RANDOM()')
                 .limit(1);

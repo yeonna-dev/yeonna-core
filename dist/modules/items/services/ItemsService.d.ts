@@ -7,6 +7,7 @@ export declare enum ItemsFields {
     price = "price",
     image = "image",
     emote = "emote",
+    context = "context",
     category_id = "category_id"
 }
 export interface ItemRecord extends TimestampedRecord {
@@ -35,10 +36,7 @@ export declare class ItemsService {
         code?: string;
         chance?: number;
     }): Promise<Item[]>;
-    static findRandom({ code, chance, }: {
-        code?: string;
-        chance?: number;
-    }): Promise<Item | undefined>;
+    static findRandom(chance: number, context?: string): Promise<Item | undefined>;
     static findByCodes(codes: string[]): Promise<Item[]>;
     static serialize(item: ItemRecord): Item;
 }
