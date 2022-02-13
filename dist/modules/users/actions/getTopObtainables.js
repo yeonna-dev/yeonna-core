@@ -16,10 +16,11 @@ function getTopObtainables({ count, isCollectible, discordGuildId, twitchChannel
     return __awaiter(this, void 0, void 0, function* () {
         const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
         /* Get top points. */
-        const topObtainables = yield ObtainableService_1.ObtainableService.getTopWithUsers({
+        const topObtainables = yield ObtainableService_1.ObtainableService.getTop({
             count,
             isCollectible,
             context,
+            withUsers: true,
         });
         return topObtainables.map(({ user, amount }) => ({
             userId: user.id,

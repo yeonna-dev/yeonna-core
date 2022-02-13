@@ -70,28 +70,17 @@ class ObtainableService {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    static getTop({ count, isCollectible, context, }) {
+    static getTop({ count, isCollectible, context, withUsers, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.obtainables()
                 .orderBy(ObtainableFields.amount, 'desc')
                 .where(ObtainableFields.is_collectible, Boolean(isCollectible))
+                .and.where(ObtainableFields.amount, '>', 0)
                 .limit(count);
             if (context)
                 query.and.where(ObtainableFields.context, context);
-            const data = yield query;
-            return data.map(ObtainableService.serialize);
-        });
-    }
-    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    static getTopWithUsers({ count, isCollectible, context, }) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const query = DB_1.DB.obtainables()
-                .orderBy(ObtainableFields.amount, 'desc')
-                .join(UsersService_1.UsersService.table, ObtainableFields.user_id, UsersService_1.UsersFields.id)
-                .where(ObtainableFields.is_collectible, Boolean(isCollectible))
-                .limit(count);
-            if (context)
-                query.and.where(ObtainableFields.context, context);
+            if (withUsers)
+                query.join(UsersService_1.UsersService.table, ObtainableFields.user_id, UsersService_1.UsersFields.id);
             const data = yield query;
             return data.map(ObtainableService.serialize);
         });

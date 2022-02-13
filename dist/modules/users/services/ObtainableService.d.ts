@@ -42,15 +42,11 @@ export declare class ObtainableService {
         isCollectible?: boolean;
         context?: string;
     }): Promise<number | undefined>;
-    static getTop({ count, isCollectible, context, }: {
+    static getTop({ count, isCollectible, context, withUsers, }: {
         count: number;
         isCollectible?: boolean;
         context?: string;
-    }): Promise<Obtainable[]>;
-    static getTopWithUsers({ count, isCollectible, context, }: {
-        count: number;
-        isCollectible?: boolean;
-        context?: string;
+        withUsers?: boolean;
     }): Promise<Obtainable[]>;
     static serialize(obtainableRecord: ObtainableRecord): Obtainable;
 }

@@ -24,10 +24,11 @@ export async function getTopObtainables({
   const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
 
   /* Get top points. */
-  const topObtainables = await ObtainableService.getTopWithUsers({
+  const topObtainables = await ObtainableService.getTop({
     count,
     isCollectible,
     context,
+    withUsers: true,
   });
 
   return topObtainables.map(({ user, amount }) => ({

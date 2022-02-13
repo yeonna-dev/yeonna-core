@@ -125,44 +125,25 @@ export class ObtainableService
     count,
     isCollectible,
     context,
+    withUsers,
   }: {
     count: number,
     isCollectible?: boolean,
     context?: string,
+    withUsers?: boolean,
   })
   {
     const query = DB.obtainables()
       .orderBy(ObtainableFields.amount, 'desc')
       .where(ObtainableFields.is_collectible, Boolean(isCollectible))
+      .and.where(ObtainableFields.amount, '>', 0)
       .limit(count);
 
     if(context)
       query.and.where(ObtainableFields.context, context);
 
-    const data = await query;
-    return data.map(ObtainableService.serialize);
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  static async getTopWithUsers({
-    count,
-    isCollectible,
-    context,
-  }: {
-    count: number,
-    isCollectible?: boolean,
-    context?: string,
-  })
-  {
-    const query = DB.obtainables()
-      .orderBy(ObtainableFields.amount, 'desc')
-      .join(UsersService.table, ObtainableFields.user_id, UsersFields.id)
-      .where(ObtainableFields.is_collectible, Boolean(isCollectible))
-      .limit(count);
-
-    if(context)
-      query.and.where(ObtainableFields.context, context);
+    if(withUsers)
+      query.join(UsersService.table, ObtainableFields.user_id, UsersFields.id);
 
     const data = await query;
     return data.map(ObtainableService.serialize);

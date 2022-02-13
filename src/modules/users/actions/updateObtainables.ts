@@ -2,7 +2,7 @@ import { findOrCreateUser } from './findUser';
 
 import { ObtainableService } from '../services/ObtainableService';
 
-import { ContextPlatforms, ContextUtil } from '../../../common/ContextUtil';
+import { ContextUtil } from '../../../common/ContextUtil';
 
 export async function updateObtainables({
   userIdentifier,
