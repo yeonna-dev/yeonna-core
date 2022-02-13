@@ -18,7 +18,8 @@ export async function obtainRandomItem({
 {
   /* Get a random item. */
   const chance = Math.random() * 100;
-  const randomItem = await ItemsService.findRandom({ chance });
+  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
+  const randomItem = await ItemsService.findRandom(chance, context);
   if(!randomItem)
     return;
 
@@ -28,7 +29,6 @@ export async function obtainRandomItem({
     throw new UserNotFound();
 
   /* Add item to the user. */
-  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
   await InventoriesService.addUserItems({
     userId,
     items: [{ code: randomItem.code, amount: 1 }],

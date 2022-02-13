@@ -47,6 +47,8 @@ const createUserIdItemCodeKey = (userId: string, itemCode: string) => `${userId}
 
 export class InventoriesService
 {
+  static table = 'inventories';
+
   static async getUserItems(userId: string, context?: string)
   {
     const query = DB.inventories()
@@ -54,7 +56,7 @@ export class InventoriesService
       .where(InventoriesFields.user_id, userId);
 
     if(context)
-      query.and.where(InventoriesFields.context, context);
+      query.and.where(`${InventoriesService.table}.${InventoriesFields.context}`, context);
 
     const data = await query;
     return data.map(InventoriesService.serialize);

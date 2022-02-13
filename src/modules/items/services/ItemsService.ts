@@ -9,6 +9,7 @@ export enum ItemsFields
   price = 'price',
   image = 'image',
   emote = 'emote',
+  context = 'context',
   category_id = 'category_id',
 };
 
@@ -64,22 +65,14 @@ export class ItemsService
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  static async findRandom({
-    code,
-    chance,
-  }: {
-    code?: string,
-    chance?: number,
-  })
+  static async findRandom(chance: number, context?: string)
   {
-    const query = DB.items();
-    if(code)
-      query.where(ItemsFields.code, code);
+    const query = DB.items()
+      .and.where(ItemsFields.chance_min, '<', chance)
+      .and.where(ItemsFields.chance_max, '>', chance);
 
-    if(chance)
-      query
-        .and.where(ItemsFields.chance_min, '<', chance)
-        .and.where(ItemsFields.chance_max, '>', chance);
+    if(context)
+      query.and.where(ItemsFields.context, context);
 
     const [data] = await query
       .orderByRaw('RANDOM()')
