@@ -73,7 +73,7 @@ export class InventoriesService
     items:
     {
       code: string,
-      amount: number,
+      amount?: number,
     }[],
     context?: string,
   })
@@ -88,7 +88,7 @@ export class InventoriesService
         [InventoriesFields.user_id]: userId,
         [InventoriesFields.item_code]: code,
         [InventoriesFields.user_id_item_code]: createUserIdItemCodeKey(userId, code),
-        [InventoriesFields.amount]: amount,
+        [InventoriesFields.amount]: amount || 1,
         [InventoriesFields.context]: context,
       });
     }
@@ -113,14 +113,14 @@ export class InventoriesService
     items:
     {
       code: string,
-      amount: number,
+      amount?: number,
     }[],
     context?: string,
   })
   {
     const updatedItems = await InventoriesService.updateUserItemAmounts({
       userId,
-      items: items.map(({ code, amount }) => ({ code, addAmount: amount })),
+      items: items.map(({ code, amount }) => ({ code, addAmount: amount || 1 })),
       context,
     });
 

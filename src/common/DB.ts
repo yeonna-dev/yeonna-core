@@ -20,6 +20,9 @@ export class DB
   static obtainables = () => db('obtainables');
   static items = () => db('items');
   static inventories = () => db('inventories');
+  static collections = () => db('collections');
+  static collectionsItems = () => db('collections_items');
+  static usersCollections = () => db('users_collections');
   static bits = () => db('bits');
   static usersBits = () => db('users_bits');
   static tags = () => db('tags');
