@@ -13,3 +13,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./getUserItems"), exports);
 __exportStar(require("./obtainRandomItem"), exports);
 __exportStar(require("./removeUserItems"), exports);
+__exportStar(require("./getUserCollections"), exports);
+__exportStar(require("./checkForCollection"), exports);

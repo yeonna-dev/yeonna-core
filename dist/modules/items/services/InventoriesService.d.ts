@@ -41,7 +41,7 @@ export declare class InventoriesService {
         userId: string;
         items: {
             code: string;
-            amount: number;
+            amount?: number;
         }[];
         context?: string;
     }): Promise<InventoryItem[]>;
@@ -49,7 +49,7 @@ export declare class InventoriesService {
         userId: string;
         items: {
             code: string;
-            amount: number;
+            amount?: number;
         }[];
         context?: string;
     }): Promise<InventoryItem[]>;

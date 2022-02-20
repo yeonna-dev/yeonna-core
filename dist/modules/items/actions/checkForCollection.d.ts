@@ -1,4 +1,6 @@
-export declare function checkForCollection({ userIdentifier }: {
+export declare function checkForCollection({ userIdentifier, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
-}): Promise<void>;
+    discordGuildId?: string;
+    twitchChannelId?: string;
+}): Promise<import("../services/CollectionsService").UserCollection[] | undefined>;
 //# sourceMappingURL=checkForCollection.d.ts.map

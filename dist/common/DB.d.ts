@@ -36,6 +36,33 @@ export declare class DB {
         _intersectProps: {};
         _unionProps: never;
     }[]>;
+    static collections: () => import("knex").Knex.QueryBuilder<any, {
+        _base: any;
+        _hasSelection: false;
+        _keys: never;
+        _aliases: {};
+        _single: false;
+        _intersectProps: {};
+        _unionProps: never;
+    }[]>;
+    static collectionsItems: () => import("knex").Knex.QueryBuilder<any, {
+        _base: any;
+        _hasSelection: false;
+        _keys: never;
+        _aliases: {};
+        _single: false;
+        _intersectProps: {};
+        _unionProps: never;
+    }[]>;
+    static usersCollections: () => import("knex").Knex.QueryBuilder<any, {
+        _base: any;
+        _hasSelection: false;
+        _keys: never;
+        _aliases: {};
+        _single: false;
+        _intersectProps: {};
+        _unionProps: never;
+    }[]>;
     static bits: () => import("knex").Knex.QueryBuilder<any, {
         _base: any;
         _hasSelection: false;

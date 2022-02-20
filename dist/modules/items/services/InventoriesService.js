@@ -45,7 +45,7 @@ class InventoriesService {
                     [InventoriesFields.user_id]: userId,
                     [InventoriesFields.item_code]: code,
                     [InventoriesFields.user_id_item_code]: createUserIdItemCodeKey(userId, code),
-                    [InventoriesFields.amount]: amount,
+                    [InventoriesFields.amount]: amount || 1,
                     [InventoriesFields.context]: context,
                 });
             }
@@ -62,7 +62,7 @@ class InventoriesService {
         return __awaiter(this, void 0, void 0, function* () {
             const updatedItems = yield InventoriesService.updateUserItemAmounts({
                 userId,
-                items: items.map(({ code, amount }) => ({ code, addAmount: amount })),
+                items: items.map(({ code, amount }) => ({ code, addAmount: amount || 1 })),
                 context,
             });
             /* If the number of updated items is equal to the given items,
