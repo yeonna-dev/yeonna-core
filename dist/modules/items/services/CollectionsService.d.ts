@@ -2,7 +2,8 @@ import { TimestampedRecord } from '../../../common/DB';
 export declare enum CollectionsFields {
     code = "code",
     name = "name",
-    fixed_bonus = "fixed_bonus"
+    fixed_bonus = "fixed_bonus",
+    context = "context"
 }
 export declare enum CollectionsItemsFields {
     collection_code = "collection_code",

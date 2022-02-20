@@ -5,6 +5,7 @@ export enum CollectionsFields
   code = 'code',
   name = 'name',
   fixed_bonus = 'fixed_bonus',
+  context = 'context',
 }
 
 export enum CollectionsItemsFields
@@ -89,20 +90,23 @@ export class CollectionsService
     collectionCodes?: string[],
   })
   {
-    const usersCollectionCodeField =
+    const usersCollectionsContextField =
+      `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.context}`;
+
+    const usersCollectionsCodeField =
       `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.collection_code}`;
 
     const query = DB.usersCollections()
       .select(
         UsersCollectionsFields.user_id,
         UsersCollectionsFields.collection_code,
-        UsersCollectionsFields.context,
+        usersCollectionsContextField,
         CollectionsFields.name,
         CollectionsFields.fixed_bonus,
       )
       .join(
         CollectionsService.collections,
-        usersCollectionCodeField,
+        usersCollectionsCodeField,
         CollectionsFields.code,
       );
 
@@ -110,10 +114,10 @@ export class CollectionsService
       query.where(UsersCollectionsFields.user_id, userId);
 
     if(context)
-      query.and.where(UsersCollectionsFields.context, context);
+      query.and.where(usersCollectionsContextField, context);
 
     if(collectionCodes)
-      query.and.whereIn(usersCollectionCodeField, collectionCodes);
+      query.and.whereIn(usersCollectionsCodeField, collectionCodes);
 
     const data = await query;
     return data.map(CollectionsService.serializeUserCollection);
@@ -132,7 +136,7 @@ export class CollectionsService
     const collectionCodeField = CollectionsItemsFields.collection_code;
 
     /* Get the completed collections that based on the item codes given. */
-    const completedCollections: CollectionItemRecord[] = await DB.collectionsItems()
+    const collectionItemsQuery = DB.collectionsItems()
       .select(collectionCodeField)
       .whereIn(CollectionsItemsFields.item_code, itemCodes)
       .groupBy(collectionCodeField)
@@ -144,6 +148,16 @@ export class CollectionsService
         })
       `));
 
+    if(context)
+      collectionItemsQuery
+        .join(
+          CollectionsService.collections,
+          CollectionsItemsFields.collection_code,
+          CollectionsFields.code,
+        )
+        .and.where(CollectionsFields.context, context);
+
+    const completedCollections: CollectionItemRecord[] = await collectionItemsQuery;
     const completedCollectionCodes = completedCollections
       .map(collection => collection[CollectionsItemsFields.collection_code]);
 

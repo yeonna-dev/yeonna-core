@@ -16,6 +16,7 @@ var CollectionsFields;
     CollectionsFields["code"] = "code";
     CollectionsFields["name"] = "name";
     CollectionsFields["fixed_bonus"] = "fixed_bonus";
+    CollectionsFields["context"] = "context";
 })(CollectionsFields = exports.CollectionsFields || (exports.CollectionsFields = {}));
 var CollectionsItemsFields;
 (function (CollectionsItemsFields) {
@@ -34,16 +35,17 @@ var UsersCollectionsFields;
 class CollectionsService {
     static getCollections({ userId, context, collectionCodes, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const usersCollectionCodeField = `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.collection_code}`;
+            const usersCollectionsContextField = `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.context}`;
+            const usersCollectionsCodeField = `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.collection_code}`;
             const query = DB_1.DB.usersCollections()
-                .select(UsersCollectionsFields.user_id, UsersCollectionsFields.collection_code, UsersCollectionsFields.context, CollectionsFields.name, CollectionsFields.fixed_bonus)
-                .join(CollectionsService.collections, usersCollectionCodeField, CollectionsFields.code);
+                .select(UsersCollectionsFields.user_id, UsersCollectionsFields.collection_code, usersCollectionsContextField, CollectionsFields.name, CollectionsFields.fixed_bonus)
+                .join(CollectionsService.collections, usersCollectionsCodeField, CollectionsFields.code);
             if (userId)
                 query.where(UsersCollectionsFields.user_id, userId);
             if (context)
-                query.and.where(UsersCollectionsFields.context, context);
+                query.and.where(usersCollectionsContextField, context);
             if (collectionCodes)
-                query.and.whereIn(usersCollectionCodeField, collectionCodes);
+                query.and.whereIn(usersCollectionsCodeField, collectionCodes);
             const data = yield query;
             return data.map(CollectionsService.serializeUserCollection);
         });
@@ -52,7 +54,7 @@ class CollectionsService {
         return __awaiter(this, void 0, void 0, function* () {
             const collectionCodeField = CollectionsItemsFields.collection_code;
             /* Get the completed collections that based on the item codes given. */
-            const completedCollections = yield DB_1.DB.collectionsItems()
+            const collectionItemsQuery = DB_1.DB.collectionsItems()
                 .select(collectionCodeField)
                 .whereIn(CollectionsItemsFields.item_code, itemCodes)
                 .groupBy(collectionCodeField)
@@ -62,6 +64,11 @@ class CollectionsService {
                 .select(collectionCodeField, DB_1.DB.knex.raw(`count(${collectionCodeField})`))
                 .groupBy(collectionCodeField)})
       `));
+            if (context)
+                collectionItemsQuery
+                    .join(CollectionsService.collections, CollectionsItemsFields.collection_code, CollectionsFields.code)
+                    .and.where(CollectionsFields.context, context);
+            const completedCollections = yield collectionItemsQuery;
             const completedCollectionCodes = completedCollections
                 .map(collection => collection[CollectionsItemsFields.collection_code]);
             /* Get the completed collections of the user along with the collection data. */
