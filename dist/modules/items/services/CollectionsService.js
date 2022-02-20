@@ -45,14 +45,14 @@ class CollectionsService {
             if (collectionCodes)
                 query.and.whereIn(usersCollectionCodeField, collectionCodes);
             const data = yield query;
-            return data.map(CollectionsService.serialize);
+            return data.map(CollectionsService.serializeUserCollection);
         });
     }
     static saveCompleted({ userId, itemCodes, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const collectionCodeField = CollectionsItemsFields.collection_code;
             /* Get the completed collections that based on the item codes given. */
-            const completedCollectionItems = yield DB_1.DB.collectionsItems()
+            const completedCollections = yield DB_1.DB.collectionsItems()
                 .select(collectionCodeField)
                 .whereIn(CollectionsItemsFields.item_code, itemCodes)
                 .groupBy(collectionCodeField)
@@ -62,39 +62,47 @@ class CollectionsService {
                 .select(collectionCodeField, DB_1.DB.knex.raw(`count(${collectionCodeField})`))
                 .groupBy(collectionCodeField)})
       `));
-            const completedCollectionCodes = [];
-            for (const collectionItem of completedCollectionItems) {
-                const collectionCode = collectionItem[CollectionsItemsFields.collection_code];
-                completedCollectionCodes.push(collectionCode);
-            }
+            const completedCollectionCodes = completedCollections
+                .map(collection => collection[CollectionsItemsFields.collection_code]);
             /* Get the completed collections of the user along with the collection data. */
-            const usersCollectionCodeField = `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.collection_code}`;
+            const usersCollectionsCodeField = UsersCollectionsFields.collection_code;
+            const usersCollectionsCodeJoinField = `${CollectionsService.usersCollectionsTable}.${usersCollectionsCodeField}`;
             const userCollections = yield DB_1.DB.usersCollections()
-                .join(CollectionsService.collections, usersCollectionCodeField, CollectionsFields.code)
+                .select(usersCollectionsCodeField)
+                .join(CollectionsService.collections, usersCollectionsCodeJoinField, CollectionsFields.code)
                 .where(UsersCollectionsFields.user_id, userId)
-                .and.whereIn(usersCollectionCodeField, completedCollectionCodes);
-            const userCollectionCodes = userCollections
-                .map((collection) => collection[UsersCollectionsFields.collection_code]);
+                .and.whereIn(usersCollectionsCodeJoinField, completedCollectionCodes);
+            const userCollectionCodes = userCollections.map(collection => collection[UsersCollectionsFields.collection_code]);
             const newUserCollectionsInsertData = [];
             for (const code of completedCollectionCodes) {
                 if (userCollectionCodes.includes(code))
                     continue;
                 newUserCollectionsInsertData.push({
                     [UsersCollectionsFields.user_id]: userId,
-                    [UsersCollectionsFields.collection_code]: code,
+                    [usersCollectionsCodeField]: code,
                     [UsersCollectionsFields.context]: context,
                 });
             }
             if (newUserCollectionsInsertData.length === 0)
                 return [];
             /* Save the new collections for the user with the given user ID. */
-            const newCompletedCollections = yield DB_1.DB.usersCollections()
+            const newCompletedCollectionCodes = yield DB_1.DB.usersCollections()
                 .insert(newUserCollectionsInsertData)
-                .returning('*');
-            return newCompletedCollections.map(CollectionsService.serialize);
+                .returning(usersCollectionsCodeField);
+            /* Get the collections data of the new completed collections. */
+            const collections = yield DB_1.DB.collections()
+                .whereIn(CollectionsFields.code, newCompletedCollectionCodes);
+            return collections.map(CollectionsService.serializeCollection);
         });
     }
-    static serialize(userCollectionRecord) {
+    static serializeCollection(collection) {
+        return {
+            code: collection[CollectionsFields.code],
+            name: collection[CollectionsFields.name],
+            fixedBonus: collection[CollectionsFields.fixed_bonus],
+        };
+    }
+    static serializeUserCollection(userCollectionRecord) {
         const serialized = {
             userId: userCollectionRecord[UsersCollectionsFields.user_id],
             code: userCollectionRecord[UsersCollectionsFields.collection_code],

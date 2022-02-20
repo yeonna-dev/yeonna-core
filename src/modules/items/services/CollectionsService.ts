@@ -51,7 +51,7 @@ export interface Collection
 {
   code: string;
   name: string;
-  fixedBonus: string;
+  fixedBonus: number;
 }
 
 export interface CollectionItem
@@ -116,7 +116,7 @@ export class CollectionsService
       query.and.whereIn(usersCollectionCodeField, collectionCodes);
 
     const data = await query;
-    return data.map(CollectionsService.serialize);
+    return data.map(CollectionsService.serializeUserCollection);
   }
 
   static async saveCompleted({
@@ -132,7 +132,7 @@ export class CollectionsService
     const collectionCodeField = CollectionsItemsFields.collection_code;
 
     /* Get the completed collections that based on the item codes given. */
-    const completedCollectionItems: CollectionItemRecord[] = await DB.collectionsItems()
+    const completedCollections: CollectionItemRecord[] = await DB.collectionsItems()
       .select(collectionCodeField)
       .whereIn(CollectionsItemsFields.item_code, itemCodes)
       .groupBy(collectionCodeField)
@@ -144,31 +144,29 @@ export class CollectionsService
         })
       `));
 
-    const completedCollectionCodes = [];
-    for(const collectionItem of completedCollectionItems)
-    {
-      const collectionCode = collectionItem[CollectionsItemsFields.collection_code];
-      completedCollectionCodes.push(collectionCode);
-    }
+    const completedCollectionCodes = completedCollections
+      .map(collection => collection[CollectionsItemsFields.collection_code]);
 
     /* Get the completed collections of the user along with the collection data. */
-    const usersCollectionCodeField =
-      `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.collection_code}`;
+    const usersCollectionsCodeField = UsersCollectionsFields.collection_code;
+    const usersCollectionsCodeJoinField =
+      `${CollectionsService.usersCollectionsTable}.${usersCollectionsCodeField}`;
 
-    const userCollections = await DB.usersCollections()
+    const userCollections: UserCollectionRecord[] = await DB.usersCollections()
+      .select(usersCollectionsCodeField)
       .join(
         CollectionsService.collections,
-        usersCollectionCodeField,
+        usersCollectionsCodeJoinField,
         CollectionsFields.code,
       )
       .where(UsersCollectionsFields.user_id, userId)
       .and.whereIn(
-        usersCollectionCodeField,
+        usersCollectionsCodeJoinField,
         completedCollectionCodes,
       );
 
-    const userCollectionCodes = userCollections
-      .map((collection) => collection[UsersCollectionsFields.collection_code]);
+    const userCollectionCodes = userCollections.map(collection =>
+      collection[UsersCollectionsFields.collection_code]);
 
     const newUserCollectionsInsertData = [];
     for(const code of completedCollectionCodes)
@@ -176,7 +174,7 @@ export class CollectionsService
       if(userCollectionCodes.includes(code)) continue;
       newUserCollectionsInsertData.push({
         [UsersCollectionsFields.user_id]: userId,
-        [UsersCollectionsFields.collection_code]: code,
+        [usersCollectionsCodeField]: code,
         [UsersCollectionsFields.context]: context,
       });
     }
@@ -185,14 +183,27 @@ export class CollectionsService
       return [];
 
     /* Save the new collections for the user with the given user ID. */
-    const newCompletedCollections = await DB.usersCollections()
+    const newCompletedCollectionCodes = await DB.usersCollections()
       .insert(newUserCollectionsInsertData)
-      .returning('*');
+      .returning(usersCollectionsCodeField);
 
-    return newCompletedCollections.map(CollectionsService.serialize);
+    /* Get the collections data of the new completed collections. */
+    const collections = await DB.collections()
+      .whereIn(CollectionsFields.code, newCompletedCollectionCodes);
+
+    return collections.map(CollectionsService.serializeCollection);
   }
 
-  static serialize(userCollectionRecord: UserCollectionRecord)
+  static serializeCollection(collection: CollectionRecord): Collection
+  {
+    return {
+      code: collection[CollectionsFields.code],
+      name: collection[CollectionsFields.name],
+      fixedBonus: collection[CollectionsFields.fixed_bonus],
+    };
+  }
+
+  static serializeUserCollection(userCollectionRecord: UserCollectionRecord): UserCollection
   {
     const serialized: UserCollection =
     {

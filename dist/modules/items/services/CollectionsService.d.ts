@@ -32,7 +32,7 @@ export interface UserCollectionRecord {
 export interface Collection {
     code: string;
     name: string;
-    fixedBonus: string;
+    fixedBonus: number;
 }
 export interface CollectionItem {
     collectionCode: string;
@@ -58,7 +58,8 @@ export declare class CollectionsService {
         userId: string;
         itemCodes: string[];
         context?: string;
-    }): Promise<UserCollection[]>;
-    static serialize(userCollectionRecord: UserCollectionRecord): UserCollection;
+    }): Promise<Collection[]>;
+    static serializeCollection(collection: CollectionRecord): Collection;
+    static serializeUserCollection(userCollectionRecord: UserCollectionRecord): UserCollection;
 }
 //# sourceMappingURL=CollectionsService.d.ts.map
