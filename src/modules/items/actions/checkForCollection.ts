@@ -25,7 +25,6 @@ export async function checkForCollection({
 
   /* Get the items of the user. */
   const inventory = await InventoriesService.getUserItems(userId, context);
-
   if(!inventory || inventory.length === 0)
     return;
 

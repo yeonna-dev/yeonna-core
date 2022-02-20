@@ -63,13 +63,10 @@ export interface CollectionItem
 export interface UserCollection
 {
   userId: string;
-  collection:
-  {
-    code: string;
-    name?: string;
-    fixedBonus?: number;
-  };
+  code: string;
   context: string;
+  name?: string;
+  fixedBonus?: number;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -200,20 +197,17 @@ export class CollectionsService
     const serialized: UserCollection =
     {
       userId: userCollectionRecord[UsersCollectionsFields.user_id],
-      collection:
-      {
-        code: userCollectionRecord[UsersCollectionsFields.collection_code],
-      },
+      code: userCollectionRecord[UsersCollectionsFields.collection_code],
       context: userCollectionRecord[UsersCollectionsFields.context],
     };
 
     const collectionName = userCollectionRecord[CollectionsFields.name];
     if(collectionName)
-      serialized.collection.name = collectionName;
+      serialized.name = collectionName;
 
     const collectionFixedBonus = userCollectionRecord[CollectionsFields.fixed_bonus];
     if(collectionFixedBonus)
-      serialized.collection.fixedBonus = collectionFixedBonus;
+      serialized.fixedBonus = collectionFixedBonus;
 
     return serialized;
   }

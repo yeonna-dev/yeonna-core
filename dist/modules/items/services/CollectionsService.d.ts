@@ -40,12 +40,10 @@ export interface CollectionItem {
 }
 export interface UserCollection {
     userId: string;
-    collection: {
-        code: string;
-        name?: string;
-        fixedBonus?: number;
-    };
+    code: string;
     context: string;
+    name?: string;
+    fixedBonus?: number;
 }
 export declare class CollectionsService {
     static collections: string;

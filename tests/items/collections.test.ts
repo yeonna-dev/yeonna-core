@@ -28,7 +28,7 @@ describe('Collections', function()
     const userCollections = await Core.Items.getUserCollections({ userIdentifier, discordGuildId });
     assert.strictEqual(
       userCollections.every(userCollection =>
-        userCollection.userId && userCollection.collection.code
+        userCollection.userId && userCollection.code
       ),
       true,
     );
