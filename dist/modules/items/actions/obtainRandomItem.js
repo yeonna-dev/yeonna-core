@@ -24,7 +24,7 @@ function obtainRandomItem({ userIdentifier, discordGuildId, twitchChannelId, }) 
         if (!randomItem)
             return;
         /* Get the user with the given identifier. */
-        const userId = yield actions_1.findUser(userIdentifier);
+        const userId = yield actions_1.findOrCreateUser({ userIdentifier, discordGuildId });
         if (!userId)
             throw new errors_1.UserNotFound();
         /* Add item to the user. */

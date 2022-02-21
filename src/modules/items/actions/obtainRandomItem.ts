@@ -1,7 +1,7 @@
 import { Item, ItemsService } from '../services/ItemsService';
 import { InventoriesService } from '../services/InventoriesService';
 
-import { findUser } from '../../users/actions';
+import { findOrCreateUser } from '../../users/actions';
 
 import { UserNotFound } from '../../../common/errors';
 import { ContextUtil } from '../../../common/ContextUtil';
@@ -24,7 +24,7 @@ export async function obtainRandomItem({
     return;
 
   /* Get the user with the given identifier. */
-  const userId = await findUser(userIdentifier);
+  const userId = await findOrCreateUser({ userIdentifier, discordGuildId });
   if(!userId)
     throw new UserNotFound();
 
