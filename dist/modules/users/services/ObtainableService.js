@@ -42,8 +42,9 @@ class ObtainableService {
             /* Try to find the obtainable record with the given `userId`, `is_collectible`
               and `context` fields first before inserting to ensure of no duplicates. */
             const existingQuery = DB_1.DB.obtainables()
-                .where(ObtainableFields.user_id, userId)
-                .and.where(ObtainableFields.amount, isCollectible);
+                .where(ObtainableFields.user_id, userId);
+            if (isCollectible)
+                existingQuery.and.where(ObtainableFields.is_collectible, isCollectible);
             if (context)
                 existingQuery.and.where(ObtainableFields.context, context);
             const existing = yield existingQuery;
