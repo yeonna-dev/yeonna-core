@@ -35,9 +35,20 @@ class ObtainableService {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    /* Creates an obtainable record */
+    /* Creates an obtainable record.
+      Returns a boolean that determines if the record was created or not. */
     static create({ userId, amount = 0, isCollectible, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
+            /* Try to find the obtainable record with the given `userId`, `is_collectible`
+              and `context` fields first before inserting to ensure of no duplicates. */
+            const existingQuery = DB_1.DB.obtainables()
+                .where(ObtainableFields.user_id, userId)
+                .and.where(ObtainableFields.amount, isCollectible);
+            if (context)
+                existingQuery.and.where(ObtainableFields.context, context);
+            const existing = yield existingQuery;
+            if (existing.length > 0)
+                return false;
             const insertData = {
                 [ObtainableFields.user_id]: userId,
                 [ObtainableFields.amount]: amount,
