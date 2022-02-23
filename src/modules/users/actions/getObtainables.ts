@@ -3,7 +3,6 @@ import { findUser } from './findUser';
 import { ObtainableService } from '../services/ObtainableService';
 
 import { ContextUtil } from '../../../common/ContextUtil';
-import { UserNotFound } from '../../../common/errors';
 
 export async function getObtainables({
   userIdentifier,
@@ -23,7 +22,7 @@ export async function getObtainables({
   /* Check if the user is existing. */
   const userId = await findUser(userIdentifier);
   if(!userId)
-    throw new UserNotFound();
+    return 0;
 
   const obtainables = await ObtainableService.find({
     userId,
@@ -34,7 +33,7 @@ export async function getObtainables({
   return obtainables || 0;
 }
 
-export async function getUserPoints({
+export async function getPoints({
   userIdentifier,
   discordGuildId,
   twitchChannelId,
@@ -51,7 +50,7 @@ export async function getUserPoints({
   });
 }
 
-export async function getUserCollectibles({
+export async function getCollectibles({
   userIdentifier,
   discordGuildId,
   twitchChannelId,

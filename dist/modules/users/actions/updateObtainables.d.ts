@@ -7,7 +7,7 @@ export declare function updateObtainables({ userIdentifier, amount, isCollectibl
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<number | undefined>;
-export declare function updateUserPoints({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }: {
+export declare function updatePoints({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
     amount: number;
     add?: boolean;
@@ -15,7 +15,7 @@ export declare function updateUserPoints({ userIdentifier, amount, add, subtract
     discordGuildId?: string;
     twitchChannelId?: string;
 }): Promise<number | undefined>;
-export declare function updateUserCollectibles({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }: {
+export declare function updateCollectibles({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }: {
     userIdentifier: string;
     amount: number;
     add?: boolean;

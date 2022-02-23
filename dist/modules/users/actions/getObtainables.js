@@ -9,11 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserCollectibles = exports.getUserPoints = exports.getObtainables = void 0;
+exports.getCollectibles = exports.getPoints = exports.getObtainables = void 0;
 const findUser_1 = require("./findUser");
 const ObtainableService_1 = require("../services/ObtainableService");
 const ContextUtil_1 = require("../../../common/ContextUtil");
-const errors_1 = require("../../../common/errors");
 function getObtainables({ userIdentifier, isCollectible, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!discordGuildId && !twitchChannelId)
@@ -21,7 +20,7 @@ function getObtainables({ userIdentifier, isCollectible, discordGuildId, twitchC
         /* Check if the user is existing. */
         const userId = yield findUser_1.findUser(userIdentifier);
         if (!userId)
-            throw new errors_1.UserNotFound();
+            return 0;
         const obtainables = yield ObtainableService_1.ObtainableService.find({
             userId,
             isCollectible,
@@ -31,7 +30,7 @@ function getObtainables({ userIdentifier, isCollectible, discordGuildId, twitchC
     });
 }
 exports.getObtainables = getObtainables;
-function getUserPoints({ userIdentifier, discordGuildId, twitchChannelId, }) {
+function getPoints({ userIdentifier, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         return getObtainables({
             userIdentifier,
@@ -40,8 +39,8 @@ function getUserPoints({ userIdentifier, discordGuildId, twitchChannelId, }) {
         });
     });
 }
-exports.getUserPoints = getUserPoints;
-function getUserCollectibles({ userIdentifier, discordGuildId, twitchChannelId, }) {
+exports.getPoints = getPoints;
+function getCollectibles({ userIdentifier, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         return getObtainables({
             userIdentifier,
@@ -51,4 +50,4 @@ function getUserCollectibles({ userIdentifier, discordGuildId, twitchChannelId, 
         });
     });
 }
-exports.getUserCollectibles = getUserCollectibles;
+exports.getCollectibles = getCollectibles;

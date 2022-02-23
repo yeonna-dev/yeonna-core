@@ -44,7 +44,7 @@ class ObtainableService {
             const existingQuery = DB_1.DB.obtainables()
                 .where(ObtainableFields.user_id, userId);
             if (isCollectible)
-                existingQuery.and.where(ObtainableFields.is_collectible, isCollectible);
+                existingQuery.and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
             if (context)
                 existingQuery.and.where(ObtainableFields.context, context);
             const existing = yield existingQuery;

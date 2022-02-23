@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserCollectibles = exports.updateUserPoints = exports.updateObtainables = void 0;
+exports.updateCollectibles = exports.updatePoints = exports.updateObtainables = void 0;
 const findUser_1 = require("./findUser");
 const ObtainableService_1 = require("../services/ObtainableService");
 const ContextUtil_1 = require("../../../common/ContextUtil");
@@ -24,14 +24,14 @@ function updateObtainables({ userIdentifier, amount, isCollectible, add, subtrac
         /* Check if the user's obtainable record is already created. */
         const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
         const obtainables = yield ObtainableService_1.ObtainableService.find({
-            userId: userId,
+            userId,
             isCollectible,
             context,
         });
         /* Create the obtainable record if not existing. */
         if (obtainables === undefined)
             yield ObtainableService_1.ObtainableService.create({
-                userId: userId,
+                userId,
                 amount,
                 isCollectible,
                 context,
@@ -43,7 +43,7 @@ function updateObtainables({ userIdentifier, amount, isCollectible, add, subtrac
             if (subtract)
                 newPoints = obtainables - amount;
             return ObtainableService_1.ObtainableService.update({
-                userId: userId,
+                userId,
                 amount: newPoints,
                 isCollectible,
                 context,
@@ -52,7 +52,7 @@ function updateObtainables({ userIdentifier, amount, isCollectible, add, subtrac
     });
 }
 exports.updateObtainables = updateObtainables;
-function updateUserPoints({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }) {
+function updatePoints({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         return updateObtainables({
             userIdentifier,
@@ -64,8 +64,8 @@ function updateUserPoints({ userIdentifier, amount, add, subtract, discordGuildI
         });
     });
 }
-exports.updateUserPoints = updateUserPoints;
-function updateUserCollectibles({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }) {
+exports.updatePoints = updatePoints;
+function updateCollectibles({ userIdentifier, amount, add, subtract, discordGuildId, twitchChannelId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         return updateObtainables({
             userIdentifier,
@@ -78,4 +78,4 @@ function updateUserCollectibles({ userIdentifier, amount, add, subtract, discord
         });
     });
 }
-exports.updateUserCollectibles = updateUserCollectibles;
+exports.updateCollectibles = updateCollectibles;

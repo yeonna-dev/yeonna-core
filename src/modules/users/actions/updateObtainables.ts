@@ -34,7 +34,7 @@ export async function updateObtainables({
   /* Check if the user's obtainable record is already created. */
   const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
   const obtainables = await ObtainableService.find({
-    userId: userId,
+    userId,
     isCollectible,
     context,
   });
@@ -42,7 +42,7 @@ export async function updateObtainables({
   /* Create the obtainable record if not existing. */
   if(obtainables === undefined)
     await ObtainableService.create({
-      userId: userId,
+      userId,
       amount,
       isCollectible,
       context,
@@ -56,7 +56,7 @@ export async function updateObtainables({
       newPoints = obtainables - amount;
 
     return ObtainableService.update({
-      userId: userId,
+      userId,
       amount: newPoints,
       isCollectible,
       context,
@@ -64,7 +64,7 @@ export async function updateObtainables({
   }
 }
 
-export async function updateUserPoints({
+export async function updatePoints({
   userIdentifier,
   amount,
   add,
@@ -90,7 +90,7 @@ export async function updateUserPoints({
   });
 }
 
-export async function updateUserCollectibles({
+export async function updateCollectibles({
   userIdentifier,
   amount,
   add,

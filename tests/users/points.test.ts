@@ -23,27 +23,27 @@ describe('Points', function()
   const twitchChannelId = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the points of a Discord user in a Discord server', async () =>
-    await Core.Users.getUserPoints({ userIdentifier: discordUser1, discordGuildId })
+    await Core.Users.getPoints({ userIdentifier: discordUser1, discordGuildId })
   );
 
   it('should get the points of a Twitch user in a Twitch channel', async () =>
-    await Core.Users.getUserPoints({ userIdentifier: twitchUser1, twitchChannelId })
+    await Core.Users.getPoints({ userIdentifier: twitchUser1, twitchChannelId })
   );
 
   it('should set the points of a Discord user in a Discord server', async () =>
-    await Core.Users.updateUserPoints({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
+    await Core.Users.updatePoints({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
   );
 
   it('should set the points of a Twitch user in a Twitch channel', async () =>
-    await Core.Users.updateUserPoints({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
+    await Core.Users.updatePoints({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
   );
 
   it('should add points to a Discord user in a Discord server', async () =>
-    await Core.Users.updateUserPoints({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
+    await Core.Users.updatePoints({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
   );
 
   it('should add points to a Twitch user in a Twitch channel', async () =>
-    await Core.Users.updateUserPoints({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
+    await Core.Users.updatePoints({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
   );
 
   it('should transfer the points of a Discord user to another', async () =>
@@ -68,7 +68,7 @@ describe('Points', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await Core.Users.getUserPoints({
+        const sourcePoints = await Core.Users.getPoints({
           userIdentifier: discordUser1,
           discordGuildId,
         });

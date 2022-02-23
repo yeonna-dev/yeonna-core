@@ -22,27 +22,27 @@ describe('Collectibles', function()
   const twitchChannelId = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the collectibles of a Discord user in a Discord server', async () =>
-    await Core.Users.getUserCollectibles({ userIdentifier: discordUser1, discordGuildId })
+    await Core.Users.getCollectibles({ userIdentifier: discordUser1, discordGuildId })
   );
 
   it('should get the collectibles of a Twitch user in a Twitch channel', async () =>
-    await Core.Users.getUserCollectibles({ userIdentifier: twitchUser1, twitchChannelId })
+    await Core.Users.getCollectibles({ userIdentifier: twitchUser1, twitchChannelId })
   );
 
   it('should set the collectibles of a Discord user in a Discord server', async () =>
-    await Core.Users.updateUserCollectibles({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
+    await Core.Users.updateCollectibles({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
   );
 
   it('should set the collectibles of a Twitch user in a Twitch channel', async () =>
-    await Core.Users.updateUserCollectibles({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
+    await Core.Users.updateCollectibles({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
   );
 
   it('should add a collectible to a Discord user in a Discord server', async () =>
-    await Core.Users.updateUserCollectibles({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
+    await Core.Users.updateCollectibles({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
   );
 
   it('should add a collectible to a Twitch user in a Twitch channel', async () =>
-    await Core.Users.updateUserCollectibles({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
+    await Core.Users.updateCollectibles({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
   );
 
   it('should transfer the collectibles of a Discord user to another', async () =>
@@ -67,7 +67,7 @@ describe('Collectibles', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await Core.Users.getUserCollectibles({ userIdentifier: discordUser1, discordGuildId });
+        const sourcePoints = await Core.Users.getCollectibles({ userIdentifier: discordUser1, discordGuildId });
         await Core.Users.transferUserCollectibles({
           fromUserIdentifier: discordUser1,
           toUserIdentifier: discordUser2,
