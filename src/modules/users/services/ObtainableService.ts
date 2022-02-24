@@ -55,7 +55,7 @@ export class ObtainableService
 
     const data = await query;
     const amount = data?.pop()?.amount;
-    if(amount) return Number(amount);
+    if(amount !== undefined) return Number(amount);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

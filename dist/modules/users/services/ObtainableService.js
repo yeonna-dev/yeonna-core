@@ -30,7 +30,7 @@ class ObtainableService {
                 query.and.where(ObtainableFields.context, context);
             const data = yield query;
             const amount = (_a = data === null || data === void 0 ? void 0 : data.pop()) === null || _a === void 0 ? void 0 : _a.amount;
-            if (amount)
+            if (amount !== undefined)
                 return Number(amount);
         });
     }
