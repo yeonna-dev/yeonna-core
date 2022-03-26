@@ -1,12 +1,11 @@
 {
   "name": "yeonna-core",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Yeonna Core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -r dist && tsc",
-    "dev": "tsc --watch",
+    "build": "tsc -b",
     "test": "mocha --exit -r tests/pre-test 'tests/index.test.ts'",
     "test:watch": "mocha -r tests/pre-test -w --watch-files 'tests/**/*.test.ts' 'tests/index.test.ts'",
     "prepare": "npm run build"

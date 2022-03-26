@@ -1,1 +1,0 @@
-{"version":3,"file":"declineRoleRequest.d.ts","sourceRoot":"","sources":["../../../../src/modules/discord/actions/declineRoleRequest.ts"],"names":[],"mappings":"AAGA,wBAAsB,kBAAkB,CAAC,EACvC,SAAS,EACT,iBAAiB,GAClB,EAAE;IACD,SAAS,EAAE,MAAM,CAAC;IAClB,iBAAiB,CAAC,EAAE,MAAM,CAAC;CAC5B,kEAUA"}
