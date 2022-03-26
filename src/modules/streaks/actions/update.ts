@@ -29,7 +29,20 @@ export async function update({
     throw new UserNotFound();
 
   const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
-  return count
-    ? StreakService.updateOrCreate({ userId, count, context })
-    : StreakService.increment({ userId, context });
+  const existingStreak = await StreakService.get({ userId, context });
+  let newStreak;
+  if(!existingStreak)
+    newStreak = await StreakService.create({ userId, context, count: 1 });
+  if(count)
+    newStreak = await StreakService.update({ userId, context, count });
+  if(increment)
+    newStreak = await StreakService.increment({ userId, context });
+
+  if(!newStreak)
+    return;
+
+  return {
+    previous: existingStreak,
+    current: newStreak,
+  };
 }

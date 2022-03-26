@@ -137,24 +137,6 @@ export class StreakService
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  static async updateOrCreate({
-    count,
-    userId,
-    context,
-  }: {
-    count: number,
-    userId: string,
-    context?: string,
-  })
-  {
-    const existingStreak = await StreakService.get({ userId, context });
-    return existingStreak
-      ? StreakService.update({ userId, count, context })
-      : StreakService.create({ userId, count, context });
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
   static async increment({
     userId,
     context,
