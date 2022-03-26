@@ -6,20 +6,19 @@ import { StreakService } from '../services/StreakService';
 export async function update({
   count,
   increment,
+  decrement,
   userIdentifier,
   discordGuildId,
   twitchChannelId,
 }: {
   count?: number,
   increment?: boolean,
+  decrement?: boolean,
   userIdentifier: string,
   discordGuildId?: string,
   twitchChannelId?: string,
 })
 {
-  if(!count && !increment)
-    return;
-
   if(!discordGuildId && !twitchChannelId)
     throw new Error('No Discord Guild ID or Twitch Channel ID provided');
 
@@ -30,13 +29,28 @@ export async function update({
 
   const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
   const existingStreak = await StreakService.get({ userId, context });
-  let newStreak;
-  if(!existingStreak)
-    newStreak = await StreakService.create({ userId, context, count: 1 });
-  if(count)
-    newStreak = await StreakService.update({ userId, context, count });
-  if(increment)
-    newStreak = await StreakService.increment({ userId, context });
+
+  const currentStreakCount = existingStreak?.count || 0;
+  if(!count)
+  {
+    if(increment)
+      count = currentStreakCount + 1;
+    else if(decrement)
+      count = currentStreakCount - 1;
+    else
+      count = 0;
+  }
+
+  if(count < 0)
+    count = 0;
+
+  let longest;
+  if(count > (existingStreak?.longest || 0))
+    longest = count;
+
+  const newStreak = existingStreak
+    ? await StreakService.update({ userId, context, count, longest })
+    : await StreakService.create({ userId, context, count });
 
   if(!newStreak)
     return;

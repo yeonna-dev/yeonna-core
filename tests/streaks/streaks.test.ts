@@ -23,25 +23,40 @@ describe('Streaks', function()
 
   it('should update the streak of a Discord user', async () =>
   {
-    const updatedStreak = await Core.Streaks.update({
+    const { current } = await Core.Streaks.update({
       count: initialStreakCount,
       userIdentifier,
       discordGuildId,
     });
 
-    currentStreakCount = updatedStreak.count;
+    currentStreakCount = current.count;
 
-    assert.strictEqual(updatedStreak.count, initialStreakCount);
+    assert.strictEqual(currentStreakCount, initialStreakCount);
   });
 
   it('should increment the streak of a Discord user', async () =>
   {
-    const updatedStreak = await Core.Streaks.update({
+    const { current } = await Core.Streaks.update({
       increment: true,
       userIdentifier,
       discordGuildId,
     });
 
-    assert.strictEqual(updatedStreak.count, currentStreakCount + 1);
+    const incremented = currentStreakCount + 1;
+    currentStreakCount = current.count;
+    assert.strictEqual(current.count, incremented);
+  });
+
+  it('should decrement the streak of a Discord user', async () =>
+  {
+    const { current } = await Core.Streaks.update({
+      decrement: true,
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const decremented = currentStreakCount - 1;
+    currentStreakCount = current.count;
+    assert.strictEqual(current.count, decremented);
   });
 });

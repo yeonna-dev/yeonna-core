@@ -88,36 +88,26 @@ export class StreakService
   static async update({
     userId,
     count,
-    increment,
+    longest,
     context,
   }: {
     userId: string,
-    count?: number,
-    increment?: boolean,
+    count: number,
+    longest?: number,
     context?: string,
   })
   {
-    const existingStreak = await StreakService.get({ userId, context });
-    if(!existingStreak || (!increment && !count))
-      return;
-
-    const currentStreakCount = existingStreak.count;
-    let newCount = count || currentStreakCount;
-    if(!count && increment)
-      newCount = currentStreakCount + 1;
-
     const updateData: {
       [StreaksFields.count]: number,
-      [StreaksFields.updated_at]: any,
+      [StreaksFields.updated_at]: any;
       [StreaksFields.longest]?: number;
     } = {
-      [StreaksFields.count]: newCount,
+      [StreaksFields.count]: count,
       [StreaksFields.updated_at]: DB.knex.fn.now(),
     };
 
-    let longest = existingStreak.longest;
-    if(newCount > longest)
-      updateData[StreaksFields.longest] = newCount;
+    if(longest)
+      updateData[StreaksFields.longest] = longest;
 
     const query = DB.streaks()
       .where(StreaksFields.user_id, userId);
@@ -133,19 +123,6 @@ export class StreakService
       return;
 
     return StreakService.serialize(updatedStreak);
-  }
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-  static async increment({
-    userId,
-    context,
-  }: {
-    userId: string,
-    context?: string,
-  })
-  {
-    return StreakService.update({ userId, increment: true, context });
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
