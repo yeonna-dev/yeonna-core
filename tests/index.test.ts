@@ -6,3 +6,4 @@ import './items/collections.test';
 import './bits/bits.test';
 import './bits/tags.test';
 import './discord/role-requests.test';
+import './streaks/streaks.test';

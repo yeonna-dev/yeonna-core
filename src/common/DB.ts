@@ -16,18 +16,23 @@ if(process.env.DEBUG)
 export class DB
 {
   static knex = db;
+
   static users = () => db('users');
   static obtainables = () => db('obtainables');
+
   static items = () => db('items');
   static inventories = () => db('inventories');
   static collections = () => db('collections');
   static collectionsItems = () => db('collections_items');
   static usersCollections = () => db('users_collections');
+
   static bits = () => db('bits');
   static usersBits = () => db('users_bits');
   static tags = () => db('tags');
 
   static discordRoleRequests = () => db('discord_role_requests');
+
+  static streaks = () => db('streaks');
 }
 
 export interface TimestampedRecord

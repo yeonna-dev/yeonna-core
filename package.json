@@ -1,6 +1,6 @@
 {
   "name": "yeonna-core",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Yeonna Core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,7 +8,8 @@
     "build": "rm -r dist && tsc",
     "dev": "tsc --watch",
     "test": "mocha --exit -r tests/pre-test 'tests/index.test.ts'",
-    "test:watch": "mocha -r tests/pre-test -w --watch-files 'tests/**/*.test.ts' 'tests/index.test.ts'"
+    "test:watch": "mocha -r tests/pre-test -w --watch-files 'tests/**/*.test.ts' 'tests/index.test.ts'",
+    "prepare": "npm run build"
   },
   "author": "osairis100@gmail.com",
   "license": "MIT",
