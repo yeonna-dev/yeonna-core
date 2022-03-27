@@ -1,0 +1,1 @@
+{"version":3,"file":"createRoleRequest.d.ts","sourceRoot":"","sources":["../../../../src/modules/discord/actions/createRoleRequest.ts"],"names":[],"mappings":"AAEA,wBAAsB,iBAAiB,CAAC,EACtC,QAAQ,EACR,SAAS,EACT,cAAc,EACd,kBAAkB,GACnB,EAAE;IACD,QAAQ,CAAC,EAAE,MAAM,CAAC;IAClB,SAAS,CAAC,EAAE,MAAM,CAAC;IACnB,cAAc,EAAE,MAAM,CAAC;IACvB,kBAAkB,EAAE,MAAM,CAAC;CAC5B,kEAcA"}
