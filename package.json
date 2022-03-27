@@ -1,9 +1,12 @@
 {
   "name": "yeonna-core",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Yeonna Core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "tsc -b",
     "test": "mocha --exit -r tests/pre-test 'tests/index.test.ts'",
