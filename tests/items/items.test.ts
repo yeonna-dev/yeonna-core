@@ -42,7 +42,7 @@ describe('Items', function()
       assert.notStrictEqual(item.code, undefined);
   });
 
-  it('should add to a specific item in a Discord user inventory', async () =>
+  it('should add a specific item in a Discord user inventory', async () =>
   {
     const userId = await Core.Users.findUser(userIdentifier);
     await InventoriesService.addUserItems({
@@ -50,6 +50,10 @@ describe('Items', function()
       items: [
         {
           code: itemCode,
+          amount: 2,
+        },
+        {
+          code: 'jkb',
           amount: 2,
         },
       ],
@@ -78,4 +82,56 @@ describe('Items', function()
       discordGuildId,
     })
   );
+
+  it('should sell duplicate items in a Discord user inventory', async () =>
+  {
+    const userPoints = await Core.Users.getPoints({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const { sellPrice } = await Core.Items.sellDuplicateItems({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const userItems = await Core.Items.getUserItems({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const postSellUserPoints = await Core.Users.getPoints({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    assert.strictEqual(postSellUserPoints, userPoints + sellPrice);
+    assert.strictEqual(userItems.every(({ amount }) => amount === 1 || amount === 0), true);
+  });
+
+  it('should sell all items of a category from a Discord user inventory', async () =>
+  {
+    const userPoints = await Core.Users.getPoints({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const sellPrice = await Core.Items.sellAllItems({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const userItems = await Core.Items.getUserItems({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const postSellUserPoints = await Core.Users.getPoints({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    assert.strictEqual(postSellUserPoints, userPoints + sellPrice);
+    assert.strictEqual(userItems.length, 0);
+  });
 });

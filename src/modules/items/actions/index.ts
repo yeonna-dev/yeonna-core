@@ -4,3 +4,5 @@ export * from './removeUserItems';
 
 export * from './getUserCollections';
 export * from './checkForCollection';
+export * from './sellDuplicateItems';
+export * from './sellAllItems';

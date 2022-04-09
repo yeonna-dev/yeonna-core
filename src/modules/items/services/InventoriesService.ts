@@ -172,13 +172,14 @@ export class InventoriesService
       code: string,
       addAmount?: number,
       subtractAmount?: number,
+      amount?: number,
     }[],
     context?: string,
   })
   {
     let whenClauses = [];
     const userIdItemCodeKeys = [];
-    for(const { code, addAmount, subtractAmount } of items)
+    for(const { code, amount, addAmount, subtractAmount } of items)
     {
       if(addAmount === 0 || subtractAmount === 0)
         continue;
@@ -186,17 +187,22 @@ export class InventoriesService
       const userIdItemCode = createUserIdItemCodeKey(userId, code);
       userIdItemCodeKeys.push(userIdItemCode);
 
-      if(subtractAmount)
+      const whenUserIdItemCodeClause =
+        `WHEN (${InventoriesFields.user_id_item_code} = '${userIdItemCode}')`;
+
+      if(addAmount)
         whenClauses.push(`
-          WHEN (${InventoriesFields.user_id_item_code} = '${userIdItemCode}')
+          ${whenUserIdItemCodeClause}
+          THEN ${InventoriesFields.amount} + ${addAmount}
+        `);
+      else if(subtractAmount)
+        whenClauses.push(`
+          ${whenUserIdItemCodeClause}
           AND (${InventoriesFields.amount} >= ${subtractAmount})
           THEN ${InventoriesFields.amount} - ${subtractAmount}
         `);
       else
-        whenClauses.push(`
-          WHEN ${InventoriesFields.user_id_item_code} = '${userIdItemCode}'
-          THEN ${InventoriesFields.amount} + ${addAmount}
-        `);
+        whenClauses.push(`${whenUserIdItemCodeClause} THEN ${amount}`);
     }
 
     if(whenClauses.length === 0)
@@ -212,6 +218,13 @@ export class InventoriesService
       query.and.where({ [InventoriesFields.context]: context });
 
     const data = await query;
+    const updatedItemsIndices = data.map(record => record[InventoriesFields.user_id_item_code]);
+
+    await DB.inventories()
+      .delete()
+      .where({ [InventoriesFields.amount]: 0 })
+      .and.whereIn(InventoriesFields.user_id_item_code, updatedItemsIndices);
+
     return data.map(InventoriesService.serialize);
   }
 

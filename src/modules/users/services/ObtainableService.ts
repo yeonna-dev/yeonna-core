@@ -112,17 +112,26 @@ export class ObtainableService
   static async update({
     userId,
     amount,
+    addAmount,
     isCollectible,
     context,
   }: {
     userId: string,
-    amount: number,
+    amount?: number,
+    addAmount?: number,
     isCollectible?: boolean,
     context?: string,
   })
   {
+    if(!amount && !addAmount)
+      return;
+
+    let updateExpression = `${amount}`;
+    if(addAmount)
+      updateExpression = `${ObtainableFields.amount} + ${addAmount}`;
+
     const query = DB.obtainables()
-      .update({ [ObtainableFields.amount]: amount })
+      .update({ [ObtainableFields.amount]: DB.knex.raw(updateExpression) })
       .returning('*')
       .where(ObtainableFields.user_id, userId)
       .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
