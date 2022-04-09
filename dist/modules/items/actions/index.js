@@ -15,3 +15,5 @@ __exportStar(require("./obtainRandomItem"), exports);
 __exportStar(require("./removeUserItems"), exports);
 __exportStar(require("./getUserCollections"), exports);
 __exportStar(require("./checkForCollection"), exports);
+__exportStar(require("./sellDuplicateItems"), exports);
+__exportStar(require("./sellAllItems"), exports);

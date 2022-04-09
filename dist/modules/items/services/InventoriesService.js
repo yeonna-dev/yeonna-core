@@ -91,22 +91,25 @@ class InventoriesService {
         return __awaiter(this, void 0, void 0, function* () {
             let whenClauses = [];
             const userIdItemCodeKeys = [];
-            for (const { code, addAmount, subtractAmount } of items) {
+            for (const { code, amount, addAmount, subtractAmount } of items) {
                 if (addAmount === 0 || subtractAmount === 0)
                     continue;
                 const userIdItemCode = createUserIdItemCodeKey(userId, code);
                 userIdItemCodeKeys.push(userIdItemCode);
-                if (subtractAmount)
+                const whenUserIdItemCodeClause = `WHEN (${InventoriesFields.user_id_item_code} = '${userIdItemCode}')`;
+                if (addAmount)
                     whenClauses.push(`
-          WHEN (${InventoriesFields.user_id_item_code} = '${userIdItemCode}')
+          ${whenUserIdItemCodeClause}
+          THEN ${InventoriesFields.amount} + ${addAmount}
+        `);
+                else if (subtractAmount)
+                    whenClauses.push(`
+          ${whenUserIdItemCodeClause}
           AND (${InventoriesFields.amount} >= ${subtractAmount})
           THEN ${InventoriesFields.amount} - ${subtractAmount}
         `);
                 else
-                    whenClauses.push(`
-          WHEN ${InventoriesFields.user_id_item_code} = '${userIdItemCode}'
-          THEN ${InventoriesFields.amount} + ${addAmount}
-        `);
+                    whenClauses.push(`${whenUserIdItemCodeClause} THEN ${amount}`);
             }
             if (whenClauses.length === 0)
                 return [];
@@ -118,6 +121,11 @@ class InventoriesService {
             if (context)
                 query.and.where({ [InventoriesFields.context]: context });
             const data = yield query;
+            const updatedItemsIndices = data.map(record => record[InventoriesFields.user_id_item_code]);
+            yield DB_1.DB.inventories()
+                .delete()
+                .where({ [InventoriesFields.amount]: 0 })
+                .and.whereIn(InventoriesFields.user_id_item_code, updatedItemsIndices);
             return data.map(InventoriesService.serialize);
         });
     }

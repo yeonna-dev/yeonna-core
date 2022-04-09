@@ -36,9 +36,10 @@ export declare class ObtainableService {
         isCollectible?: boolean;
         context?: string;
     }): Promise<Boolean>;
-    static update({ userId, amount, isCollectible, context, }: {
+    static update({ userId, amount, addAmount, isCollectible, context, }: {
         userId: string;
-        amount: number;
+        amount?: number;
+        addAmount?: number;
         isCollectible?: boolean;
         context?: string;
     }): Promise<number | undefined>;

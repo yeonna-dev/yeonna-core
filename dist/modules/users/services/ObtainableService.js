@@ -65,11 +65,16 @@ class ObtainableService {
         });
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    static update({ userId, amount, isCollectible, context, }) {
+    static update({ userId, amount, addAmount, isCollectible, context, }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            if (!amount && !addAmount)
+                return;
+            let updateExpression = `${amount}`;
+            if (addAmount)
+                updateExpression = `${ObtainableFields.amount} + ${addAmount}`;
             const query = DB_1.DB.obtainables()
-                .update({ [ObtainableFields.amount]: amount })
+                .update({ [ObtainableFields.amount]: DB_1.DB.knex.raw(updateExpression) })
                 .returning('*')
                 .where(ObtainableFields.user_id, userId)
                 .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));

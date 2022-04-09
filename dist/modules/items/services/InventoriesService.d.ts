@@ -67,6 +67,7 @@ export declare class InventoriesService {
             code: string;
             addAmount?: number;
             subtractAmount?: number;
+            amount?: number;
         }[];
         context?: string;
     }): Promise<InventoryItem[]>;

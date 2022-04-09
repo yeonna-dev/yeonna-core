@@ -33,9 +33,9 @@ export async function sellAllItems({
     which will set all item amounts to 0. */
   let totalSellPrice = 0;
   const itemsToUpdate: { code: string, amount: number; }[] = [];
-  for(const { code, price } of userItems)
+  for(const { code, price, amount } of userItems)
   {
-    totalSellPrice += price || 0;
+    totalSellPrice += amount * (price || 0);
     itemsToUpdate.push({ code, amount: 0 });
   }
 
