@@ -1,8 +1,8 @@
-import 'mocha';
 import assert from 'assert';
-
+import 'mocha';
 import { Core } from '../../src';
 import { InventoriesService } from '../../src/modules/items/services/InventoriesService';
+
 
 describe('Items', function()
 {
@@ -116,7 +116,7 @@ describe('Items', function()
       discordGuildId,
     });
 
-    const sellPrice = await Core.Items.sellAllItems({
+    const { sellPrice } = await Core.Items.sellAllItems({
       userIdentifier,
       discordGuildId,
     });
