@@ -2,7 +2,7 @@ import { ContextUtil } from '../../../common/ContextUtil';
 import { UserNotFound } from '../../../common/errors';
 import { findUser } from '../../users/actions';
 import { ObtainableService } from '../../users/services/ObtainableService';
-import { InventoriesService } from '../services/InventoriesService';
+import { InventoriesService, InventoryItem } from '../services/InventoriesService';
 import { getUserItems } from './getUserItems';
 
 enum SellMode
@@ -10,18 +10,21 @@ enum SellMode
   All,
   Duplicates,
   Single,
+  Category,
 }
 
 async function sell({
   userIdentifier,
+  sellMode,
+  category,
   discordGuildId,
   twitchChannelId,
-  sellMode,
 }: {
   userIdentifier: string,
+  sellMode: SellMode,
+  category?: string,
   discordGuildId?: string,
   twitchChannelId?: string,
-  sellMode: SellMode,
 })
 {
   /* Get the user with the given identifier. */
@@ -38,23 +41,39 @@ async function sell({
     twitchChannelId,
   });
 
-  /* Get the total price of the items to be sold and form
-    the update data, which will update all the item amounts. */
-  let sellPrice = 0;
   const itemsToUpdate: { code: string, amount: number; }[] = [];
-  for(let { code, price, amount } of userItems)
+  if([SellMode.All, SellMode.Duplicates, SellMode.Category].includes(sellMode))
   {
-    price = price || 0;
-    if(sellMode === SellMode.All)
+    /* Get the total price of the items to be sold and form
+      the update data, which will update all the item amounts. */
+    for(let { code, amount, category: itemCategory } of userItems)
     {
-      sellPrice += amount * price;
-      itemsToUpdate.push({ code, amount: 0 });
+      let newAmount;
+      if(
+        sellMode === SellMode.All ||
+        (sellMode === SellMode.Category && category === itemCategory)
+      )
+        newAmount = 0;
+      if(sellMode === SellMode.Duplicates && amount > 1)
+        newAmount = 1;
+
+      if(newAmount !== undefined)
+        itemsToUpdate.push({ code, amount: newAmount });
     }
-    if(sellMode === SellMode.Duplicates)
-    {
-      sellPrice += (amount - 1) * price;
-      itemsToUpdate.push({ code, amount: 1 });
-    }
+  }
+
+  /* Update the item amounts. */
+  let sellPrice = 0;
+  let soldItems: InventoryItem[] = [];
+  if(itemsToUpdate.length > 0)
+  {
+    soldItems = await InventoriesService.updateUserItemAmounts({
+      userId,
+      items: itemsToUpdate,
+      context,
+    });
+
+    sellPrice = soldItems.reduce((total, item) => total + (item.price || 0), 0);
   }
 
   /* Add the total price of the items to the user's points. */
@@ -64,13 +83,6 @@ async function sell({
       addAmount: sellPrice,
       context,
     });
-
-  /* Update the item amounts. */
-  const soldItems = await InventoriesService.updateUserItemAmounts({
-    userId,
-    items: itemsToUpdate,
-    context,
-  });
 
   return {
     sellPrice,
@@ -90,9 +102,9 @@ export async function sellAllItems({
 {
   return sell({
     userIdentifier,
+    sellMode: SellMode.All,
     discordGuildId,
     twitchChannelId,
-    sellMode: SellMode.All,
   });
 }
 
@@ -108,8 +120,29 @@ export async function sellDuplicateItems({
 {
   return sell({
     userIdentifier,
+    sellMode: SellMode.Duplicates,
     discordGuildId,
     twitchChannelId,
-    sellMode: SellMode.Duplicates,
+  });
+}
+
+export async function sellByCategory({
+  userIdentifier,
+  category,
+  discordGuildId,
+  twitchChannelId,
+}: {
+  userIdentifier: string,
+  category: string,
+  discordGuildId?: string,
+  twitchChannelId?: string,
+})
+{
+  return sell({
+    userIdentifier,
+    sellMode: SellMode.Category,
+    category,
+    discordGuildId,
+    twitchChannelId,
   });
 }

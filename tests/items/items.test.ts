@@ -10,7 +10,6 @@ describe('Items', function()
 
   const userIdentifier = '247955535620472844';
   const discordGuildId = '504135117296500746';
-  const itemCode = 'c';
 
   it('should get the items of a Discord user', async () =>
   {
@@ -42,14 +41,22 @@ describe('Items', function()
       assert.notStrictEqual(item.code, undefined);
   });
 
-  it('should add a specific item in a Discord user inventory', async () =>
+  it('should add specific items in a Discord user inventory', async () =>
   {
     const userId = await Core.Users.findUser(userIdentifier);
     await InventoriesService.addUserItems({
       userId,
       items: [
         {
-          code: itemCode,
+          code: 'c',
+          amount: 2,
+        },
+        {
+          code: 'a',
+          amount: 2,
+        },
+        {
+          code: 'p',
           amount: 2,
         },
         {
@@ -110,6 +117,35 @@ describe('Items', function()
   });
 
   it('should sell all items of a category from a Discord user inventory', async () =>
+  {
+    const category = 'Uncommon';
+
+    const userPoints = await Core.Users.getPoints({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const { sellPrice } = await Core.Items.sellByCategory({
+      userIdentifier,
+      discordGuildId,
+      category,
+    });
+
+    const userItems = await Core.Items.getUserItems({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    const postSellUserPoints = await Core.Users.getPoints({
+      userIdentifier,
+      discordGuildId,
+    });
+
+    assert.strictEqual(postSellUserPoints, userPoints + sellPrice);
+    assert.strictEqual(userItems.every(item => item.category !== category), true);
+  });
+
+  it('should sell all items from a Discord user inventory', async () =>
   {
     const userPoints = await Core.Users.getPoints({
       userIdentifier,

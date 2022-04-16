@@ -10,6 +10,11 @@ export enum InventoriesFields
   context = 'context',
 };
 
+const categoriesTable = 'categories';
+const categoryIdField = 'id';
+const categoryNameField = 'name';
+const categoryNameAlias = 'category_name';
+
 export interface InventoryRecord extends TimestampedRecord
 {
   [InventoriesFields.user_id]: string;
@@ -27,6 +32,9 @@ export interface InventoryRecord extends TimestampedRecord
   [ItemsFields.image]?: string;
   [ItemsFields.emote]?: string;
   [ItemsFields.category_id]?: string;
+
+  /* Joined fields from 'categories' table */
+  [categoryNameAlias]?: string;
 }
 
 export interface InventoryItem
@@ -40,7 +48,7 @@ export interface InventoryItem
   price?: number;
   image?: string;
   emote?: string;
-  categoryId?: string;
+  category?: string;
 }
 
 const createUserIdItemCodeKey = (userId: string, itemCode: string) => `${userId}:${itemCode}`;
@@ -52,7 +60,13 @@ export class InventoriesService
   static async getUserItems(userId: string, context?: string)
   {
     const query = DB.inventories()
+      .select(
+        `${InventoriesService.table}.*`,
+        `${ItemsService.table}.*`,
+        `${categoriesTable}.${categoryNameField} as ${categoryNameAlias}`,
+      )
       .join(ItemsService.table, InventoriesFields.item_code, ItemsFields.code)
+      .join(categoriesTable, ItemsFields.category_id, `${categoriesTable}.${categoryIdField}`)
       .where(InventoriesFields.user_id, userId);
 
     if(context)
@@ -248,7 +262,7 @@ export class InventoriesService
       [ItemsFields.price]: 'price',
       [ItemsFields.image]: 'image',
       [ItemsFields.emote]: 'emote',
-      [ItemsFields.category_id]: 'categoryId',
+      [categoryNameAlias]: 'category'
     };
 
     for(const field in itemFieldsMapping)
