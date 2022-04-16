@@ -21,12 +21,18 @@ var InventoriesFields;
     InventoriesFields["context"] = "context";
 })(InventoriesFields = exports.InventoriesFields || (exports.InventoriesFields = {}));
 ;
+const categoriesTable = 'categories';
+const categoryIdField = 'id';
+const categoryNameField = 'name';
+const categoryNameAlias = 'category_name';
 const createUserIdItemCodeKey = (userId, itemCode) => `${userId}:${itemCode}`;
 class InventoriesService {
     static getUserItems(userId, context) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.inventories()
+                .select(`${InventoriesService.table}.*`, `${ItemsService_1.ItemsService.table}.*`, `${categoriesTable}.${categoryNameField} as ${categoryNameAlias}`)
                 .join(ItemsService_1.ItemsService.table, InventoriesFields.item_code, ItemsService_1.ItemsFields.code)
+                .join(categoriesTable, ItemsService_1.ItemsFields.category_id, `${categoriesTable}.${categoryIdField}`)
                 .where(InventoriesFields.user_id, userId);
             if (context)
                 query.and.where(`${InventoriesService.table}.${InventoriesFields.context}`, context);
@@ -144,7 +150,7 @@ class InventoriesService {
             [ItemsService_1.ItemsFields.price]: 'price',
             [ItemsService_1.ItemsFields.image]: 'image',
             [ItemsService_1.ItemsFields.emote]: 'emote',
-            [ItemsService_1.ItemsFields.category_id]: 'categoryId',
+            [categoryNameAlias]: 'category'
         };
         for (const field in itemFieldsMapping) {
             const serializedKey = itemFieldsMapping[field];

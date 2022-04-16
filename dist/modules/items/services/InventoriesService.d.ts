@@ -7,6 +7,7 @@ export declare enum InventoriesFields {
     amount = "amount",
     context = "context"
 }
+declare const categoryNameAlias = "category_name";
 export interface InventoryRecord extends TimestampedRecord {
     [InventoriesFields.user_id]: string;
     [InventoriesFields.item_code]: string;
@@ -21,6 +22,7 @@ export interface InventoryRecord extends TimestampedRecord {
     [ItemsFields.image]?: string;
     [ItemsFields.emote]?: string;
     [ItemsFields.category_id]?: string;
+    [categoryNameAlias]?: string;
 }
 export interface InventoryItem {
     amount: number;
@@ -32,7 +34,7 @@ export interface InventoryItem {
     price?: number;
     image?: string;
     emote?: string;
-    categoryId?: string;
+    category?: string;
 }
 export declare class InventoriesService {
     static table: string;
@@ -73,4 +75,5 @@ export declare class InventoriesService {
     }): Promise<InventoryItem[]>;
     static serialize(userItem: InventoryRecord): InventoryItem;
 }
+export {};
 //# sourceMappingURL=InventoriesService.d.ts.map
