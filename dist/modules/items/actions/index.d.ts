@@ -1,8 +1,7 @@
+export * from './checkForCollection';
+export * from './getUserCollections';
 export * from './getUserItems';
 export * from './obtainRandomItem';
 export * from './removeUserItems';
-export * from './getUserCollections';
-export * from './checkForCollection';
-export * from './sellDuplicateItems';
-export * from './sellAllItems';
+export * from './sell';
 //# sourceMappingURL=index.d.ts.map
