@@ -1,5 +1,4 @@
 import { UsersService } from '../services/UsersService';
-
 import { findUser } from './findUser';
 
 export async function connectIdToUser({

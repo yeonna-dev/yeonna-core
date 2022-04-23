@@ -1,10 +1,8 @@
-import { CollectionsService } from '../services/CollectionsService';
-import { InventoriesService } from '../services/InventoriesService';
-
-import { findUser } from '../../users/actions';
-
 import { ContextUtil } from '../../../common/ContextUtil';
 import { UserNotFound } from '../../../common/errors';
+import { findUser } from '../../users/actions';
+import { CollectionsService } from '../services/CollectionsService';
+import { InventoriesService } from '../services/InventoriesService';
 
 export async function checkForCollection({
   userIdentifier,

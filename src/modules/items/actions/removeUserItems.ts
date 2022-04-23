@@ -1,9 +1,7 @@
-import { InventoriesService } from '../services/InventoriesService';
-
-import { findUser } from '../../users/actions';
-
 import { ContextUtil } from '../../../common/ContextUtil';
 import { UserNotFound } from '../../../common/errors';
+import { findUser } from '../../users/actions';
+import { InventoriesService } from '../services/InventoriesService';
 
 export async function removeUserItems({
   userIdentifier,

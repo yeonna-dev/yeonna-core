@@ -1,8 +1,6 @@
-import { findUser } from './findUser';
-
-import { ObtainableService } from '../services/ObtainableService';
-
 import { ContextUtil } from '../../../common/ContextUtil';
+import { ObtainableService } from '../services/ObtainableService';
+import { findUser } from './findUser';
 
 export async function getObtainables({
   userIdentifier,

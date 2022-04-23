@@ -1,10 +1,8 @@
+import { createTags } from '.';
+import { NoBitContentProvided } from '../../../common/errors';
+import { findOrCreateUser } from '../../users/actions';
 import { BitsService } from '../services/BitsService';
 import { UsersBitsService } from '../services/UsersBitsService';
-
-import { findOrCreateUser } from '../../users/actions';
-import { createTags } from '.';
-
-import { NoBitContentProvided } from '../../../common/errors';
 
 export async function saveUserBit({
   userIdentifier,

@@ -1,10 +1,8 @@
-import { Item, ItemsService } from '../services/ItemsService';
-import { InventoriesService } from '../services/InventoriesService';
-
-import { findOrCreateUser } from '../../users/actions';
-
-import { UserNotFound } from '../../../common/errors';
 import { ContextUtil } from '../../../common/ContextUtil';
+import { UserNotFound } from '../../../common/errors';
+import { findOrCreateUser } from '../../users/actions';
+import { InventoriesService } from '../services/InventoriesService';
+import { Item, ItemsService } from '../services/ItemsService';
 
 export async function obtainRandomItem({
   userIdentifier,

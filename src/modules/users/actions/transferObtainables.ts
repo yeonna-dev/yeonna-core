@@ -1,10 +1,8 @@
-import { findUser, findOrCreateUser } from './findUser';
-import { getObtainables } from './getObtainables';
-
-import { ObtainableService } from '../services/ObtainableService';
-
 import { ContextUtil } from '../../../common/ContextUtil';
 import { NotEnoughCollectibles, NotEnoughPoints } from '../../../common/errors';
+import { ObtainableService } from '../services/ObtainableService';
+import { findOrCreateUser, findUser } from './findUser';
+import { getObtainables } from './getObtainables';
 
 export async function transferObtainables({
   fromUserIdentifier,

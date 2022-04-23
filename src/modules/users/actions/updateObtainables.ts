@@ -1,8 +1,6 @@
-import { findOrCreateUser } from './findUser';
-
-import { ObtainableService } from '../services/ObtainableService';
-
 import { ContextUtil } from '../../../common/ContextUtil';
+import { ObtainableService } from '../services/ObtainableService';
+import { findOrCreateUser } from './findUser';
 
 export async function updateObtainables({
   userIdentifier,
