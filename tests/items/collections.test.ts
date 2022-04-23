@@ -1,8 +1,8 @@
-import 'mocha';
 import assert from 'assert';
+import 'mocha';
 import { Core } from '../../src';
-import { InventoriesService } from '../../src/modules/items/services/InventoriesService';
 import { ContextUtil } from '../../src/common/ContextUtil';
+import { InventoriesService } from '../../src/modules/items/services/InventoriesService';
 
 describe('Collections', function()
 {
@@ -20,12 +20,15 @@ describe('Collections', function()
       items: [{ code: 'c' }, { code: 'j' }, { code: 'sb' }],
       context,
     });
-    await Core.Items.checkForCollection({ userIdentifier, discordGuildId });
+    await Core.getUserActions({ userIdentifier, discordGuildId }).checkForCollections();
   });
 
   it('get the completed collections of a user', async () =>
   {
-    const userCollections = await Core.Items.getUserCollections({ userIdentifier, discordGuildId });
+    const userCollections = await Core
+      .getUserActions({ userIdentifier, discordGuildId })
+      .getCollections();
+
     assert.strictEqual(
       userCollections.every(userCollection =>
         userCollection.userId && userCollection.code

@@ -1,18 +1,51 @@
 require('dotenv').config();
 
-import * as bitsActions from './modules/bits/actions';
-import * as discordActions from './modules/discord/actions';
-import * as itemsActions from './modules/items/actions';
-import * as streakActions from './modules/streaks/actions';
-import * as usersActions from './modules/users/actions';
+import { createUserAndContextProvider } from './common/providers';
+import { Identifiers, ItemsWithCodeAndAmount } from './common/types';
+import * as bits from './modules/bits/actions';
+import * as discord from './modules/discord/actions';
+import * as items from './modules/items/actions';
+import * as streaks from './modules/streaks/actions';
+import * as users from './modules/users/actions';
 
 export * from './common/errors';
 
 export class Core
 {
-  static Users = usersActions;
-  static Items = itemsActions;
-  static Bits = bitsActions;
-  static Discord = discordActions;
-  static Streaks = streakActions;
+  static Users = users;
+  static Bits = bits;
+  static Discord = discord;
+  static Streaks = streaks;
+
+  static findUser = users.findUser;
+
+  static getUserActions(identifiers: Identifiers)
+  {
+    const provideUserAndContext = createUserAndContextProvider(identifiers);
+
+    return {
+      getItems: () => provideUserAndContext(items.getUserItems),
+
+      getCollections: () => provideUserAndContext(items.getUserCollections),
+
+      obtainRandomItem: () => provideUserAndContext(
+        items.obtainRandomItem,
+        { createNonexistentUser: true },
+      ),
+
+      removeItems: (itemsToRemove: ItemsWithCodeAndAmount) =>
+        provideUserAndContext((userId, context) =>
+          items.removeUserItems({ userId, context, itemsToRemove })),
+
+      checkForCollections: () => provideUserAndContext(items.checkForCollections),
+
+      sellDuplicateItems: () => provideUserAndContext(items.sellDuplicateItems),
+
+      sellAllItems: () => provideUserAndContext(items.sellAllItems),
+
+      sellByCategory: (category: string) =>
+        provideUserAndContext((userId, context) =>
+          items.sellByCategory({ userId, context, category })),
+    };
+  };
 }

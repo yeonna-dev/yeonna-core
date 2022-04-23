@@ -1,30 +1,13 @@
-import { ContextUtil } from '../../../common/ContextUtil';
-import { UserNotFound } from '../../../common/errors';
-import { findOrCreateUser } from '../../users/actions';
 import { InventoriesService } from '../services/InventoriesService';
-import { Item, ItemsService } from '../services/ItemsService';
+import { ItemsService } from '../services/ItemsService';
 
-export async function obtainRandomItem({
-  userIdentifier,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-}): Promise<Item | undefined>
+export const obtainRandomItem = async (userId: string, context?: string) =>
 {
   /* Get a random item. */
   const chance = Math.random() * 100;
-  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
   const randomItem = await ItemsService.findRandom(chance, context);
   if(!randomItem)
     return;
-
-  /* Get the user with the given identifier. */
-  const userId = await findOrCreateUser({ userIdentifier, discordGuildId });
-  if(!userId)
-    throw new UserNotFound();
 
   /* Add item to the user. */
   await InventoriesService.addUserItems({
@@ -34,4 +17,4 @@ export async function obtainRandomItem({
   });
 
   return randomItem;
-}
+};

@@ -1,26 +1,8 @@
-import { ContextUtil } from '../../../common/ContextUtil';
-import { UserNotFound } from '../../../common/errors';
-import { findUser } from '../../users/actions';
 import { CollectionsService } from '../services/CollectionsService';
 import { InventoriesService } from '../services/InventoriesService';
 
-export async function checkForCollection({
-  userIdentifier,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
+export async function checkForCollections(userId: string, context?: string)
 {
-  /* Get the user with the given identifier. */
-  const userId = await findUser(userIdentifier);
-  if(!userId)
-    throw new UserNotFound();
-
-  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
-
   /* Get the items of the user. */
   const inventory = await InventoriesService.getUserItems(userId, context);
   if(!inventory || inventory.length === 0)
