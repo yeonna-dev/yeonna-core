@@ -20,14 +20,12 @@ describe('Collections', function()
       items: [{ code: 'c' }, { code: 'j' }, { code: 'sb' }],
       context,
     });
-    await Core.getUserActions({ userIdentifier, discordGuildId }).checkForCollections();
+    await Core.Items.checkForCollections({ userIdentifier, discordGuildId });
   });
 
   it('get the completed collections of a user', async () =>
   {
-    const userCollections = await Core
-      .getUserActions({ userIdentifier, discordGuildId })
-      .getCollections();
+    const userCollections = await Core.Items.getUserCollections({ userIdentifier, discordGuildId });
 
     assert.strictEqual(
       userCollections.every(userCollection =>

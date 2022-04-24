@@ -1,17 +1,16 @@
-import { ItemsWithCodeAndAmount } from '../../../common/types';
+import { withUserAndContext } from '../../../common/providers';
+import { Identifiers, ItemsWithCodeAndAmount } from '../../../common/types';
 import { InventoriesService } from '../services/InventoriesService';
 
 export const removeUserItems = ({
-  userId,
-  context,
   itemsToRemove,
-}: {
-  userId: string,
-  context?: string,
-  itemsToRemove: ItemsWithCodeAndAmount,
-}) =>
-  InventoriesService.removeUserItem({
-    userId,
-    items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),
-    context,
-  });
+  ...identifiers
+}: Identifiers & { itemsToRemove: ItemsWithCodeAndAmount; }) =>
+  withUserAndContext(identifiers)(
+    (userId, context) =>
+      InventoriesService.removeUserItem({
+        userId,
+        context,
+        items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),
+      })
+  );

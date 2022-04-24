@@ -3,7 +3,7 @@ import { ContextUtil } from './ContextUtil';
 import { UserNotFound } from './errors';
 import { Identifiers, UserAndContextProvider } from './types';
 
-export const createUserAndContextProvider = (identifiers: Identifiers): UserAndContextProvider =>
+export const withUserAndContext = (identifiers: Identifiers): UserAndContextProvider =>
   async (callback, { createNonexistentUser } = {}) =>
   {
     const { userIdentifier, discordGuildId, twitchChannelId } = identifiers;
