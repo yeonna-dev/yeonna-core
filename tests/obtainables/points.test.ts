@@ -1,8 +1,6 @@
-import 'mocha';
 import assert from 'assert';
-
+import 'mocha';
 import { Core } from '../../src';
-
 import { NotEnoughPoints } from '../../src/common/errors';
 import { assertThrowsAsync } from '../helpers/assertThrowsAsync';
 
@@ -23,31 +21,49 @@ describe('Points', function()
   const twitchChannelId = '193202362'; /* esfox316 Twitch Channel ID */
 
   it('should get the points of a Discord user in a Discord server', async () =>
-    await Core.Users.getPoints({ userIdentifier: discordUser1, discordGuildId })
+    await Core.Obtainables.getPoints({ userIdentifier: discordUser1, discordGuildId })
   );
 
   it('should get the points of a Twitch user in a Twitch channel', async () =>
-    await Core.Users.getPoints({ userIdentifier: twitchUser1, twitchChannelId })
+    await Core.Obtainables.getPoints({ userIdentifier: twitchUser1, twitchChannelId })
   );
 
   it('should set the points of a Discord user in a Discord server', async () =>
-    await Core.Users.updatePoints({ userIdentifier: discordUser2, amount: updateAmount, discordGuildId })
+    await Core.Obtainables.updatePoints({
+      userIdentifier: discordUser2,
+      amount: updateAmount,
+      discordGuildId,
+    })
   );
 
   it('should set the points of a Twitch user in a Twitch channel', async () =>
-    await Core.Users.updatePoints({ userIdentifier: twitchUser2, amount: updateAmount, twitchChannelId })
+    await Core.Obtainables.updatePoints({
+      userIdentifier: twitchUser2,
+      amount: updateAmount,
+      twitchChannelId,
+    })
   );
 
   it('should add points to a Discord user in a Discord server', async () =>
-    await Core.Users.updatePoints({ userIdentifier: discordUser1, amount: addAmount, discordGuildId, add: true })
+    await Core.Obtainables.updatePoints({
+      userIdentifier: discordUser1,
+      amount: addAmount,
+      discordGuildId,
+      add: true,
+    })
   );
 
   it('should add points to a Twitch user in a Twitch channel', async () =>
-    await Core.Users.updatePoints({ userIdentifier: twitchUser1, amount: addAmount, twitchChannelId, add: true })
+    await Core.Obtainables.updatePoints({
+      userIdentifier: twitchUser1,
+      amount: addAmount,
+      twitchChannelId,
+      add: true,
+    })
   );
 
   it('should transfer the points of a Discord user to another', async () =>
-    await Core.Users.transferUserPoints({
+    await Core.Obtainables.transferUserPoints({
       fromUserIdentifier: discordUser2,
       toUserIdentifier: discordUser1,
       amount: transferAmount,
@@ -56,7 +72,7 @@ describe('Points', function()
   );
 
   it('should transfer the points of a Twitch user to another', async () =>
-    await Core.Users.transferUserPoints({
+    await Core.Obtainables.transferUserPoints({
       fromUserIdentifier: twitchUser2,
       toUserIdentifier: twitchUser1,
       amount: transferAmount,
@@ -68,11 +84,11 @@ describe('Points', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await Core.Users.getPoints({
+        const sourcePoints = await Core.Obtainables.getPoints({
           userIdentifier: discordUser1,
           discordGuildId,
         });
-        await Core.Users.transferUserPoints({
+        await Core.Obtainables.transferUserPoints({
           fromUserIdentifier: discordUser1,
           toUserIdentifier: discordUser2,
           amount: sourcePoints + 1,
@@ -85,7 +101,7 @@ describe('Points', function()
 
   it('should get the top user points of a Discord server', async () =>
   {
-    const topUsers = await Core.Users.getTopPoints({ count: 10, discordGuildId });
+    const topUsers = await Core.Obtainables.getTopPoints({ count: 10, discordGuildId });
     assert.strictEqual(
       topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
@@ -94,7 +110,7 @@ describe('Points', function()
 
   it('should get the top user points of a Twitch channel', async () =>
   {
-    const topUsers = await Core.Users.getTopPoints({ count: 10, twitchChannelId });
+    const topUsers = await Core.Obtainables.getTopPoints({ count: 10, twitchChannelId });
     assert.strictEqual(
       topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,

@@ -1,5 +1,11 @@
-import { ContextUtil } from '../../../common/ContextUtil';
+import { withContext } from '../../../common/providers';
+import { ContextParameters } from '../../../common/types';
 import { ObtainableService } from '../services/ObtainableService';
+
+type GetTopObtainablesParameters = ContextParameters & {
+  count: number;
+  isCollectible?: boolean,
+};
 
 type TopObtainables = {
   userId: string;
@@ -8,58 +14,33 @@ type TopObtainables = {
   amount: number;
 };
 
-export async function getTopObtainables({
+export const getTopObtainables = async ({
   count,
   isCollectible,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  count: number,
-  isCollectible?: boolean,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-}): Promise<TopObtainables[]>
-{
-  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
+  ...contextParameters
+}: GetTopObtainablesParameters): Promise<TopObtainables[]> => withContext(contextParameters)(
+  async (context) =>
+  {
+    const topObtainables = await ObtainableService.getTop({
+      count,
+      isCollectible,
+      context,
+      withUsers: true,
+    });
 
-  /* Get top points. */
-  const topObtainables = await ObtainableService.getTop({
-    count,
-    isCollectible,
-    context,
-    withUsers: true,
-  });
+    return topObtainables.map(({ user, amount }) => ({
+      userId: user.id,
+      discordId: user.discordId,
+      twitchId: user.twitchId,
+      amount,
+    }));
+  }
+);
 
-  return topObtainables.map(({ user, amount }) => ({
-    userId: user.id,
-    discordId: user.discordId,
-    twitchId: user.twitchId,
-    amount,
-  }));
-}
+export const getTopPoints = (
+  parameters: Omit<GetTopObtainablesParameters, 'isCollectible'>
+) => getTopObtainables(parameters);
 
-export function getTopPoints({
-  count,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  count: number,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  return getTopObtainables({ count, discordGuildId, twitchChannelId });
-}
-
-export function getTopCollectibles({
-  count,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  count: number,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  return getTopObtainables({ count, isCollectible: true, discordGuildId, twitchChannelId });
-}
+export const getTopCollectibles = (
+  parameters: Omit<GetTopObtainablesParameters, 'isCollectible'>
+) => getTopObtainables({ ...parameters, isCollectible: true });

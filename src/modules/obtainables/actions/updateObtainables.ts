@@ -1,116 +1,66 @@
-import { ContextUtil } from '../../../common/ContextUtil';
-import { findOrCreateUser } from '../../users/actions';
+import { withUserAndContext } from '../../../common/providers';
+import { Identifiers } from '../../../common/types';
 import { ObtainableService } from '../services/ObtainableService';
 
-export async function updateObtainables({
-  userIdentifier,
+type UpdateObtainablesParameters = Identifiers &
+{
+  amount: number;
+  isCollectible?: boolean;
+  add?: boolean;
+  subtract?: boolean;
+};
+
+export const updateObtainables = ({
   amount,
   isCollectible,
   add,
   subtract,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  amount: number,
-  isCollectible?: boolean,
-  add?: boolean,
-  subtract?: boolean,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  if(!discordGuildId && !twitchChannelId)
-    throw new Error('No Discord Guild ID or Twitch Channel ID provided');
-
-  amount = Math.abs(amount);
-
-  const userId = await findOrCreateUser({ userIdentifier, discordGuildId, twitchChannelId });
-  if(!userId)
-    throw new Error('Cannot update user points');
-
-  /* Check if the user's obtainable record is already created. */
-  const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });
-  const obtainables = await ObtainableService.find({
-    userId,
-    isCollectible,
-    context,
-  });
-
-  /* Create the obtainable record if not existing. */
-  if(obtainables === undefined)
-    await ObtainableService.create({
-      userId,
-      amount,
-      isCollectible,
-      context,
-    });
-  else
+  ...identifiers
+}: UpdateObtainablesParameters) => withUserAndContext(identifiers)(
+  async (userId, context) =>
   {
-    let newPoints = amount;
-    if(add)
-      newPoints = obtainables + amount;
-    if(subtract)
-      newPoints = obtainables - amount;
+    amount = Math.abs(amount);
 
-    return ObtainableService.update({
+    const obtainables = await ObtainableService.find({
       userId,
-      amount: newPoints,
       isCollectible,
       context,
     });
+
+    /* Create the obtainable record if not existing. */
+    if(obtainables === undefined)
+      await ObtainableService.create({
+        userId,
+        amount,
+        isCollectible,
+        context,
+      });
+    else
+    {
+      let newPoints = amount;
+      if(add)
+        newPoints = obtainables + amount;
+      if(subtract)
+        newPoints = obtainables - amount;
+
+      return ObtainableService.update({
+        userId,
+        amount: newPoints,
+        isCollectible,
+        context,
+      });
+    }
+  },
+  {
+    createNonexistentUser: true,
+    requireContextParameters: true,
   }
-}
+);
 
-export async function updatePoints({
-  userIdentifier,
-  amount,
-  add,
-  subtract,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  amount: number,
-  add?: boolean,
-  subtract?: boolean,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  return updateObtainables({
-    userIdentifier,
-    amount,
-    add,
-    subtract,
-    discordGuildId,
-    twitchChannelId,
-  });
-}
+export const updatePoints = (
+  parameters: Omit<UpdateObtainablesParameters, 'isCollectible'>
+) => updateObtainables(parameters);
 
-export async function updateCollectibles({
-  userIdentifier,
-  amount,
-  add,
-  subtract,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  amount: number,
-  add?: boolean,
-  subtract?: boolean,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  return updateObtainables({
-    userIdentifier,
-    amount,
-    isCollectible: true,
-    add,
-    subtract,
-    discordGuildId,
-    twitchChannelId,
-  });
-}
+export const updateCollectibles = (
+  parameters: Omit<UpdateObtainablesParameters, 'isCollectible'>
+) => updateObtainables({ ...parameters, isCollectible: true });

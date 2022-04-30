@@ -1,67 +1,25 @@
-import { ContextUtil } from '../../../common/ContextUtil';
-import { findUser } from '../../users/actions';
+import { withUserAndContext } from '../../../common/providers';
+import { Identifiers } from '../../../common/types';
 import { ObtainableService } from '../services/ObtainableService';
 
-export async function getObtainables({
-  userIdentifier,
+export const getObtainables = async ({
   isCollectible,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  isCollectible?: boolean,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  if(!discordGuildId && !twitchChannelId)
-    throw new Error('No Discord Guild ID or Twitch Channel ID provided');
+  ...identifiers
+}: Identifiers & { isCollectible?: boolean; }) => withUserAndContext(identifiers)(
+  async (userId, context) =>
+  {
+    const obtainables = await ObtainableService.find({
+      userId,
+      context,
+      isCollectible,
+    });
 
-  /* Check if the user is existing. */
-  const userId = await findUser(userIdentifier);
-  if(!userId)
-    return 0;
+    return obtainables || 0;
+  }
+);
 
-  const obtainables = await ObtainableService.find({
-    userId,
-    isCollectible,
-    context: ContextUtil.createContext({ discordGuildId, twitchChannelId }),
-  });
+export const getPoints = (identifiers: Identifiers) =>
+  getObtainables(identifiers);
 
-  return obtainables || 0;
-}
-
-export async function getPoints({
-  userIdentifier,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  return getObtainables({
-    userIdentifier,
-    discordGuildId,
-    twitchChannelId,
-  });
-}
-
-export async function getCollectibles({
-  userIdentifier,
-  discordGuildId,
-  twitchChannelId,
-}: {
-  userIdentifier: string,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
-{
-  return getObtainables({
-    userIdentifier,
-    isCollectible: true,
-    discordGuildId,
-    twitchChannelId,
-  });
-}
+export const getCollectibles = (identifiers: Identifiers) =>
+  getObtainables({ ...identifiers, isCollectible: true });

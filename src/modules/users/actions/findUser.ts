@@ -1,4 +1,5 @@
 import { UserNotFound } from '../../../common/errors';
+import { Identifiers } from '../../../common/types';
 import { UsersService } from '../services/UsersService';
 
 export async function findUser(userIdentifier: string): Promise<string>
@@ -14,11 +15,7 @@ export async function findOrCreateUser({
   userIdentifier,
   discordGuildId,
   twitchChannelId,
-}: {
-  userIdentifier: string,
-  discordGuildId?: string,
-  twitchChannelId?: string,
-})
+}: Identifiers)
 {
   // TODO: Try to use actual objects for the params instead of dynamic key names.
   let userFindKey = 'ids';
