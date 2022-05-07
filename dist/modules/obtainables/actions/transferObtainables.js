@@ -48,7 +48,7 @@ const transferObtainables = ({ fromUserIdentifier, toUserIdentifier, discordGuil
             twitchChannelId,
             isCollectible,
         });
-        if (!targetObtainables)
+        if (targetObtainables === undefined)
             yield ObtainableService_1.ObtainableService.create({
                 userId: target,
                 amount,

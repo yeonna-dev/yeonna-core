@@ -26,12 +26,11 @@ const ObtainableService_1 = require("../services/ObtainableService");
 const getObtainables = (_a) => __awaiter(void 0, void 0, void 0, function* () {
     var { isCollectible } = _a, identifiers = __rest(_a, ["isCollectible"]);
     return providers_1.withUserAndContext(identifiers)((userId, context) => __awaiter(void 0, void 0, void 0, function* () {
-        const obtainables = yield ObtainableService_1.ObtainableService.find({
+        return yield ObtainableService_1.ObtainableService.find({
             userId,
             context,
             isCollectible,
         });
-        return obtainables || 0;
     }));
 });
 exports.getObtainables = getObtainables;

@@ -61,7 +61,7 @@ export const transferObtainables = async ({
       isCollectible,
     });
 
-    if(!targetObtainables)
+    if(targetObtainables === undefined)
       await ObtainableService.create({
         userId: target,
         amount,

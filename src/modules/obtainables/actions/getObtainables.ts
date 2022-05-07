@@ -6,16 +6,11 @@ export const getObtainables = async ({
   isCollectible,
   ...identifiers
 }: Identifiers & { isCollectible?: boolean; }) => withUserAndContext(identifiers)(
-  async (userId, context) =>
-  {
-    const obtainables = await ObtainableService.find({
-      userId,
-      context,
-      isCollectible,
-    });
-
-    return obtainables || 0;
-  }
+  async (userId, context) => await ObtainableService.find({
+    userId,
+    context,
+    isCollectible,
+  }),
 );
 
 export const getPoints = (identifiers: Identifiers) =>
