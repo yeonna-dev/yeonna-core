@@ -66,6 +66,7 @@ export const transferObtainables = async ({
         userId: target,
         amount,
         isCollectible,
+        context,
       });
     else
       await ObtainableService.update({
