@@ -18,24 +18,25 @@ export const getTopObtainables = async ({
   count,
   isCollectible,
   ...contextParameters
-}: GetTopObtainablesParameters): Promise<TopObtainables[]> => withContext(contextParameters)(
-  async (context) =>
-  {
-    const topObtainables = await ObtainableService.getTop({
-      count,
-      isCollectible,
-      context,
-      withUsers: true,
-    });
+}: GetTopObtainablesParameters): Promise<TopObtainables[] | undefined> =>
+  withContext(contextParameters)(
+    async (context) =>
+    {
+      const topObtainables = await ObtainableService.getTop({
+        count,
+        isCollectible,
+        context,
+        withUsers: true,
+      });
 
-    return topObtainables.map(({ user, amount }) => ({
-      userId: user.id,
-      discordId: user.discordId,
-      twitchId: user.twitchId,
-      amount,
-    }));
-  }
-);
+      return topObtainables.map(({ user, amount }) => ({
+        userId: user.id,
+        discordId: user.discordId,
+        twitchId: user.twitchId,
+        amount,
+      }));
+    }
+  );
 
 export const getTopPoints = (
   parameters: Omit<GetTopObtainablesParameters, 'isCollectible'>

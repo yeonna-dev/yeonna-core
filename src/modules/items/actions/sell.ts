@@ -22,6 +22,8 @@ const sell = ({
     {
       /* Get the user items. */
       const userItems = await getUserItems(identifiers);
+      if(!userItems)
+        return;
 
       const itemsToUpdate: { code: string, amount: number; }[] = [];
       let sellPrice = 0;
