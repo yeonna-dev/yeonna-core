@@ -1,6 +1,5 @@
-import 'mocha';
 import assert from 'assert';
-
+import 'mocha';
 import { Core } from '../../src';
 
 describe('Bits', function()

@@ -1,7 +1,33 @@
 import { findOrCreateUser, findUser } from '../modules/users/actions';
 import { ContextUtil } from './ContextUtil';
 import { UserNotFound } from './errors';
-import { ContextParameters, ContextProvider, Identifiers, UserAndContextProvider } from './types';
+import
+{
+  ContextParameters,
+  ContextProvider,
+  Identifiers,
+  UserAndContextProvider,
+  UserProvider
+} from './types';
+
+export const withUser = (identifiers: Identifiers): UserProvider => (
+  async (callback, options) =>
+  {
+    const { createNonexistentUser, silentErrors } = options || {};
+
+    let user;
+    if(createNonexistentUser)
+      user = await findOrCreateUser(identifiers);
+    else
+    {
+      user = await findUser(identifiers.userIdentifier);
+      if(!silentErrors && !user)
+        throw new UserNotFound();
+    }
+
+    return callback(user);
+  }
+);
 
 export const withContext = (contextParameters: ContextParameters): ContextProvider => (
   async (callback, options) =>
@@ -37,8 +63,13 @@ export const withUserAndContext = (identifiers: Identifiers): UserAndContextProv
     else
     {
       user = await findUser(userIdentifier);
-      if(!silentErrors && !user)
-        throw new UserNotFound();
+      if(!user)
+      {
+        if(!silentErrors)
+          throw new UserNotFound();
+
+        return;
+      }
     }
 
     const context = ContextUtil.createContext({ discordGuildId, twitchChannelId });

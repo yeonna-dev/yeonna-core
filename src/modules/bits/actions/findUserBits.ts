@@ -1,17 +1,15 @@
-import { findUser } from '../../users/actions';
+import { withUser } from '../../../common/providers';
+import { Identifiers } from '../../../common/types';
 import { UsersBitsService } from '../services/UsersBitsService';
 
-export async function findUserBits({
-  userIdentifier,
-  search,
-}: {
-  userIdentifier: string,
-  search?: string,
-})
+type FindUserBitsParameters = Identifiers &
 {
-  /* Get user with the given user identifier. */
-  const userId = await findUser(userIdentifier);
+  search?: string;
+};
 
-  /* Get the user's bits and do a search by the search query if given.  */
-  return UsersBitsService.find({ userIds: [userId], search });
-}
+export const findUserBits = async ({
+  search,
+  ...identifiers
+}: FindUserBitsParameters) => withUser(identifiers)(
+  async (userId) => UsersBitsService.find({ userIds: [userId], search }),
+);
