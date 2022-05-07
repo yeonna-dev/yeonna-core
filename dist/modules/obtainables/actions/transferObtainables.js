@@ -53,6 +53,7 @@ const transferObtainables = ({ fromUserIdentifier, toUserIdentifier, discordGuil
                 userId: target,
                 amount,
                 isCollectible,
+                context,
             });
         else
             yield ObtainableService_1.ObtainableService.update({
