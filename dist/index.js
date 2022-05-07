@@ -24,17 +24,19 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Core = void 0;
 require('dotenv').config();
-const usersActions = __importStar(require("./modules/users/actions"));
-const itemsActions = __importStar(require("./modules/items/actions"));
-const bitsActions = __importStar(require("./modules/bits/actions"));
-const discordActions = __importStar(require("./modules/discord/actions"));
-const streakActions = __importStar(require("./modules/streaks/actions"));
+const bits = __importStar(require("./modules/bits/actions"));
+const discord = __importStar(require("./modules/discord/actions"));
+const items = __importStar(require("./modules/items/actions"));
+const obtainables = __importStar(require("./modules/obtainables/actions"));
+const streaks = __importStar(require("./modules/streaks/actions"));
+const users = __importStar(require("./modules/users/actions"));
 __exportStar(require("./common/errors"), exports);
 class Core {
 }
 exports.Core = Core;
-Core.Users = usersActions;
-Core.Items = itemsActions;
-Core.Bits = bitsActions;
-Core.Discord = discordActions;
-Core.Streaks = streakActions;
+Core.Users = users;
+Core.Obtainables = obtainables;
+Core.Items = items;
+Core.Bits = bits;
+Core.Discord = discord;
+Core.Streaks = streaks;

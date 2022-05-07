@@ -10,11 +10,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/* Users */
-__exportStar(require("./findUser"), exports);
 __exportStar(require("./connectIdToUser"), exports);
-/* Obtainables */
-__exportStar(require("./getObtainables"), exports);
-__exportStar(require("./updateObtainables"), exports);
-__exportStar(require("./transferObtainables"), exports);
-__exportStar(require("./getTopObtainables"), exports);
+__exportStar(require("./findUser"), exports);

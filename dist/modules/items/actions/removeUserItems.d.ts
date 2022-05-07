@@ -1,10 +1,7 @@
-export declare function removeUserItems({ userIdentifier, itemsToRemove, discordGuildId, twitchChannelId, }: {
+import { Identifiers, ItemsWithCodeAndAmount } from '../../../common/types';
+export declare const removeUserItems: ({ itemsToRemove, ...identifiers }: import("../../../common/types").ContextParameters & {
     userIdentifier: string;
-    itemsToRemove: {
-        code: string;
-        amount: number;
-    }[];
-    discordGuildId?: string;
-    twitchChannelId?: string;
-}): Promise<import("../services/InventoriesService").InventoryItem[]>;
+} & {
+    itemsToRemove: ItemsWithCodeAndAmount;
+}) => Promise<import("../services/InventoriesService").InventoryItem[] | undefined>;
 //# sourceMappingURL=removeUserItems.d.ts.map

@@ -11,23 +11,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeUserBits = void 0;
 const errors_1 = require("../../../common/errors");
-const actions_1 = require("../../users/actions");
+const providers_1 = require("../../../common/providers");
 const BitsService_1 = require("../services/BitsService");
 const UsersBitsService_1 = require("../services/UsersBitsService");
-function removeUserBits({ userIdentifier, bitId }) {
-    return __awaiter(this, void 0, void 0, function* () {
+const removeUserBits = ({ userIdentifier, bitId, }) => __awaiter(void 0, void 0, void 0, function* () {
+    return providers_1.withUser({ userIdentifier })((userId) => __awaiter(void 0, void 0, void 0, function* () {
         /* Check if bit is existing. */
         const [foundBit] = yield BitsService_1.BitsService.find({ ids: [bitId] });
         bitId = foundBit.id;
         if (!foundBit)
             throw new errors_1.BitNotFound();
-        /* Get the user by the given identifier. */
-        const userId = yield actions_1.findUser(userIdentifier);
         /* Check if the bit has been added to the user. */
         const [userBit] = yield UsersBitsService_1.UsersBitsService.find({ userIds: [userId], bitIds: [bitId] });
         if (!userBit)
             throw new errors_1.UserBitNotFound();
         return UsersBitsService_1.UsersBitsService.remove({ userId, bitId });
-    });
-}
+    }), {});
+});
 exports.removeUserBits = removeUserBits;

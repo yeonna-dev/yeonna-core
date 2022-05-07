@@ -1,6 +1,3 @@
-export declare function getUserCollections({ userIdentifier, discordGuildId, twitchChannelId, }: {
-    userIdentifier: string;
-    discordGuildId?: string;
-    twitchChannelId?: string;
-}): Promise<import("../services/CollectionsService").UserCollection[]>;
+import { Identifiers } from '../../../common/types';
+export declare const getUserCollections: (identifiers: Identifiers) => Promise<import("../services/CollectionsService").UserCollection[] | undefined>;
 //# sourceMappingURL=getUserCollections.d.ts.map

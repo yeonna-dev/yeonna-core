@@ -1,5 +1,7 @@
-export declare function findUserBits({ userIdentifier, search, }: {
-    userIdentifier: string;
+import { Identifiers } from '../../../common/types';
+declare type FindUserBitsParameters = Identifiers & {
     search?: string;
-}): Promise<import("../services/UsersBitsService").UserBit[]>;
+};
+export declare const findUserBits: ({ search, ...identifiers }: FindUserBitsParameters) => Promise<import("../services/UsersBitsService").UserBit[] | undefined>;
+export {};
 //# sourceMappingURL=findUserBits.d.ts.map

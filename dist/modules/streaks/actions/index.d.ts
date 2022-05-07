@@ -1,3 +1,3 @@
-export * from './get';
-export * from './update';
+export * from './getStreak';
+export * from './updateStreak';
 //# sourceMappingURL=index.d.ts.map

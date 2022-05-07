@@ -1,7 +1,3 @@
-import { Item } from '../services/ItemsService';
-export declare function obtainRandomItem({ userIdentifier, discordGuildId, twitchChannelId, }: {
-    userIdentifier: string;
-    discordGuildId?: string;
-    twitchChannelId?: string;
-}): Promise<Item | undefined>;
+import { Identifiers } from '../../../common/types';
+export declare const obtainRandomItem: (identifiers: Identifiers) => Promise<import("../services/ItemsService").Item | undefined>;
 //# sourceMappingURL=obtainRandomItem.d.ts.map

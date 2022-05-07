@@ -1,7 +1,8 @@
-export declare function saveUserBit({ userIdentifier, content, tags, discordGuildId, }: {
-    userIdentifier: string;
+import { Identifiers } from '../../../common/types';
+declare type SaveUserBitParameters = Identifiers & {
     content: string;
     tags?: string[];
-    discordGuildId?: string;
-}): Promise<import("../services/UsersBitsService").UserBit>;
+};
+export declare const saveUserBit: ({ content, tags, ...identifiers }: SaveUserBitParameters) => Promise<import("../services/UsersBitsService").UserBit | undefined>;
+export {};
 //# sourceMappingURL=saveUserBit.d.ts.map

@@ -10,30 +10,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.obtainRandomItem = void 0;
-const ItemsService_1 = require("../services/ItemsService");
+const providers_1 = require("../../../common/providers");
 const InventoriesService_1 = require("../services/InventoriesService");
-const actions_1 = require("../../users/actions");
-const errors_1 = require("../../../common/errors");
-const ContextUtil_1 = require("../../../common/ContextUtil");
-function obtainRandomItem({ userIdentifier, discordGuildId, twitchChannelId, }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        /* Get a random item. */
-        const chance = Math.random() * 100;
-        const context = ContextUtil_1.ContextUtil.createContext({ discordGuildId, twitchChannelId });
-        const randomItem = yield ItemsService_1.ItemsService.findRandom(chance, context);
-        if (!randomItem)
-            return;
-        /* Get the user with the given identifier. */
-        const userId = yield actions_1.findOrCreateUser({ userIdentifier, discordGuildId });
-        if (!userId)
-            throw new errors_1.UserNotFound();
-        /* Add item to the user. */
-        yield InventoriesService_1.InventoriesService.addUserItems({
-            userId,
-            items: [{ code: randomItem.code, amount: 1 }],
-            context,
-        });
-        return randomItem;
+const ItemsService_1 = require("../services/ItemsService");
+const obtainRandomItem = (identifiers) => providers_1.withUserAndContext(identifiers)((userId, context) => __awaiter(void 0, void 0, void 0, function* () {
+    /* Get a random item. */
+    const chance = Math.random() * 100;
+    const randomItem = yield ItemsService_1.ItemsService.findRandom(chance, context);
+    if (!randomItem)
+        return;
+    /* Add item to the user. */
+    yield InventoriesService_1.InventoriesService.addUserItems({
+        userId,
+        items: [{ code: randomItem.code, amount: 1 }],
+        context,
     });
-}
+    return randomItem;
+}), { createNonexistentUser: true });
 exports.obtainRandomItem = obtainRandomItem;
