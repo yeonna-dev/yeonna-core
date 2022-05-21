@@ -7,8 +7,7 @@
   "scripts": {
     "build": "tsc",
     "test": "mocha --exit -r tests/pre-test 'tests/index.test.ts'",
-    "test:watch": "mocha -r tests/pre-test -w --watch-files 'tests/**/*.test.ts' 'tests/index.test.ts'",
-    "prepare": "npm run build"
+    "test:watch": "mocha -r tests/pre-test -w --watch-files 'tests/**/*.test.ts' 'tests/index.test.ts'"
   },
   "author": "osairis100@gmail.com",
   "license": "MIT",
