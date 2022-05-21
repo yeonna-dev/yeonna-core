@@ -12,5 +12,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./getObtainables"), exports);
 __exportStar(require("./getTopObtainables"), exports);
+__exportStar(require("./resetObtainables"), exports);
 __exportStar(require("./transferObtainables"), exports);
 __exportStar(require("./updateObtainables"), exports);

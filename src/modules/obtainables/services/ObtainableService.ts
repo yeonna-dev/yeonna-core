@@ -34,17 +34,18 @@ export interface Obtainable
   isCollectible?: boolean;
 }
 
+type CommonParams = {
+  isCollectible?: boolean;
+  context?: string;
+};
+
 export class ObtainableService
 {
   static async find({
     userId,
     isCollectible,
     context,
-  }: {
-    userId: string,
-    isCollectible?: boolean,
-    context?: string,
-  })
+  }: { userId: string; } & CommonParams)
   {
     const query = DB.obtainables()
       .where(ObtainableFields.user_id, userId)
@@ -55,7 +56,36 @@ export class ObtainableService
 
     const data = await query;
     const amount = data?.pop()?.amount;
-    if(amount !== undefined) return Number(amount);
+    if(amount !== undefined)
+      return Number(amount);
+  }
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  static async getTop({
+    count,
+    isCollectible,
+    context,
+    withUsers,
+  }: {
+    count: number,
+    withUsers?: boolean,
+  } & CommonParams)
+  {
+    const query = DB.obtainables()
+      .orderBy(ObtainableFields.amount, 'desc')
+      .where(ObtainableFields.is_collectible, Boolean(isCollectible))
+      .and.where(ObtainableFields.amount, '>', 0)
+      .limit(count);
+
+    if(context)
+      query.and.where(ObtainableFields.context, context);
+
+    if(withUsers)
+      query.join(UsersService.table, ObtainableFields.user_id, UsersFields.id);
+
+    const data = await query;
+    return data.map(ObtainableService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -70,9 +100,7 @@ export class ObtainableService
   }: {
     userId: string,
     amount: number,
-    isCollectible?: boolean,
-    context?: string,
-  }): Promise<Boolean>
+  } & CommonParams): Promise<Boolean>
   {
     /* Try to find the obtainable record with the given `userId`, `is_collectible`
       and `context` fields first before inserting to ensure of no duplicates. */
@@ -119,11 +147,9 @@ export class ObtainableService
     userId: string,
     amount?: number,
     addAmount?: number,
-    isCollectible?: boolean,
-    context?: string,
-  })
+  } & CommonParams)
   {
-    if(!amount && !addAmount)
+    if(amount === undefined && addAmount === undefined)
       return;
 
     let updateExpression = `${amount}`;
@@ -141,34 +167,24 @@ export class ObtainableService
 
     const data = await query;
     const resultAmount = data?.pop()?.amount;
-    if(resultAmount) return Number(resultAmount);
+    if(resultAmount)
+      return Number(resultAmount);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-  static async getTop({
-    count,
+  static async reset({
     isCollectible,
     context,
-    withUsers,
-  }: {
-    count: number,
-    isCollectible?: boolean,
-    context?: string,
-    withUsers?: boolean,
-  })
+  }: CommonParams)
   {
     const query = DB.obtainables()
-      .orderBy(ObtainableFields.amount, 'desc')
-      .where(ObtainableFields.is_collectible, Boolean(isCollectible))
-      .and.where(ObtainableFields.amount, '>', 0)
-      .limit(count);
+      .update({ [ObtainableFields.amount]: 0 })
+      .returning('*')
+      .where(ObtainableFields.is_collectible, Boolean(isCollectible));
 
     if(context)
       query.and.where(ObtainableFields.context, context);
-
-    if(withUsers)
-      query.join(UsersService.table, ObtainableFields.user_id, UsersFields.id);
 
     const data = await query;
     return data.map(ObtainableService.serialize);

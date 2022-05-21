@@ -24,31 +24,29 @@ export interface Obtainable {
     context?: string;
     isCollectible?: boolean;
 }
+declare type CommonParams = {
+    isCollectible?: boolean;
+    context?: string;
+};
 export declare class ObtainableService {
     static find({ userId, isCollectible, context, }: {
         userId: string;
-        isCollectible?: boolean;
-        context?: string;
-    }): Promise<number | undefined>;
+    } & CommonParams): Promise<number | undefined>;
+    static getTop({ count, isCollectible, context, withUsers, }: {
+        count: number;
+        withUsers?: boolean;
+    } & CommonParams): Promise<Obtainable[]>;
     static create({ userId, amount, isCollectible, context, }: {
         userId: string;
         amount: number;
-        isCollectible?: boolean;
-        context?: string;
-    }): Promise<Boolean>;
+    } & CommonParams): Promise<Boolean>;
     static update({ userId, amount, addAmount, isCollectible, context, }: {
         userId: string;
         amount?: number;
         addAmount?: number;
-        isCollectible?: boolean;
-        context?: string;
-    }): Promise<number | undefined>;
-    static getTop({ count, isCollectible, context, withUsers, }: {
-        count: number;
-        isCollectible?: boolean;
-        context?: string;
-        withUsers?: boolean;
-    }): Promise<Obtainable[]>;
+    } & CommonParams): Promise<number | undefined>;
+    static reset({ isCollectible, context, }: CommonParams): Promise<Obtainable[]>;
     static serialize(obtainableRecord: ObtainableRecord): Obtainable;
 }
+export {};
 //# sourceMappingURL=ObtainableService.d.ts.map

@@ -118,4 +118,10 @@ describe('Collectibles', function()
       true,
     );
   });
+
+  it('should reset the collectibles of all users in a Discord server', async () =>
+  {
+    const updatedRecords = await Core.Obtainables.resetCollectibles({ discordGuildId });
+    assert.strictEqual(updatedRecords.every(({ amount }) => amount === 0), true);
+  });
 });
