@@ -57,7 +57,15 @@ export class InventoriesService
 {
   static table = 'inventories';
 
-  static async getUserItems(userId: string, context?: string)
+  static async getUserItems({
+    userId,
+    context,
+    category,
+  }: {
+    userId: string,
+    context?: string,
+    category?: string,
+  })
   {
     const query = DB.inventories()
       .select(
@@ -71,6 +79,9 @@ export class InventoriesService
 
     if(context)
       query.and.where(`${InventoriesService.table}.${InventoriesFields.context}`, context);
+
+    if(category)
+      query.and.whereILike(`${categoriesTable}.${categoryNameField}`, category.toLowerCase());
 
     const data = await query;
     return data.map(InventoriesService.serialize);

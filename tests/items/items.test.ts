@@ -10,19 +10,6 @@ describe('Items', function()
   const userIdentifier = '247955535620472844';
   const discordGuildId = '504135117296500746';
 
-  it('should get the items of a Discord user', async () =>
-  {
-    const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
-    assert.deepStrictEqual(
-      true,
-      userItems.every(userItem =>
-        userItem.code &&
-        userItem.name &&
-        userItem.amount !== undefined
-      ),
-    );
-  });
-
   it('should add a random item to a Discord user inventory', async () =>
   {
     let item: any;
@@ -62,6 +49,36 @@ describe('Items', function()
       ],
       context: 'discord:504135117296500746',
     });
+  });
+
+  it('should get the items of a Discord user', async () =>
+  {
+    const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
+    assert.deepStrictEqual(
+      userItems.length !== 0 &&
+      userItems.every(userItem =>
+        userItem.code &&
+        userItem.name &&
+        userItem.amount !== undefined
+      ),
+      true,
+    );
+  });
+
+  it('should get the items of a Discord user by category', async () =>
+  {
+    const category = 'Common';
+    const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId, category });
+    assert.deepStrictEqual(
+      userItems.length !== 0 &&
+      userItems.every(userItem =>
+        userItem.code &&
+        userItem.name &&
+        userItem.amount !== undefined &&
+        userItem.category === category
+      ),
+      true,
+    );
   });
 
   it('should remove an item from a Discord user inventory', async () =>

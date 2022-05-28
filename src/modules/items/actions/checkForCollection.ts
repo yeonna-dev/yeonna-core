@@ -8,7 +8,7 @@ export const checkForCollections = (identifiers: Identifiers) =>
     async (userId, context) =>
     {
       /* Get the items of the user. */
-      const inventory = await InventoriesService.getUserItems(userId, context);
+      const inventory = await InventoriesService.getUserItems({ userId, context });
       if(!inventory || inventory.length === 0)
         return;
 
