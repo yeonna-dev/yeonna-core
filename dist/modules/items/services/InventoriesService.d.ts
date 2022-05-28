@@ -38,7 +38,11 @@ export interface InventoryItem {
 }
 export declare class InventoriesService {
     static table: string;
-    static getUserItems(userId: string, context?: string): Promise<InventoryItem[]>;
+    static getUserItems({ userId, context, category, }: {
+        userId: string;
+        context?: string;
+        category?: string;
+    }): Promise<InventoryItem[]>;
     static updateOrCreateUserItems({ userId, items, context, }: {
         userId: string;
         items: {

@@ -39,12 +39,15 @@ const sell = (_a) => {
         const userItems = yield getUserItems_1.getUserItems(identifiers);
         if (!userItems)
             return;
+        category = category === null || category === void 0 ? void 0 : category.toLowerCase();
         const itemsToUpdate = [];
+        const soldItems = [];
         let sellPrice = 0;
         if ([SellMode.All, SellMode.Duplicates, SellMode.Category].includes(sellMode)) {
             /* Get the total price of the items to be sold and form
               the update data, which will update all the item amounts. */
             for (let { code, amount, category: itemCategory, price } of userItems) {
+                itemCategory = itemCategory === null || itemCategory === void 0 ? void 0 : itemCategory.toLowerCase();
                 let newAmount;
                 if (sellMode === SellMode.All ||
                     (sellMode === SellMode.Category && category === itemCategory))
@@ -54,13 +57,13 @@ const sell = (_a) => {
                 if (newAmount === undefined)
                     continue;
                 sellPrice += (amount - newAmount) * (price || 0);
+                soldItems.push({ code, amount });
                 itemsToUpdate.push({ code, amount: newAmount });
             }
         }
         /* Update the item amounts. */
-        let soldItems = [];
         if (itemsToUpdate.length > 0)
-            soldItems = yield InventoriesService_1.InventoriesService.updateUserItemAmounts({
+            yield InventoriesService_1.InventoriesService.updateUserItemAmounts({
                 userId,
                 items: itemsToUpdate,
                 context,

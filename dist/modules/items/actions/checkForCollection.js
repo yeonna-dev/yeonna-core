@@ -15,7 +15,7 @@ const CollectionsService_1 = require("../services/CollectionsService");
 const InventoriesService_1 = require("../services/InventoriesService");
 const checkForCollections = (identifiers) => providers_1.withUserAndContext(identifiers)((userId, context) => __awaiter(void 0, void 0, void 0, function* () {
     /* Get the items of the user. */
-    const inventory = yield InventoriesService_1.InventoriesService.getUserItems(userId, context);
+    const inventory = yield InventoriesService_1.InventoriesService.getUserItems({ userId, context });
     if (!inventory || inventory.length === 0)
         return;
     /* Get the item codes of the items of the user. */

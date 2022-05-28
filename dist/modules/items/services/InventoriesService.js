@@ -27,7 +27,7 @@ const categoryNameField = 'name';
 const categoryNameAlias = 'category_name';
 const createUserIdItemCodeKey = (userId, itemCode) => `${userId}:${itemCode}`;
 class InventoriesService {
-    static getUserItems(userId, context) {
+    static getUserItems({ userId, context, category, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.inventories()
                 .select(`${InventoriesService.table}.*`, `${ItemsService_1.ItemsService.table}.*`, `${categoriesTable}.${categoryNameField} as ${categoryNameAlias}`)
@@ -36,6 +36,8 @@ class InventoriesService {
                 .where(InventoriesFields.user_id, userId);
             if (context)
                 query.and.where(`${InventoriesService.table}.${InventoriesFields.context}`, context);
+            if (category)
+                query.and.whereILike(`${categoriesTable}.${categoryNameField}`, category.toLowerCase());
             const data = yield query;
             return data.map(InventoriesService.serialize);
         });
