@@ -25,7 +25,10 @@ const sell = ({
       if(!userItems)
         return;
 
+      category = category?.toLowerCase();
+
       const itemsToUpdate: { code: string, amount: number; }[] = [];
+      const soldItems: InventoryItem[] = [];
       let sellPrice = 0;
       if([SellMode.All, SellMode.Duplicates, SellMode.Category].includes(sellMode))
       {
@@ -33,6 +36,8 @@ const sell = ({
           the update data, which will update all the item amounts. */
         for(let { code, amount, category: itemCategory, price } of userItems)
         {
+          itemCategory = itemCategory?.toLowerCase();
+
           let newAmount;
           if(
             sellMode === SellMode.All ||
@@ -47,14 +52,14 @@ const sell = ({
             continue;
 
           sellPrice += (amount - newAmount) * (price || 0);
+          soldItems.push({ code, amount });
           itemsToUpdate.push({ code, amount: newAmount });
         }
       }
 
       /* Update the item amounts. */
-      let soldItems: InventoryItem[] = [];
       if(itemsToUpdate.length > 0)
-        soldItems = await InventoriesService.updateUserItemAmounts({
+        await InventoriesService.updateUserItemAmounts({
           userId,
           items: itemsToUpdate,
           context,
