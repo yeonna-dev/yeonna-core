@@ -197,13 +197,17 @@ export class CollectionsService
       return [];
 
     /* Save the new collections for the user with the given user ID. */
-    const newCompletedCollectionCodes = await DB.usersCollections()
+    const newUserCollections = await DB.usersCollections()
       .insert(newUserCollectionsInsertData)
       .returning(usersCollectionsCodeField);
 
     /* Get the collections data of the new completed collections. */
+    const collectionCodes = newUserCollections.map(collection =>
+      collection[UsersCollectionsFields.collection_code]
+    );
+
     const collections = await DB.collections()
-      .whereIn(CollectionsFields.code, newCompletedCollectionCodes);
+      .whereIn(CollectionsFields.code, collectionCodes);
 
     return collections.map(CollectionsService.serializeCollection);
   }
