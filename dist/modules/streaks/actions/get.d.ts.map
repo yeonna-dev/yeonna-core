@@ -1,1 +1,0 @@
-{"version":3,"file":"get.d.ts","sourceRoot":"","sources":["../../../../src/modules/streaks/actions/get.ts"],"names":[],"mappings":"AAKA,wBAAsB,GAAG,CAAC,EACxB,cAAc,EACd,cAAc,EACd,eAAe,GAChB,EAAE;IACD,cAAc,EAAE,MAAM,CAAC;IACvB,cAAc,CAAC,EAAE,MAAM,CAAC;IACxB,eAAe,CAAC,EAAE,MAAM,CAAC;CAC1B,mEAYA"}

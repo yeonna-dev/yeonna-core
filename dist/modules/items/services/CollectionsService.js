@@ -93,12 +93,13 @@ class CollectionsService {
             if (newUserCollectionsInsertData.length === 0)
                 return [];
             /* Save the new collections for the user with the given user ID. */
-            const newCompletedCollectionCodes = yield DB_1.DB.usersCollections()
+            const newUserCollections = yield DB_1.DB.usersCollections()
                 .insert(newUserCollectionsInsertData)
                 .returning(usersCollectionsCodeField);
             /* Get the collections data of the new completed collections. */
+            const collectionCodes = newUserCollections.map(collection => collection[UsersCollectionsFields.collection_code]);
             const collections = yield DB_1.DB.collections()
-                .whereIn(CollectionsFields.code, newCompletedCollectionCodes);
+                .whereIn(CollectionsFields.code, collectionCodes);
             return collections.map(CollectionsService.serializeCollection);
         });
     }
