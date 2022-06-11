@@ -85,10 +85,11 @@ describe('Collectibles', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await Core.Obtainables.getCollectibles({
+        let sourcePoints = await Core.Obtainables.getCollectibles({
           userIdentifier: discordUser1,
           discordGuildId
         });
+        sourcePoints = sourcePoints || 0;
 
         await Core.Obtainables.transferUserCollectibles({
           fromUserIdentifier: discordUser1,
@@ -105,7 +106,7 @@ describe('Collectibles', function()
   {
     const topUsers = await Core.Obtainables.getTopCollectibles({ count: 10, discordGuildId });
     assert.strictEqual(
-      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
+      topUsers?.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });
@@ -114,7 +115,7 @@ describe('Collectibles', function()
   {
     const topUsers = await Core.Obtainables.getTopCollectibles({ count: 10, twitchChannelId });
     assert.strictEqual(
-      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
+      topUsers?.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });
@@ -122,6 +123,6 @@ describe('Collectibles', function()
   it('should reset the collectibles of all users in a Discord server', async () =>
   {
     const updatedRecords = await Core.Obtainables.resetCollectibles({ discordGuildId });
-    assert.strictEqual(updatedRecords.every(({ amount }) => amount === 0), true);
+    assert.strictEqual(updatedRecords?.every(({ amount }) => amount === 0), true);
   });
 });

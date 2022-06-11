@@ -84,10 +84,12 @@ describe('Points', function()
     await assertThrowsAsync(
       async () =>
       {
-        const sourcePoints = await Core.Obtainables.getPoints({
+        let sourcePoints = await Core.Obtainables.getPoints({
           userIdentifier: discordUser1,
           discordGuildId,
         });
+        sourcePoints = sourcePoints || 0;
+
         await Core.Obtainables.transferUserPoints({
           fromUserIdentifier: discordUser1,
           toUserIdentifier: discordUser2,
@@ -103,7 +105,7 @@ describe('Points', function()
   {
     const topUsers = await Core.Obtainables.getTopPoints({ count: 10, discordGuildId });
     assert.strictEqual(
-      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
+      topUsers?.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });
@@ -112,7 +114,7 @@ describe('Points', function()
   {
     const topUsers = await Core.Obtainables.getTopPoints({ count: 10, twitchChannelId });
     assert.strictEqual(
-      topUsers.every(({ userId, amount }) => userId && typeof amount === 'number'),
+      topUsers?.every(({ userId, amount }) => userId && typeof amount === 'number'),
       true,
     );
   });

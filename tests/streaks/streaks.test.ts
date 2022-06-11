@@ -1,5 +1,5 @@
-import 'mocha';
 import assert from 'assert';
+import 'mocha';
 import { Core } from '../../src';
 
 describe('Streaks', function()
@@ -23,40 +23,43 @@ describe('Streaks', function()
 
   it('should update the streak of a Discord user', async () =>
   {
-    const { current } = await Core.Streaks.update({
+    let updateResult = await Core.Streaks.update({
       count: initialStreakCount,
       userIdentifier,
       discordGuildId,
     });
 
-    currentStreakCount = current.count;
+    let { current } = updateResult || {};
+    currentStreakCount = current?.count;
 
     assert.strictEqual(currentStreakCount, initialStreakCount);
   });
 
   it('should increment the streak of a Discord user', async () =>
   {
-    const { current } = await Core.Streaks.update({
+    let updateResult = await Core.Streaks.update({
       increment: true,
       userIdentifier,
       discordGuildId,
     });
+    let { current } = updateResult || {};
 
     const incremented = currentStreakCount + 1;
-    currentStreakCount = current.count;
-    assert.strictEqual(current.count, incremented);
+    currentStreakCount = current?.count;
+    assert.strictEqual(current?.count, incremented);
   });
 
   it('should decrement the streak of a Discord user', async () =>
   {
-    const { current } = await Core.Streaks.update({
+    let updateResult = await Core.Streaks.update({
       decrement: true,
       userIdentifier,
       discordGuildId,
     });
+    let { current } = updateResult || {};
 
     const decremented = currentStreakCount - 1;
-    currentStreakCount = current.count;
-    assert.strictEqual(current.count, decremented);
+    currentStreakCount = current?.count;
+    assert.strictEqual(current?.count, decremented);
   });
 });

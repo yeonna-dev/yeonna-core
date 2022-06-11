@@ -25,7 +25,8 @@ describe('Collections', function()
 
   it('get the completed collections of a user', async () =>
   {
-    const userCollections = await Core.Items.getUserCollections({ userIdentifier, discordGuildId });
+    let userCollections = await Core.Items.getUserCollections({ userIdentifier, discordGuildId });
+    userCollections = userCollections || [];
 
     assert.strictEqual(
       userCollections.every(userCollection =>

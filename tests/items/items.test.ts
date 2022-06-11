@@ -55,8 +55,8 @@ describe('Items', function()
   {
     const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
     assert.deepStrictEqual(
-      userItems.length !== 0 &&
-      userItems.every(userItem =>
+      userItems?.length !== 0 &&
+      userItems?.every(userItem =>
         userItem.code &&
         userItem.name &&
         userItem.amount !== undefined
@@ -70,8 +70,8 @@ describe('Items', function()
     const category = 'Common';
     const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId, category });
     assert.deepStrictEqual(
-      userItems.length !== 0 &&
-      userItems.every(userItem =>
+      userItems?.length !== 0 &&
+      userItems?.every(userItem =>
         userItem.code &&
         userItem.name &&
         userItem.amount !== undefined &&
@@ -104,10 +104,16 @@ describe('Items', function()
 
   it('should sell duplicate items in a Discord user inventory', async () =>
   {
-    const userPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
-    const { sellPrice } = await Core.Items.sellDuplicateItems({ userIdentifier, discordGuildId });
-    const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
+    const sellResult = await Core.Items.sellDuplicateItems({ userIdentifier, discordGuildId });
+    let { sellPrice } = sellResult || {};
+    sellPrice = sellPrice || 0;
+
     const postSellUserPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
+    let userPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
+    userPoints = userPoints || 0;
+
+    let userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
+    userItems = userItems || [];
 
     assert.strictEqual(postSellUserPoints, userPoints + sellPrice);
     assert.strictEqual(userItems.every(({ amount }) => amount === 1 || amount === 0), true);
@@ -116,11 +122,17 @@ describe('Items', function()
   it('should sell all items of a category from a Discord user inventory', async () =>
   {
     const category = 'uncommon';
-    const userPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
-    const { sellPrice } = await Core.Items
-      .sellByCategory({ userIdentifier, discordGuildId, category });
+    let userPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
+    userPoints = userPoints || 0;
 
-    const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
+    const sellResult = await Core.Items
+      .sellByCategory({ userIdentifier, discordGuildId, category });
+    let { sellPrice } = sellResult || {};
+    sellPrice = sellPrice || 0;
+
+    let userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
+    userItems = userItems || [];
+
     const postSellUserPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
 
     assert.strictEqual(
@@ -133,9 +145,16 @@ describe('Items', function()
 
   it('should sell all items from a Discord user inventory', async () =>
   {
-    const userPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
-    const { sellPrice } = await Core.Items.sellAllItems({ userIdentifier, discordGuildId });
-    const userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
+    let userPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
+    userPoints = userPoints || 0;
+
+    const sellResult = await Core.Items.sellAllItems({ userIdentifier, discordGuildId });
+    let { sellPrice } = sellResult || {};
+    sellPrice = sellPrice || 0;
+
+    let userItems = await Core.Items.getUserItems({ userIdentifier, discordGuildId });
+    userItems = userItems || [];
+
     const postSellUserPoints = await Core.Obtainables.getPoints({ userIdentifier, discordGuildId });
 
     assert.strictEqual(postSellUserPoints, userPoints + sellPrice);
