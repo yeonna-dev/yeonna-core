@@ -19,7 +19,7 @@ const checkForCollections = (identifiers) => providers_1.withUserAndContext(iden
     if (!inventory || inventory.length === 0)
         return;
     /* Get the item codes of the items of the user. */
-    const itemCodes = inventory.map(({ code }) => code);
+    const itemCodes = inventory.filter(({ amount }) => amount > 0).map(({ code }) => code);
     /* Save and get all new completed collections. */
     return CollectionsService_1.CollectionsService.saveCompleted({
         userId,

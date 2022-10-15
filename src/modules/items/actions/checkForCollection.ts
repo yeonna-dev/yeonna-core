@@ -13,7 +13,7 @@ export const checkForCollections = (identifiers: Identifiers) =>
         return;
 
       /* Get the item codes of the items of the user. */
-      const itemCodes = inventory.map(({ code }) => code);
+      const itemCodes = inventory.filter(({ amount }) => amount > 0).map(({ code }) => code);
 
       /* Save and get all new completed collections. */
       return CollectionsService.saveCompleted({
