@@ -5,6 +5,7 @@ export declare enum RoleRequestsFields {
     guild_id = "guild_id",
     role_name = "role_name",
     role_color = "role_color",
+    notes = "notes",
     status = "status",
     approver_discord_id = "approver_discord_id"
 }
@@ -19,6 +20,7 @@ export interface RoleRequestRecord extends TimestampedRecord {
     [RoleRequestsFields.guild_id]: string;
     [RoleRequestsFields.role_name]: string;
     [RoleRequestsFields.role_color]: string;
+    [RoleRequestsFields.notes]: string;
     [RoleRequestsFields.status]: RoleRequestStatus;
     [RoleRequestsFields.approver_discord_id]: string;
 }
@@ -27,14 +29,16 @@ export interface RoleRequest {
     requesterDiscordId: string;
     roleName: string;
     roleColor: string;
+    notes: string;
     guildId: string;
     status: RoleRequestStatus;
     approverDiscordId: string;
 }
 export declare class RoleRequestsService {
-    static create({ roleName, roleColor, discordGuildId, requesterDiscordId, }: {
+    static create({ roleName, roleColor, requestNotes, discordGuildId, requesterDiscordId, }: {
         roleName?: string;
         roleColor?: string;
+        requestNotes?: string;
         discordGuildId: string;
         requesterDiscordId: string;
     }): Promise<RoleRequest>;

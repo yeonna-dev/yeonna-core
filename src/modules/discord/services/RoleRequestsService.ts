@@ -8,6 +8,7 @@ export enum RoleRequestsFields
   guild_id = 'guild_id',
   role_name = 'role_name',
   role_color = 'role_color',
+  notes = 'notes',
   status = 'status',
   approver_discord_id = 'approver_discord_id',
 };
@@ -26,6 +27,7 @@ export interface RoleRequestRecord extends TimestampedRecord
   [RoleRequestsFields.guild_id]: string;
   [RoleRequestsFields.role_name]: string;
   [RoleRequestsFields.role_color]: string;
+  [RoleRequestsFields.notes]: string;
   [RoleRequestsFields.status]: RoleRequestStatus;
   [RoleRequestsFields.approver_discord_id]: string;
 }
@@ -36,6 +38,7 @@ export interface RoleRequest
   requesterDiscordId: string;
   roleName: string;
   roleColor: string;
+  notes: string;
   guildId: string;
   status: RoleRequestStatus;
   approverDiscordId: string;
@@ -46,11 +49,13 @@ export class RoleRequestsService
   static async create({
     roleName,
     roleColor,
+    requestNotes,
     discordGuildId,
     requesterDiscordId,
   }: {
     roleName?: string,
     roleColor?: string,
+    requestNotes?: string,
     discordGuildId: string,
     requesterDiscordId: string,
   })
@@ -61,6 +66,7 @@ export class RoleRequestsService
         [RoleRequestsFields.requester_discord_id]: requesterDiscordId,
         [RoleRequestsFields.role_name]: roleName,
         [RoleRequestsFields.role_color]: roleColor,
+        [RoleRequestsFields.notes]: requestNotes,
         [RoleRequestsFields.guild_id]: discordGuildId,
       })
       .returning('*');
@@ -140,6 +146,7 @@ export class RoleRequestsService
       requesterDiscordId: roleRequest[RoleRequestsFields.requester_discord_id],
       roleName: roleRequest[RoleRequestsFields.role_name],
       roleColor: roleRequest[RoleRequestsFields.role_color],
+      notes: roleRequest[RoleRequestsFields.notes],
       guildId: roleRequest[RoleRequestsFields.guild_id],
       status: roleRequest[RoleRequestsFields.status],
       approverDiscordId: roleRequest[RoleRequestsFields.approver_discord_id],

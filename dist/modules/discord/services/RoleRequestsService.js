@@ -19,6 +19,7 @@ var RoleRequestsFields;
     RoleRequestsFields["guild_id"] = "guild_id";
     RoleRequestsFields["role_name"] = "role_name";
     RoleRequestsFields["role_color"] = "role_color";
+    RoleRequestsFields["notes"] = "notes";
     RoleRequestsFields["status"] = "status";
     RoleRequestsFields["approver_discord_id"] = "approver_discord_id";
 })(RoleRequestsFields = exports.RoleRequestsFields || (exports.RoleRequestsFields = {}));
@@ -30,7 +31,7 @@ var RoleRequestStatus;
     RoleRequestStatus["DECLINED"] = "DECLINED";
 })(RoleRequestStatus = exports.RoleRequestStatus || (exports.RoleRequestStatus = {}));
 class RoleRequestsService {
-    static create({ roleName, roleColor, discordGuildId, requesterDiscordId, }) {
+    static create({ roleName, roleColor, requestNotes, discordGuildId, requesterDiscordId, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const [roleRequestRecord] = yield DB_1.DB.discordRoleRequests()
                 .insert({
@@ -38,6 +39,7 @@ class RoleRequestsService {
                 [RoleRequestsFields.requester_discord_id]: requesterDiscordId,
                 [RoleRequestsFields.role_name]: roleName,
                 [RoleRequestsFields.role_color]: roleColor,
+                [RoleRequestsFields.notes]: requestNotes,
                 [RoleRequestsFields.guild_id]: discordGuildId,
             })
                 .returning('*');
@@ -89,6 +91,7 @@ class RoleRequestsService {
             requesterDiscordId: roleRequest[RoleRequestsFields.requester_discord_id],
             roleName: roleRequest[RoleRequestsFields.role_name],
             roleColor: roleRequest[RoleRequestsFields.role_color],
+            notes: roleRequest[RoleRequestsFields.notes],
             guildId: roleRequest[RoleRequestsFields.guild_id],
             status: roleRequest[RoleRequestsFields.status],
             approverDiscordId: roleRequest[RoleRequestsFields.approver_discord_id],
