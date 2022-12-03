@@ -13,9 +13,9 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserItems = void 0;
 const providers_1 = require("../../../common/providers");
-const InventoriesService_1 = require("../services/InventoriesService");
+const InventoryService_1 = require("../services/InventoryService");
 const getUserItems = (_a) => {
     var { category } = _a, identifiers = __rest(_a, ["category"]);
-    return providers_1.withUserAndContext(identifiers)((userId, context) => InventoriesService_1.InventoriesService.getUserItems({ userId, context, category }));
+    return providers_1.withUserAndContext(identifiers)((userId, context) => InventoryService_1.InventoryService.getUserItems({ userId, context, category }));
 };
 exports.getUserItems = getUserItems;

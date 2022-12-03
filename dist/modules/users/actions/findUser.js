@@ -11,10 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findOrCreateUser = exports.findUser = void 0;
 const errors_1 = require("../../../common/errors");
-const UsersService_1 = require("../services/UsersService");
+const UserService_1 = require("../services/UserService");
 function findUser(userIdentifier) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [user] = yield UsersService_1.UsersService.findById(userIdentifier);
+        const [user] = yield UserService_1.UserService.findById(userIdentifier);
         if (!user)
             throw new errors_1.UserNotFound();
         return user.id;
@@ -36,11 +36,11 @@ function findOrCreateUser({ userIdentifier, discordGuildId, twitchChannelId, }) 
             userCreateKey = 'twitchId';
         }
         /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
-        const result = yield UsersService_1.UsersService.find({ [userFindKey]: userIdentifier });
+        const result = yield UserService_1.UserService.find({ [userFindKey]: userIdentifier });
         const [user] = result;
         if (!user) {
             const createUserParams = userCreateKey ? { [userCreateKey]: userIdentifier } : {};
-            const createdUserId = yield UsersService_1.UsersService.create(createUserParams);
+            const createdUserId = yield UserService_1.UserService.create(createUserParams);
             if (!createdUserId)
                 throw new Error('User not saved');
             return createdUserId;

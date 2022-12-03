@@ -3,5 +3,5 @@ export declare const getUserItems: ({ category, ...identifiers }: import("../../
     userIdentifier: string;
 } & {
     category?: string | undefined;
-}) => Promise<import("../services/InventoriesService").InventoryItem[] | undefined>;
+}) => Promise<import("../services/InventoryService").InventoryItem[] | undefined>;
 //# sourceMappingURL=getUserItems.d.ts.map

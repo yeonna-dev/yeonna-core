@@ -10,19 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTags = void 0;
-const TagsService_1 = require("../services/TagsService");
+const TagService_1 = require("../services/TagService");
 function createTags(names) {
     return __awaiter(this, void 0, void 0, function* () {
         /*
           Only create new tags for the given names that are not names of existing tags.
           After tags have been created, return the merged IDs of the existing and created tags.
         */
-        const found = yield TagsService_1.TagsService.find({ names });
+        const found = yield TagService_1.TagService.find({ names });
         const foundNames = found.map(({ name }) => name);
         const newTags = names.filter(name => !foundNames.includes(name));
         let createdTags = [];
         if (newTags.length !== 0)
-            createdTags = yield TagsService_1.TagsService.create(newTags);
+            createdTags = yield TagService_1.TagService.create(newTags);
         return createdTags.concat(found);
     });
 }

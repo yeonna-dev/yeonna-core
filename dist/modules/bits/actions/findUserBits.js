@@ -22,9 +22,9 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findUserBits = void 0;
 const providers_1 = require("../../../common/providers");
-const UsersBitsService_1 = require("../services/UsersBitsService");
+const UserBitService_1 = require("../services/UserBitService");
 const findUserBits = (_a) => __awaiter(void 0, void 0, void 0, function* () {
     var { search } = _a, identifiers = __rest(_a, ["search"]);
-    return providers_1.withUser(identifiers)((userId) => __awaiter(void 0, void 0, void 0, function* () { return UsersBitsService_1.UsersBitsService.find({ userIds: [userId], search }); }));
+    return providers_1.withUser(identifiers)((userId) => __awaiter(void 0, void 0, void 0, function* () { return UserBitService_1.UserBitService.find({ userIds: [userId], search }); }));
 });
 exports.findUserBits = findUserBits;

@@ -1,4 +1,4 @@
-export declare enum ContextPlatforms {
+export declare enum ContextPlatform {
     Discord = "discord",
     Twitch = "twitch"
 }

@@ -11,16 +11,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tagUserBit = void 0;
 const __1 = require("../../..");
-const BitsService_1 = require("../services/BitsService");
-const TagsService_1 = require("../services/TagsService");
+const BitService_1 = require("../services/BitService");
+const TagService_1 = require("../services/TagService");
 function tagUserBit({ userIdentifier, bitContent, tags, }) {
     return __awaiter(this, void 0, void 0, function* () {
         /* Get the bit with the given content. */
-        const bit = yield BitsService_1.BitsService.find({ content: bitContent });
+        const bit = yield BitService_1.BitService.find({ content: bitContent });
         if (bit.length === 0)
             throw new __1.BitNotFound();
         /* Get the tags with the given names. */
-        const foundTags = yield TagsService_1.TagsService.find({ names: tags });
+        const foundTags = yield TagService_1.TagService.find({ names: tags });
         if (!foundTags || foundTags.length === 0)
             throw new __1.TagsNotFound();
         /* Update the user's bit with the new tags. */

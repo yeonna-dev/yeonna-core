@@ -2,6 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserCollections = void 0;
 const providers_1 = require("../../../common/providers");
-const CollectionsService_1 = require("../services/CollectionsService");
-const getUserCollections = (identifiers) => providers_1.withUserAndContext(identifiers)((userId, context) => CollectionsService_1.CollectionsService.getCollections({ userId, context }));
+const CollectionService_1 = require("../services/CollectionService");
+const getUserCollections = (identifiers) => providers_1.withUserAndContext(identifiers)((userId, context) => CollectionService_1.CollectionService.getCollections({ userId, context }));
 exports.getUserCollections = getUserCollections;

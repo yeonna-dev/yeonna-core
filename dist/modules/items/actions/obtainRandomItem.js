@@ -11,16 +11,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.obtainRandomItem = void 0;
 const providers_1 = require("../../../common/providers");
-const InventoriesService_1 = require("../services/InventoriesService");
-const ItemsService_1 = require("../services/ItemsService");
+const InventoryService_1 = require("../services/InventoryService");
+const ItemService_1 = require("../services/ItemService");
 const obtainRandomItem = (identifiers) => providers_1.withUserAndContext(identifiers)((userId, context) => __awaiter(void 0, void 0, void 0, function* () {
     /* Get a random item. */
     const chance = Math.random() * 100;
-    const randomItem = yield ItemsService_1.ItemsService.findRandom(chance, context);
+    const randomItem = yield ItemService_1.ItemService.findRandom(chance, context);
     if (!randomItem)
         return;
     /* Add item to the user. */
-    yield InventoriesService_1.InventoriesService.addUserItems({
+    yield InventoryService_1.InventoryService.addUserItems({
         userId,
         items: [{ code: randomItem.code, amount: 1 }],
         context,

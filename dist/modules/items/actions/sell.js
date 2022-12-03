@@ -22,8 +22,8 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sellByCategory = exports.sellAllItems = exports.sellDuplicateItems = void 0;
 const providers_1 = require("../../../common/providers");
-const ObtainableService_1 = require("../../users/services/ObtainableService");
-const InventoriesService_1 = require("../services/InventoriesService");
+const ObtainableService_1 = require("../../obtainables/services/ObtainableService");
+const InventoryService_1 = require("../services/InventoryService");
 const getUserItems_1 = require("./getUserItems");
 var SellMode;
 (function (SellMode) {
@@ -63,7 +63,7 @@ const sell = (_a) => {
         }
         /* Update the item amounts. */
         if (itemsToUpdate.length > 0)
-            yield InventoriesService_1.InventoriesService.updateUserItemAmounts({
+            yield InventoryService_1.InventoryService.updateUserItemAmounts({
                 userId,
                 items: itemsToUpdate,
                 context,

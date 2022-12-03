@@ -3,5 +3,5 @@ export declare const removeUserItems: ({ itemsToRemove, ...identifiers }: import
     userIdentifier: string;
 } & {
     itemsToRemove: ItemsWithCodeAndAmount;
-}) => Promise<import("../services/InventoriesService").InventoryItem[] | undefined>;
+}) => Promise<import("../services/InventoryService").InventoryItem[] | undefined>;
 //# sourceMappingURL=removeUserItems.d.ts.map

@@ -3,6 +3,6 @@ declare type SaveUserBitParameters = Identifiers & {
     content: string;
     tags?: string[];
 };
-export declare const saveUserBit: ({ content, tags, ...identifiers }: SaveUserBitParameters) => Promise<import("../services/UsersBitsService").UserBit | undefined>;
+export declare const saveUserBit: ({ content, tags, ...identifiers }: SaveUserBitParameters) => Promise<import("../services/UserBitService").UserBit | undefined>;
 export {};
 //# sourceMappingURL=saveUserBit.d.ts.map

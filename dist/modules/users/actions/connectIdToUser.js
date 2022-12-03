@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectIdToUser = void 0;
-const UsersService_1 = require("../services/UsersService");
+const UserService_1 = require("../services/UserService");
 const findUser_1 = require("./findUser");
 function connectIdToUser({ userIdentifier, newDiscordId, newTwitchId, }) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -19,7 +19,7 @@ function connectIdToUser({ userIdentifier, newDiscordId, newTwitchId, }) {
         /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
         const user = yield findUser_1.findUser(userIdentifier);
         /* Update the user record */
-        yield UsersService_1.UsersService.updateById(user, { discordId: newDiscordId, twitchId: newTwitchId });
+        yield UserService_1.UserService.updateById(user, { discordId: newDiscordId, twitchId: newTwitchId });
     });
 }
 exports.connectIdToUser = connectIdToUser;

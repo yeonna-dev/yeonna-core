@@ -99,6 +99,15 @@ export declare class DB {
         _intersectProps: {};
         _unionProps: never;
     }[]>;
+    static timeTables: () => import("knex").Knex.QueryBuilder<any, {
+        _base: any;
+        _hasSelection: false;
+        _keys: never;
+        _aliases: {};
+        _single: false;
+        _intersectProps: {};
+        _unionProps: never;
+    }[]>;
     static streaks: () => import("knex").Knex.QueryBuilder<any, {
         _base: any;
         _hasSelection: false;

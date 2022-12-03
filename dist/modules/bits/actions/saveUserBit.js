@@ -24,25 +24,25 @@ exports.saveUserBit = void 0;
 const _1 = require(".");
 const errors_1 = require("../../../common/errors");
 const providers_1 = require("../../../common/providers");
-const BitsService_1 = require("../services/BitsService");
-const UsersBitsService_1 = require("../services/UsersBitsService");
+const BitService_1 = require("../services/BitService");
+const UserBitService_1 = require("../services/UserBitService");
 const saveUserBit = (_a) => __awaiter(void 0, void 0, void 0, function* () {
     var { content, tags } = _a, identifiers = __rest(_a, ["content", "tags"]);
     return providers_1.withUserAndContext(identifiers)((userId) => __awaiter(void 0, void 0, void 0, function* () {
         if (!content)
             throw new errors_1.NoBitContentProvided();
         /* Check if a bit with the same content is existing. */
-        const [foundBit] = yield BitsService_1.BitsService.find({ content });
+        const [foundBit] = yield BitService_1.BitService.find({ content });
         /* Create the bit if not existing. */
         let bitId;
         if (foundBit)
             bitId = foundBit.id;
         else {
-            const [createdBit] = yield BitsService_1.BitsService.create([content]);
+            const [createdBit] = yield BitService_1.BitService.create([content]);
             bitId = createdBit.id;
         }
         /* Check if the bit has been added to the user. */
-        const [userBit] = yield UsersBitsService_1.UsersBitsService.find({
+        const [userBit] = yield UserBitService_1.UserBitService.find({
             userIds: [userId],
             bitIds: [bitId],
         });
@@ -55,7 +55,7 @@ const saveUserBit = (_a) => __awaiter(void 0, void 0, void 0, function* () {
         /* If the user already has the bit, do not save it. */
         if (userBit)
             return userBit;
-        const [createdUserBit] = yield UsersBitsService_1.UsersBitsService.create([{ userId, bitId, tagIds }]);
+        const [createdUserBit] = yield UserBitService_1.UserBitService.create([{ userId, bitId, tagIds }]);
         return createdUserBit;
     }), {
         createNonexistentUser: true,

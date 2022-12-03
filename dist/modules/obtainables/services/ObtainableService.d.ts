@@ -1,18 +1,18 @@
 import { TimestampedRecord } from '../../../common/DB';
-import { UsersFields } from '../../users/services/UsersService';
-export declare enum ObtainableFields {
+import { UserField } from '../../users/services/UserService';
+export declare enum ObtainableField {
     user_id = "user_id",
     amount = "amount",
     is_collectible = "is_collectible",
     context = "context"
 }
 export interface ObtainableRecord extends TimestampedRecord {
-    [ObtainableFields.user_id]: string;
-    [ObtainableFields.amount]: number;
-    [ObtainableFields.is_collectible]?: boolean;
-    [ObtainableFields.context]?: string;
-    [UsersFields.discord_id]?: string;
-    [UsersFields.twitch_id]?: string;
+    [ObtainableField.user_id]: string;
+    [ObtainableField.amount]: number;
+    [ObtainableField.is_collectible]?: boolean;
+    [ObtainableField.context]?: string;
+    [UserField.discord_id]?: string;
+    [UserField.twitch_id]?: string;
 }
 export interface Obtainable {
     user: {

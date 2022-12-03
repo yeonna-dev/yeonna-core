@@ -1,5 +1,5 @@
 import { TimestampedRecord } from '../../../common/DB';
-export declare enum StreaksFields {
+export declare enum StreakField {
     user_id = "user_id",
     count = "count",
     longest = "longest",
@@ -8,12 +8,12 @@ export declare enum StreaksFields {
     updated_at = "updated_at"
 }
 export interface StreakRecord extends TimestampedRecord {
-    [StreaksFields.user_id]: string;
-    [StreaksFields.count]: number;
-    [StreaksFields.longest]: number;
-    [StreaksFields.context]: string;
-    [StreaksFields.created_at]: string;
-    [StreaksFields.updated_at]: string;
+    [StreakField.user_id]: string;
+    [StreakField.count]: number;
+    [StreakField.longest]: number;
+    [StreakField.context]: string;
+    [StreakField.created_at]: string;
+    [StreakField.updated_at]: string;
 }
 export interface Streak {
     userId: string;

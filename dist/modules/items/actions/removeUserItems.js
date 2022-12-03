@@ -13,10 +13,10 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeUserItems = void 0;
 const providers_1 = require("../../../common/providers");
-const InventoriesService_1 = require("../services/InventoriesService");
+const InventoryService_1 = require("../services/InventoryService");
 const removeUserItems = (_a) => {
     var { itemsToRemove } = _a, identifiers = __rest(_a, ["itemsToRemove"]);
-    return providers_1.withUserAndContext(identifiers)((userId, context) => InventoriesService_1.InventoriesService.removeUserItem({
+    return providers_1.withUserAndContext(identifiers)((userId, context) => InventoryService_1.InventoryService.removeUserItem({
         userId,
         context,
         items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),

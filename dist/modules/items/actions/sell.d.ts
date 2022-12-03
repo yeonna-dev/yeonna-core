@@ -1,5 +1,5 @@
 import { Identifiers } from '../../../common/types';
-import { InventoryItem } from '../services/InventoriesService';
+import { InventoryItem } from '../services/InventoryService';
 export declare const sellDuplicateItems: (identifiers: Identifiers) => Promise<{
     sellPrice: number;
     soldItems: InventoryItem[];

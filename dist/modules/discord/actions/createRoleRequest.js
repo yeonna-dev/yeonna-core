@@ -10,14 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRoleRequest = void 0;
-const RoleRequestsService_1 = require("../services/RoleRequestsService");
+const RoleRequestService_1 = require("../services/RoleRequestService");
 function createRoleRequest({ roleName, roleColor, requestNotes, discordGuildId, requesterDiscordId, }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!discordGuildId)
             throw new Error('No Discord Guild ID provided');
         if (!requesterDiscordId)
             throw new Error('No requester Discord ID provided');
-        return RoleRequestsService_1.RoleRequestsService.create({
+        return RoleRequestService_1.RoleRequestService.create({
             roleName,
             roleColor,
             requestNotes,

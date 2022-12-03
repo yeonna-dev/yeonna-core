@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTags = void 0;
-const TagsService_1 = require("../services/TagsService");
+const TagService_1 = require("../services/TagService");
 function deleteTags(names) {
     return __awaiter(this, void 0, void 0, function* () {
-        return TagsService_1.TagsService.remove(names);
+        return TagService_1.TagService.remove(names);
     });
 }
 exports.deleteTags = deleteTags;
