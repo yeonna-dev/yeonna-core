@@ -1,7 +1,7 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
-import { ItemsFields, ItemsService } from './ItemsService';
+import { ItemField, ItemService } from './ItemService';
 
-export enum InventoriesFields
+export enum InventoryField
 {
   user_id = 'user_id',
   item_code = 'item_code',
@@ -17,21 +17,21 @@ const categoryNameAlias = 'category_name';
 
 export interface InventoryRecord extends TimestampedRecord
 {
-  [InventoriesFields.user_id]: string;
-  [InventoriesFields.item_code]: string;
-  [InventoriesFields.user_id_item_code]: string;
-  [InventoriesFields.amount]: number;
-  [InventoriesFields.context]?: string;
+  [InventoryField.user_id]: string;
+  [InventoryField.item_code]: string;
+  [InventoryField.user_id_item_code]: string;
+  [InventoryField.amount]: number;
+  [InventoryField.context]?: string;
 
   /* Joined fields from `items` table */
-  [ItemsFields.code]?: string;
-  [ItemsFields.name]?: string;
-  [ItemsFields.chance_min]?: number;
-  [ItemsFields.chance_max]?: number;
-  [ItemsFields.price]?: number;
-  [ItemsFields.image]?: string;
-  [ItemsFields.emote]?: string;
-  [ItemsFields.category_id]?: string;
+  [ItemField.code]?: string;
+  [ItemField.name]?: string;
+  [ItemField.chance_min]?: number;
+  [ItemField.chance_max]?: number;
+  [ItemField.price]?: number;
+  [ItemField.image]?: string;
+  [ItemField.emote]?: string;
+  [ItemField.category_id]?: string;
 
   /* Joined fields from 'categories' table */
   [categoryNameAlias]?: string;
@@ -53,7 +53,7 @@ export interface InventoryItem
 
 const createUserIdItemCodeKey = (userId: string, itemCode: string) => `${userId}:${itemCode}`;
 
-export class InventoriesService
+export class InventoryService
 {
   static table = 'inventories';
 
@@ -69,22 +69,22 @@ export class InventoriesService
   {
     const query = DB.inventories()
       .select(
-        `${InventoriesService.table}.*`,
-        `${ItemsService.table}.*`,
+        `${InventoryService.table}.*`,
+        `${ItemService.table}.*`,
         `${categoriesTable}.${categoryNameField} as ${categoryNameAlias}`,
       )
-      .join(ItemsService.table, InventoriesFields.item_code, ItemsFields.code)
-      .join(categoriesTable, ItemsFields.category_id, `${categoriesTable}.${categoryIdField}`)
-      .where(InventoriesFields.user_id, userId);
+      .join(ItemService.table, InventoryField.item_code, ItemField.code)
+      .join(categoriesTable, ItemField.category_id, `${categoriesTable}.${categoryIdField}`)
+      .where(InventoryField.user_id, userId);
 
     if(context)
-      query.and.where(`${InventoriesService.table}.${InventoriesFields.context}`, context);
+      query.and.where(`${InventoryService.table}.${InventoryField.context}`, context);
 
     if(category)
       query.and.whereILike(`${categoriesTable}.${categoryNameField}`, category.toLowerCase());
 
     const data = await query;
-    return data.map(InventoriesService.serialize);
+    return data.map(InventoryService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -110,21 +110,21 @@ export class InventoriesService
         continue;
 
       upsertData.push({
-        [InventoriesFields.user_id]: userId,
-        [InventoriesFields.item_code]: code,
-        [InventoriesFields.user_id_item_code]: createUserIdItemCodeKey(userId, code),
-        [InventoriesFields.amount]: amount || 1,
-        [InventoriesFields.context]: context,
+        [InventoryField.user_id]: userId,
+        [InventoryField.item_code]: code,
+        [InventoryField.user_id_item_code]: createUserIdItemCodeKey(userId, code),
+        [InventoryField.amount]: amount || 1,
+        [InventoryField.context]: context,
       });
     }
 
     const data = await DB.inventories()
       .insert(upsertData)
       .returning('*')
-      .onConflict(InventoriesFields.user_id_item_code)
-      .merge([InventoriesFields.amount]);
+      .onConflict(InventoryField.user_id_item_code)
+      .merge([InventoryField.amount]);
 
-    return data.map(InventoriesService.serialize);
+    return data.map(InventoryService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -143,7 +143,7 @@ export class InventoriesService
     context?: string,
   })
   {
-    const updatedItems = await InventoriesService.updateUserItemAmounts({
+    const updatedItems = await InventoryService.updateUserItemAmounts({
       userId,
       items: items.map(({ code, amount }) => ({ code, addAmount: amount || 1 })),
       context,
@@ -154,7 +154,7 @@ export class InventoriesService
     if(updatedItems.length === items.length)
       return updatedItems;
 
-    return InventoriesService.updateOrCreateUserItems({
+    return InventoryService.updateOrCreateUserItems({
       userId,
       items,
       context,
@@ -177,7 +177,7 @@ export class InventoriesService
     context?: string,
   })
   {
-    return InventoriesService.updateUserItemAmounts({
+    return InventoryService.updateUserItemAmounts({
       userId,
       items: items.map(({ code, amount }) => ({ code, subtractAmount: amount })),
       context,
@@ -213,18 +213,18 @@ export class InventoriesService
       userIdItemCodeKeys.push(userIdItemCode);
 
       const whenUserIdItemCodeClause =
-        `WHEN (${InventoriesFields.user_id_item_code} = '${userIdItemCode}')`;
+        `WHEN (${InventoryField.user_id_item_code} = '${userIdItemCode}')`;
 
       if(addAmount)
         whenClauses.push(`
           ${whenUserIdItemCodeClause}
-          THEN ${InventoriesFields.amount} + ${addAmount}
+          THEN ${InventoryField.amount} + ${addAmount}
         `);
       else if(subtractAmount)
         whenClauses.push(`
           ${whenUserIdItemCodeClause}
-          AND (${InventoriesFields.amount} >= ${subtractAmount})
-          THEN ${InventoriesFields.amount} - ${subtractAmount}
+          AND (${InventoryField.amount} >= ${subtractAmount})
+          THEN ${InventoryField.amount} - ${subtractAmount}
         `);
       else
         whenClauses.push(`${whenUserIdItemCodeClause} THEN ${amount}`);
@@ -235,22 +235,22 @@ export class InventoriesService
 
     const updateQuery = `(CASE ${whenClauses.join(' ')} ELSE 0 END)`;
     const query = DB.inventories()
-      .update({ [InventoriesFields.amount]: DB.knex.raw(updateQuery) })
-      .whereIn(InventoriesFields.user_id_item_code, userIdItemCodeKeys)
+      .update({ [InventoryField.amount]: DB.knex.raw(updateQuery) })
+      .whereIn(InventoryField.user_id_item_code, userIdItemCodeKeys)
       .returning('*');
 
     if(context)
-      query.and.where({ [InventoriesFields.context]: context });
+      query.and.where({ [InventoryField.context]: context });
 
     const data = await query;
-    const updatedItemsIndices = data.map(record => record[InventoriesFields.user_id_item_code]);
+    const updatedItemsIndices = data.map(record => record[InventoryField.user_id_item_code]);
 
     await DB.inventories()
       .delete()
-      .where({ [InventoriesFields.amount]: 0 })
-      .and.whereIn(InventoriesFields.user_id_item_code, updatedItemsIndices);
+      .where({ [InventoryField.amount]: 0 })
+      .and.whereIn(InventoryField.user_id_item_code, updatedItemsIndices);
 
-    return data.map(InventoriesService.serialize);
+    return data.map(InventoryService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -259,27 +259,27 @@ export class InventoriesService
   {
     const serialized: any =
     {
-      amount: userItem[InventoriesFields.amount],
-      context: userItem[InventoriesFields.context],
-      code: userItem[InventoriesFields.item_code],
+      amount: userItem[InventoryField.amount],
+      context: userItem[InventoryField.context],
+      code: userItem[InventoryField.item_code],
     };
 
     const itemFieldsMapping: any =
     {
-      [ItemsFields.code]: 'code',
-      [ItemsFields.name]: 'name',
-      [ItemsFields.chance_min]: 'chanceMin',
-      [ItemsFields.chance_max]: 'chanceMax',
-      [ItemsFields.price]: 'price',
-      [ItemsFields.image]: 'image',
-      [ItemsFields.emote]: 'emote',
+      [ItemField.code]: 'code',
+      [ItemField.name]: 'name',
+      [ItemField.chance_min]: 'chanceMin',
+      [ItemField.chance_max]: 'chanceMax',
+      [ItemField.price]: 'price',
+      [ItemField.image]: 'image',
+      [ItemField.emote]: 'emote',
       [categoryNameAlias]: 'category'
     };
 
     for(const field in itemFieldsMapping)
     {
       const serializedKey = itemFieldsMapping[field];
-      const property = userItem[field as ItemsFields];
+      const property = userItem[field as ItemField];
       if(property)
         serialized[serializedKey] = property;
     }

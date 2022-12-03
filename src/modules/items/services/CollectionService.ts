@@ -1,6 +1,6 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
 
-export enum CollectionsFields
+export enum CollectionField
 {
   code = 'code',
   name = 'name',
@@ -8,13 +8,13 @@ export enum CollectionsFields
   context = 'context',
 }
 
-export enum CollectionsItemsFields
+export enum CollectionItemField
 {
   collection_code = 'collection_code',
   item_code = 'item_code',
 }
 
-export enum UsersCollectionsFields
+export enum UserCollectionField
 {
   user_id = 'user_id',
   context = 'context',
@@ -25,25 +25,25 @@ export enum UsersCollectionsFields
 
 export interface CollectionRecord extends TimestampedRecord
 {
-  [CollectionsFields.code]: string;
-  [CollectionsFields.name]: string;
-  [CollectionsFields.fixed_bonus]: number;
+  [CollectionField.code]: string;
+  [CollectionField.name]: string;
+  [CollectionField.fixed_bonus]: number;
 }
 
 export interface CollectionItemRecord
 {
-  [CollectionsItemsFields.collection_code]: string;
-  [CollectionsItemsFields.item_code]: string;
+  [CollectionItemField.collection_code]: string;
+  [CollectionItemField.item_code]: string;
 }
 
 export interface UserCollectionRecord
 {
-  [UsersCollectionsFields.user_id]: string;
-  [UsersCollectionsFields.context]: string;
-  [UsersCollectionsFields.collection_code]: string;
+  [UserCollectionField.user_id]: string;
+  [UserCollectionField.context]: string;
+  [UserCollectionField.collection_code]: string;
 
-  [CollectionsFields.name]?: string;
-  [CollectionsFields.fixed_bonus]?: number;
+  [CollectionField.name]?: string;
+  [CollectionField.fixed_bonus]?: number;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -74,7 +74,7 @@ export interface UserCollection
 
 /* This class includes operations that involve the `collections`,
   `collections_items`, and `users_collections` tables. */
-export class CollectionsService
+export class CollectionService
 {
   static collections = 'collections';
   static collectionsItemsTable = 'collections_items';
@@ -91,27 +91,27 @@ export class CollectionsService
   })
   {
     const usersCollectionsContextField =
-      `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.context}`;
+      `${CollectionService.usersCollectionsTable}.${UserCollectionField.context}`;
 
     const usersCollectionsCodeField =
-      `${CollectionsService.usersCollectionsTable}.${UsersCollectionsFields.collection_code}`;
+      `${CollectionService.usersCollectionsTable}.${UserCollectionField.collection_code}`;
 
     const query = DB.usersCollections()
       .select(
-        UsersCollectionsFields.user_id,
-        UsersCollectionsFields.collection_code,
+        UserCollectionField.user_id,
+        UserCollectionField.collection_code,
         usersCollectionsContextField,
-        CollectionsFields.name,
-        CollectionsFields.fixed_bonus,
+        CollectionField.name,
+        CollectionField.fixed_bonus,
       )
       .join(
-        CollectionsService.collections,
+        CollectionService.collections,
         usersCollectionsCodeField,
-        CollectionsFields.code,
+        CollectionField.code,
       );
 
     if(userId)
-      query.where(UsersCollectionsFields.user_id, userId);
+      query.where(UserCollectionField.user_id, userId);
 
     if(context)
       query.and.where(usersCollectionsContextField, context);
@@ -120,7 +120,7 @@ export class CollectionsService
       query.and.whereIn(usersCollectionsCodeField, collectionCodes);
 
     const data = await query;
-    return data.map(CollectionsService.serializeUserCollection);
+    return data.map(CollectionService.serializeUserCollection);
   }
 
   static async saveCompleted({
@@ -133,12 +133,12 @@ export class CollectionsService
     context?: string,
   })
   {
-    const collectionCodeField = CollectionsItemsFields.collection_code;
+    const collectionCodeField = CollectionItemField.collection_code;
 
     /* Get the completed collections that based on the item codes given. */
     const collectionItemsQuery = DB.collectionsItems()
       .select(collectionCodeField)
-      .whereIn(CollectionsItemsFields.item_code, itemCodes)
+      .whereIn(CollectionItemField.item_code, itemCodes)
       .groupBy(collectionCodeField)
       .having(DB.knex.raw(`
         (${collectionCodeField}, count(${collectionCodeField}))
@@ -151,45 +151,45 @@ export class CollectionsService
     if(context)
       collectionItemsQuery
         .join(
-          CollectionsService.collections,
-          CollectionsItemsFields.collection_code,
-          CollectionsFields.code,
+          CollectionService.collections,
+          CollectionItemField.collection_code,
+          CollectionField.code,
         )
-        .and.where(CollectionsFields.context, context);
+        .and.where(CollectionField.context, context);
 
     const completedCollections: CollectionItemRecord[] = await collectionItemsQuery;
     const completedCollectionCodes = completedCollections
-      .map(collection => collection[CollectionsItemsFields.collection_code]);
+      .map(collection => collection[CollectionItemField.collection_code]);
 
     /* Get the completed collections of the user along with the collection data. */
-    const usersCollectionsCodeField = UsersCollectionsFields.collection_code;
+    const usersCollectionsCodeField = UserCollectionField.collection_code;
     const usersCollectionsCodeJoinField =
-      `${CollectionsService.usersCollectionsTable}.${usersCollectionsCodeField}`;
+      `${CollectionService.usersCollectionsTable}.${usersCollectionsCodeField}`;
 
     const userCollections: UserCollectionRecord[] = await DB.usersCollections()
       .select(usersCollectionsCodeField)
       .join(
-        CollectionsService.collections,
+        CollectionService.collections,
         usersCollectionsCodeJoinField,
-        CollectionsFields.code,
+        CollectionField.code,
       )
-      .where(UsersCollectionsFields.user_id, userId)
+      .where(UserCollectionField.user_id, userId)
       .and.whereIn(
         usersCollectionsCodeJoinField,
         completedCollectionCodes,
       );
 
     const userCollectionCodes = userCollections.map(collection =>
-      collection[UsersCollectionsFields.collection_code]);
+      collection[UserCollectionField.collection_code]);
 
     const newUserCollectionsInsertData = [];
     for(const code of completedCollectionCodes)
     {
       if(userCollectionCodes.includes(code)) continue;
       newUserCollectionsInsertData.push({
-        [UsersCollectionsFields.user_id]: userId,
+        [UserCollectionField.user_id]: userId,
         [usersCollectionsCodeField]: code,
-        [UsersCollectionsFields.context]: context,
+        [UserCollectionField.context]: context,
       });
     }
 
@@ -203,21 +203,21 @@ export class CollectionsService
 
     /* Get the collections data of the new completed collections. */
     const collectionCodes = newUserCollections.map(collection =>
-      collection[UsersCollectionsFields.collection_code]
+      collection[UserCollectionField.collection_code]
     );
 
     const collections = await DB.collections()
-      .whereIn(CollectionsFields.code, collectionCodes);
+      .whereIn(CollectionField.code, collectionCodes);
 
-    return collections.map(CollectionsService.serializeCollection);
+    return collections.map(CollectionService.serializeCollection);
   }
 
   static serializeCollection(collection: CollectionRecord): Collection
   {
     return {
-      code: collection[CollectionsFields.code],
-      name: collection[CollectionsFields.name],
-      fixedBonus: collection[CollectionsFields.fixed_bonus],
+      code: collection[CollectionField.code],
+      name: collection[CollectionField.name],
+      fixedBonus: collection[CollectionField.fixed_bonus],
     };
   }
 
@@ -225,16 +225,16 @@ export class CollectionsService
   {
     const serialized: UserCollection =
     {
-      userId: userCollectionRecord[UsersCollectionsFields.user_id],
-      code: userCollectionRecord[UsersCollectionsFields.collection_code],
-      context: userCollectionRecord[UsersCollectionsFields.context],
+      userId: userCollectionRecord[UserCollectionField.user_id],
+      code: userCollectionRecord[UserCollectionField.collection_code],
+      context: userCollectionRecord[UserCollectionField.context],
     };
 
-    const collectionName = userCollectionRecord[CollectionsFields.name];
+    const collectionName = userCollectionRecord[CollectionField.name];
     if(collectionName)
       serialized.name = collectionName;
 
-    const collectionFixedBonus = userCollectionRecord[CollectionsFields.fixed_bonus];
+    const collectionFixedBonus = userCollectionRecord[CollectionField.fixed_bonus];
     if(collectionFixedBonus)
       serialized.fixedBonus = collectionFixedBonus;
 

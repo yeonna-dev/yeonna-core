@@ -1,4 +1,4 @@
-import { RoleRequestsService } from '../services/RoleRequestsService';
+import { RoleRequestService } from '../services/RoleRequestService';
 
 export async function createRoleRequest({
   roleName,
@@ -20,7 +20,7 @@ export async function createRoleRequest({
   if(!requesterDiscordId)
     throw new Error('No requester Discord ID provided');
 
-  return RoleRequestsService.create({
+  return RoleRequestService.create({
     roleName,
     roleColor,
     requestNotes,

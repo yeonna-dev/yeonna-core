@@ -2,8 +2,8 @@ import { createTags } from '.';
 import { NoBitContentProvided } from '../../../common/errors';
 import { withUserAndContext } from '../../../common/providers';
 import { Identifiers } from '../../../common/types';
-import { BitsService } from '../services/BitsService';
-import { UsersBitsService } from '../services/UsersBitsService';
+import { BitService } from '../services/BitService';
+import { UserBitService } from '../services/UserBitService';
 
 type SaveUserBitParameters = Identifiers &
 {
@@ -22,7 +22,7 @@ export const saveUserBit = async ({
       throw new NoBitContentProvided();
 
     /* Check if a bit with the same content is existing. */
-    const [foundBit] = await BitsService.find({ content });
+    const [foundBit] = await BitService.find({ content });
 
     /* Create the bit if not existing. */
     let bitId;
@@ -30,12 +30,12 @@ export const saveUserBit = async ({
       bitId = foundBit.id;
     else
     {
-      const [createdBit] = await BitsService.create([content]);
+      const [createdBit] = await BitService.create([content]);
       bitId = createdBit.id;
     }
 
     /* Check if the bit has been added to the user. */
-    const [userBit] = await UsersBitsService.find({
+    const [userBit] = await UserBitService.find({
       userIds: [userId],
       bitIds: [bitId],
     });
@@ -52,7 +52,7 @@ export const saveUserBit = async ({
     if(userBit)
       return userBit;
 
-    const [createdUserBit] = await UsersBitsService.create([{ userId, bitId, tagIds }]);
+    const [createdUserBit] = await UserBitService.create([{ userId, bitId, tagIds }]);
     return createdUserBit;
   },
   {

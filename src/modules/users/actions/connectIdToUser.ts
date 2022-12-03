@@ -1,4 +1,4 @@
-import { UsersService } from '../services/UsersService';
+import { UserService } from '../services/UserService';
 import { findUser } from './findUser';
 
 export async function connectIdToUser({
@@ -18,5 +18,5 @@ export async function connectIdToUser({
   const user = await findUser(userIdentifier);
 
   /* Update the user record */
-  await UsersService.updateById(user, { discordId: newDiscordId, twitchId: newTwitchId });
+  await UserService.updateById(user, { discordId: newDiscordId, twitchId: newTwitchId });
 }

@@ -1,7 +1,7 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
-export enum RoleRequestsFields
+export enum RoleRequestField
 {
   request_id = 'request_id',
   requester_discord_id = 'requester_discord_id',
@@ -22,14 +22,14 @@ export enum RoleRequestStatus
 
 export interface RoleRequestRecord extends TimestampedRecord
 {
-  [RoleRequestsFields.request_id]: string;
-  [RoleRequestsFields.requester_discord_id]: string;
-  [RoleRequestsFields.guild_id]: string;
-  [RoleRequestsFields.role_name]: string;
-  [RoleRequestsFields.role_color]: string;
-  [RoleRequestsFields.notes]: string;
-  [RoleRequestsFields.status]: RoleRequestStatus;
-  [RoleRequestsFields.approver_discord_id]: string;
+  [RoleRequestField.request_id]: string;
+  [RoleRequestField.requester_discord_id]: string;
+  [RoleRequestField.guild_id]: string;
+  [RoleRequestField.role_name]: string;
+  [RoleRequestField.role_color]: string;
+  [RoleRequestField.notes]: string;
+  [RoleRequestField.status]: RoleRequestStatus;
+  [RoleRequestField.approver_discord_id]: string;
 }
 
 export interface RoleRequest
@@ -44,7 +44,7 @@ export interface RoleRequest
   approverDiscordId: string;
 }
 
-export class RoleRequestsService
+export class RoleRequestService
 {
   static async create({
     roleName,
@@ -62,16 +62,16 @@ export class RoleRequestsService
   {
     const [roleRequestRecord] = await DB.discordRoleRequests()
       .insert({
-        [RoleRequestsFields.request_id]: nanoid(15),
-        [RoleRequestsFields.requester_discord_id]: requesterDiscordId,
-        [RoleRequestsFields.role_name]: roleName,
-        [RoleRequestsFields.role_color]: roleColor,
-        [RoleRequestsFields.notes]: requestNotes,
-        [RoleRequestsFields.guild_id]: discordGuildId,
+        [RoleRequestField.request_id]: nanoid(15),
+        [RoleRequestField.requester_discord_id]: requesterDiscordId,
+        [RoleRequestField.role_name]: roleName,
+        [RoleRequestField.role_color]: roleColor,
+        [RoleRequestField.notes]: requestNotes,
+        [RoleRequestField.guild_id]: discordGuildId,
       })
       .returning('*');
 
-    return RoleRequestsService.serialize(roleRequestRecord);
+    return RoleRequestService.serialize(roleRequestRecord);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -84,7 +84,7 @@ export class RoleRequestsService
     approverDiscordId?: string,
   })
   {
-    return RoleRequestsService.updateStatus({
+    return RoleRequestService.updateStatus({
       requestId,
       approverDiscordId,
       status: RoleRequestStatus.APPROVED,
@@ -101,7 +101,7 @@ export class RoleRequestsService
     approverDiscordId?: string,
   })
   {
-    return RoleRequestsService.updateStatus({
+    return RoleRequestService.updateStatus({
       requestId,
       approverDiscordId,
       status: RoleRequestStatus.DECLINED,
@@ -122,19 +122,19 @@ export class RoleRequestsService
   {
     const [updatedData] = await DB.discordRoleRequests()
       .update({
-        [RoleRequestsFields.status]: status,
-        [RoleRequestsFields.approver_discord_id]: approverDiscordId,
+        [RoleRequestField.status]: status,
+        [RoleRequestField.approver_discord_id]: approverDiscordId,
       })
       .where({
-        [RoleRequestsFields.request_id]: requestId,
-        [RoleRequestsFields.status]: RoleRequestStatus.PENDING,
+        [RoleRequestField.request_id]: requestId,
+        [RoleRequestField.status]: RoleRequestStatus.PENDING,
       })
       .returning('*');
 
     if(!updatedData)
       return;
 
-    return RoleRequestsService.serialize(updatedData);
+    return RoleRequestService.serialize(updatedData);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -142,14 +142,14 @@ export class RoleRequestsService
   static serialize(roleRequest: RoleRequestRecord): RoleRequest
   {
     return {
-      id: roleRequest[RoleRequestsFields.request_id],
-      requesterDiscordId: roleRequest[RoleRequestsFields.requester_discord_id],
-      roleName: roleRequest[RoleRequestsFields.role_name],
-      roleColor: roleRequest[RoleRequestsFields.role_color],
-      notes: roleRequest[RoleRequestsFields.notes],
-      guildId: roleRequest[RoleRequestsFields.guild_id],
-      status: roleRequest[RoleRequestsFields.status],
-      approverDiscordId: roleRequest[RoleRequestsFields.approver_discord_id],
+      id: roleRequest[RoleRequestField.request_id],
+      requesterDiscordId: roleRequest[RoleRequestField.requester_discord_id],
+      roleName: roleRequest[RoleRequestField.role_name],
+      roleColor: roleRequest[RoleRequestField.role_color],
+      notes: roleRequest[RoleRequestField.notes],
+      guildId: roleRequest[RoleRequestField.guild_id],
+      status: roleRequest[RoleRequestField.status],
+      approverDiscordId: roleRequest[RoleRequestField.approver_discord_id],
     };
   }
 };

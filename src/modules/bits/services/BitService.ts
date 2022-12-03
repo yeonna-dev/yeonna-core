@@ -1,7 +1,7 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
-export enum BitsFields
+export enum BitField
 {
   id = 'id',
   content = 'content',
@@ -9,8 +9,8 @@ export enum BitsFields
 
 export interface BitRecord extends TimestampedRecord
 {
-  [BitsFields.id]: string;
-  [BitsFields.content]: string;
+  [BitField.id]: string;
+  [BitField.content]: string;
 }
 
 export interface Bit
@@ -19,7 +19,7 @@ export interface Bit
   content: string;
 }
 
-export class BitsService
+export class BitService
 {
   /* Table name is added here to be able to use in joins in other services. */
   static table = 'bits';
@@ -38,17 +38,17 @@ export class BitsService
     if(ids)
     {
       const idsArray = Array.isArray(ids) ? ids : [ids];
-      query.whereIn(BitsFields.id, idsArray);
+      query.whereIn(BitField.id, idsArray);
     }
 
     if(search)
-      query.and.where(BitsFields.content, 'LIKE', `%${search}%`);
+      query.and.where(BitField.content, 'LIKE', `%${search}%`);
 
     if(content)
-      query.and.where(BitsFields.content, content);
+      query.and.where(BitField.content, content);
 
     const data = await query;
-    return data.map(BitsService.serialize);
+    return data.map(BitService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -61,15 +61,15 @@ export class BitsService
       throw new Error('No content provided');
 
     const bitsData = content.map(content => ({
-      [BitsFields.id]: nanoid(15),
-      [BitsFields.content]: content,
+      [BitField.id]: nanoid(15),
+      [BitField.content]: content,
     }));
 
     const data = await DB.bits()
       .insert(bitsData)
       .returning('*');
 
-    return data.map(BitsService.serialize);
+    return data.map(BitService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -77,8 +77,8 @@ export class BitsService
   static serialize(bitRecord: BitRecord): Bit
   {
     return {
-      id: bitRecord[BitsFields.id],
-      content: bitRecord[BitsFields.content],
+      id: bitRecord[BitField.id],
+      content: bitRecord[BitField.content],
     };
   }
 };

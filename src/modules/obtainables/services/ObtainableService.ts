@@ -1,7 +1,7 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
-import { UsersFields, UsersService } from '../../users/services/UsersService';
+import { UserField, UserService } from '../../users/services/UserService';
 
-export enum ObtainableFields
+export enum ObtainableField
 {
   user_id = 'user_id',
   amount = 'amount',
@@ -11,14 +11,14 @@ export enum ObtainableFields
 
 export interface ObtainableRecord extends TimestampedRecord
 {
-  [ObtainableFields.user_id]: string;
-  [ObtainableFields.amount]: number;
-  [ObtainableFields.is_collectible]?: boolean;
-  [ObtainableFields.context]?: string;
+  [ObtainableField.user_id]: string;
+  [ObtainableField.amount]: number;
+  [ObtainableField.is_collectible]?: boolean;
+  [ObtainableField.context]?: string;
 
   /* Joined fields from `users` table */
-  [UsersFields.discord_id]?: string;
-  [UsersFields.twitch_id]?: string;
+  [UserField.discord_id]?: string;
+  [UserField.twitch_id]?: string;
 }
 
 export interface Obtainable
@@ -48,11 +48,11 @@ export class ObtainableService
   }: { userId: string; } & CommonParams)
   {
     const query = DB.obtainables()
-      .where(ObtainableFields.user_id, userId)
-      .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
+      .where(ObtainableField.user_id, userId)
+      .and.where(ObtainableField.is_collectible, Boolean(isCollectible));
 
     if(context)
-      query.and.where(ObtainableFields.context, context);
+      query.and.where(ObtainableField.context, context);
 
     const data = await query;
     const amount = data?.pop()?.amount;
@@ -73,16 +73,16 @@ export class ObtainableService
   } & CommonParams)
   {
     const query = DB.obtainables()
-      .orderBy(ObtainableFields.amount, 'desc')
-      .where(ObtainableFields.is_collectible, Boolean(isCollectible))
-      .and.where(ObtainableFields.amount, '>', 0)
+      .orderBy(ObtainableField.amount, 'desc')
+      .where(ObtainableField.is_collectible, Boolean(isCollectible))
+      .and.where(ObtainableField.amount, '>', 0)
       .limit(count);
 
     if(context)
-      query.and.where(ObtainableFields.context, context);
+      query.and.where(ObtainableField.context, context);
 
     if(withUsers)
-      query.join(UsersService.table, ObtainableFields.user_id, UsersFields.id);
+      query.join(UserService.table, ObtainableField.user_id, UserField.id);
 
     const data = await query;
     return data.map(ObtainableService.serialize);
@@ -105,13 +105,13 @@ export class ObtainableService
     /* Try to find the obtainable record with the given `userId`, `is_collectible`
       and `context` fields first before inserting to ensure of no duplicates. */
     const existingQuery = DB.obtainables()
-      .where(ObtainableFields.user_id, userId);
+      .where(ObtainableField.user_id, userId);
 
     if(isCollectible)
-      existingQuery.and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
+      existingQuery.and.where(ObtainableField.is_collectible, Boolean(isCollectible));
 
     if(context)
-      existingQuery.and.where(ObtainableFields.context, context);
+      existingQuery.and.where(ObtainableField.context, context);
 
     const existing = await existingQuery;
     if(existing.length > 0)
@@ -119,13 +119,13 @@ export class ObtainableService
 
     const insertData: ObtainableRecord =
     {
-      [ObtainableFields.user_id]: userId,
-      [ObtainableFields.amount]: amount,
-      [ObtainableFields.is_collectible]: isCollectible,
+      [ObtainableField.user_id]: userId,
+      [ObtainableField.amount]: amount,
+      [ObtainableField.is_collectible]: isCollectible,
     };
 
     if(context)
-      insertData[ObtainableFields.context] = context;
+      insertData[ObtainableField.context] = context;
 
     const data = await DB.obtainables().insert(insertData).returning('*');
     const obtainableRecord = data?.pop();
@@ -154,16 +154,16 @@ export class ObtainableService
 
     let updateExpression = `${amount}`;
     if(addAmount)
-      updateExpression = `${ObtainableFields.amount} + ${addAmount}`;
+      updateExpression = `${ObtainableField.amount} + ${addAmount}`;
 
     const query = DB.obtainables()
-      .update({ [ObtainableFields.amount]: DB.knex.raw(updateExpression) })
+      .update({ [ObtainableField.amount]: DB.knex.raw(updateExpression) })
       .returning('*')
-      .where(ObtainableFields.user_id, userId)
-      .and.where(ObtainableFields.is_collectible, Boolean(isCollectible));
+      .where(ObtainableField.user_id, userId)
+      .and.where(ObtainableField.is_collectible, Boolean(isCollectible));
 
     if(context)
-      query.and.where(ObtainableFields.context, context);
+      query.and.where(ObtainableField.context, context);
 
     const data = await query;
     const resultAmount = data?.pop()?.amount;
@@ -179,12 +179,12 @@ export class ObtainableService
   }: CommonParams)
   {
     const query = DB.obtainables()
-      .update({ [ObtainableFields.amount]: 0 })
+      .update({ [ObtainableField.amount]: 0 })
       .returning('*')
-      .where(ObtainableFields.is_collectible, Boolean(isCollectible));
+      .where(ObtainableField.is_collectible, Boolean(isCollectible));
 
     if(context)
-      query.and.where(ObtainableFields.context, context);
+      query.and.where(ObtainableField.context, context);
 
     const data = await query;
     return data.map(ObtainableService.serialize);
@@ -197,13 +197,13 @@ export class ObtainableService
     return {
       user:
       {
-        id: obtainableRecord[ObtainableFields.user_id],
-        discordId: obtainableRecord[UsersFields.discord_id],
-        twitchId: obtainableRecord[UsersFields.twitch_id],
+        id: obtainableRecord[ObtainableField.user_id],
+        discordId: obtainableRecord[UserField.discord_id],
+        twitchId: obtainableRecord[UserField.twitch_id],
       },
-      amount: obtainableRecord[ObtainableFields.amount],
-      context: obtainableRecord[ObtainableFields.context],
-      isCollectible: obtainableRecord[ObtainableFields.is_collectible],
+      amount: obtainableRecord[ObtainableField.amount],
+      context: obtainableRecord[ObtainableField.context],
+      isCollectible: obtainableRecord[ObtainableField.is_collectible],
     };
   }
 };

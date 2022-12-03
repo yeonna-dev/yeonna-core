@@ -1,7 +1,7 @@
 import { withUserAndContext } from '../../../common/providers';
 import { Identifiers } from '../../../common/types';
-import { ObtainableService } from '../../users/services/ObtainableService';
-import { InventoriesService, InventoryItem } from '../services/InventoriesService';
+import { ObtainableService } from '../../obtainables/services/ObtainableService';
+import { InventoryItem, InventoryService } from '../services/InventoryService';
 import { getUserItems } from './getUserItems';
 
 enum SellMode
@@ -59,7 +59,7 @@ const sell = ({
 
       /* Update the item amounts. */
       if(itemsToUpdate.length > 0)
-        await InventoriesService.updateUserItemAmounts({
+        await InventoryService.updateUserItemAmounts({
           userId,
           items: itemsToUpdate,
           context,

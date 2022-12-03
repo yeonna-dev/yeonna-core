@@ -1,10 +1,10 @@
 import { UserNotFound } from '../../../common/errors';
 import { Identifiers } from '../../../common/types';
-import { UsersService } from '../services/UsersService';
+import { UserService } from '../services/UserService';
 
 export async function findUser(userIdentifier: string): Promise<string>
 {
-  const [user] = await UsersService.findById(userIdentifier);
+  const [user] = await UserService.findById(userIdentifier);
   if(!user)
     throw new UserNotFound();
 
@@ -33,12 +33,12 @@ export async function findOrCreateUser({
   }
 
   /* Get the user/s with the given user ID/s or Discord or Twitch ID/s. */
-  const result = await UsersService.find({ [userFindKey]: userIdentifier });
+  const result = await UserService.find({ [userFindKey]: userIdentifier });
   const [user] = result;
   if(!user)
   {
     const createUserParams = userCreateKey ? { [userCreateKey]: userIdentifier } : {};
-    const createdUserId = await UsersService.create(createUserParams);
+    const createdUserId = await UserService.create(createUserParams);
     if(!createdUserId)
       throw new Error('User not saved');
 

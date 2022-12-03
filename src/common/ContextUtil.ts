@@ -1,4 +1,4 @@
-export enum ContextPlatforms
+export enum ContextPlatform
 {
   Discord = 'discord',
   Twitch = 'twitch',
@@ -17,7 +17,7 @@ export class ContextUtil
     if(!discordGuildId && !twitchChannelId)
       return;
 
-    const platform = discordGuildId ? ContextPlatforms.Discord : ContextPlatforms.Twitch;
+    const platform = discordGuildId ? ContextPlatform.Discord : ContextPlatform.Twitch;
     return `${platform}:${discordGuildId || twitchChannelId}`;
   }
 }

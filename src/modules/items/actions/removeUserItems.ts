@@ -1,6 +1,6 @@
 import { withUserAndContext } from '../../../common/providers';
 import { Identifiers, ItemsWithCodeAndAmount } from '../../../common/types';
-import { InventoriesService } from '../services/InventoriesService';
+import { InventoryService } from '../services/InventoryService';
 
 export const removeUserItems = ({
   itemsToRemove,
@@ -8,7 +8,7 @@ export const removeUserItems = ({
 }: Identifiers & { itemsToRemove: ItemsWithCodeAndAmount; }) =>
   withUserAndContext(identifiers)(
     (userId, context) =>
-      InventoriesService.removeUserItem({
+      InventoryService.removeUserItem({
         userId,
         context,
         items: itemsToRemove.map(({ code, amount }) => ({ code, amount })),

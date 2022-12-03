@@ -1,6 +1,6 @@
-import { TagsService } from '../services/TagsService';
+import { TagService } from '../services/TagService';
 
 export async function deleteTags(names: string[])
 {
-  return TagsService.remove(names);
+  return TagService.remove(names);
 }

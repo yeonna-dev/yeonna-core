@@ -1,7 +1,7 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
-export enum UsersFields
+export enum UserField
 {
   id = 'id',
   discord_id = 'discord_id',
@@ -10,9 +10,9 @@ export enum UsersFields
 
 export interface UserRecord extends TimestampedRecord
 {
-  [UsersFields.id]: string;
-  [UsersFields.discord_id]?: string;
-  [UsersFields.twitch_id]?: string;
+  [UserField.id]: string;
+  [UserField.discord_id]?: string;
+  [UserField.twitch_id]?: string;
 }
 
 export interface User
@@ -22,7 +22,7 @@ export interface User
   twitchId?: string;
 }
 
-export class UsersService
+export class UserService
 {
   /* Table name is added here to be able to use in joins in other services. */
   static table = 'users';
@@ -41,9 +41,9 @@ export class UsersService
 
     const user =
     {
-      [UsersFields.id]: nanoid(15),
-      [UsersFields.discord_id]: discordId,
-      [UsersFields.twitch_id]: twitchId,
+      [UserField.id]: nanoid(15),
+      [UserField.discord_id]: discordId,
+      [UserField.twitch_id]: twitchId,
     };
 
     const data = await DB.users().insert(user).returning('*');
@@ -61,17 +61,17 @@ export class UsersService
     ids = Array.isArray(ids) ? ids : [ids];
 
     const data = await DB.users()
-      .or.whereIn(UsersFields.id, ids)
-      .or.whereIn(UsersFields.discord_id, ids)
-      .or.whereIn(UsersFields.twitch_id, ids);
+      .or.whereIn(UserField.id, ids)
+      .or.whereIn(UserField.discord_id, ids)
+      .or.whereIn(UserField.twitch_id, ids);
 
     if(!data || data.length === 0)
       return [];
 
     return data.map(user => ({
-      id: user[UsersFields.id],
-      discordId: user[UsersFields.discord_id],
-      twitchId: user[UsersFields.twitch_id],
+      id: user[UserField.id],
+      discordId: user[UserField.discord_id],
+      twitchId: user[UserField.twitch_id],
     }));
   }
 
@@ -89,22 +89,22 @@ export class UsersService
   {
     const query = DB.users();
     if(ids)
-      query.whereIn(UsersFields.id, Array.isArray(ids) ? ids : [ids]);
+      query.whereIn(UserField.id, Array.isArray(ids) ? ids : [ids]);
 
     if(discordIds)
-      query.whereIn(UsersFields.discord_id, Array.isArray(discordIds) ? discordIds : [discordIds]);
+      query.whereIn(UserField.discord_id, Array.isArray(discordIds) ? discordIds : [discordIds]);
 
     if(twitchIds)
-      query.whereIn(UsersFields.twitch_id, Array.isArray(twitchIds) ? twitchIds : [twitchIds]);
+      query.whereIn(UserField.twitch_id, Array.isArray(twitchIds) ? twitchIds : [twitchIds]);
 
     const data = await query;
     if(!data || data.length === 0)
       return [];
 
     return data.map(user => ({
-      id: user[UsersFields.id],
-      discordId: user[UsersFields.discord_id],
-      twitchId: user[UsersFields.twitch_id],
+      id: user[UserField.id],
+      discordId: user[UserField.discord_id],
+      twitchId: user[UserField.twitch_id],
     }));
   }
 
@@ -117,13 +117,13 @@ export class UsersService
   {
     const updateData: any = {};
     if(discordId)
-      updateData[UsersFields.discord_id] = discordId;
+      updateData[UserField.discord_id] = discordId;
 
     if(twitchId)
-      updateData[UsersFields.twitch_id] = twitchId;
+      updateData[UserField.twitch_id] = twitchId;
 
     await DB.users()
       .update(updateData)
-      .where(UsersFields.id, id);
+      .where(UserField.id, id);
   }
 };

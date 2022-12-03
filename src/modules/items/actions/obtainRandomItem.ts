@@ -1,7 +1,7 @@
 import { withUserAndContext } from '../../../common/providers';
 import { Identifiers } from '../../../common/types';
-import { InventoriesService } from '../services/InventoriesService';
-import { ItemsService } from '../services/ItemsService';
+import { InventoryService } from '../services/InventoryService';
+import { ItemService } from '../services/ItemService';
 
 export const obtainRandomItem = (identifiers: Identifiers) =>
   withUserAndContext(identifiers)(
@@ -9,12 +9,12 @@ export const obtainRandomItem = (identifiers: Identifiers) =>
     {
       /* Get a random item. */
       const chance = Math.random() * 100;
-      const randomItem = await ItemsService.findRandom(chance, context);
+      const randomItem = await ItemService.findRandom(chance, context);
       if(!randomItem)
         return;
 
       /* Add item to the user. */
-      await InventoriesService.addUserItems({
+      await InventoryService.addUserItems({
         userId,
         items: [{ code: randomItem.code, amount: 1 }],
         context,

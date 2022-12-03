@@ -1,6 +1,6 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
 
-export enum ItemsFields
+export enum ItemField
 {
   code = 'code',
   name = 'name',
@@ -15,14 +15,14 @@ export enum ItemsFields
 
 export interface ItemRecord extends TimestampedRecord
 {
-  [ItemsFields.code]: string;
-  [ItemsFields.name]: string;
-  [ItemsFields.chance_min]?: number;
-  [ItemsFields.chance_max]?: number;
-  [ItemsFields.price]?: number;
-  [ItemsFields.image]?: string;
-  [ItemsFields.emote]?: string;
-  [ItemsFields.category_id]?: string;
+  [ItemField.code]: string;
+  [ItemField.name]: string;
+  [ItemField.chance_min]?: number;
+  [ItemField.chance_max]?: number;
+  [ItemField.price]?: number;
+  [ItemField.image]?: string;
+  [ItemField.emote]?: string;
+  [ItemField.category_id]?: string;
 }
 
 export interface Item
@@ -37,7 +37,7 @@ export interface Item
   categoryId?: string;
 }
 
-export class ItemsService
+export class ItemService
 {
   /* Table name is added here to be able to use in joins in other services. */
   static table = 'items';
@@ -52,15 +52,15 @@ export class ItemsService
   {
     const query = DB.items();
     if(code)
-      query.where(ItemsFields.code, code);
+      query.where(ItemField.code, code);
 
     if(chance)
       query
-        .and.where(ItemsFields.chance_min, '<', chance)
-        .and.where(ItemsFields.chance_max, '>', chance);
+        .and.where(ItemField.chance_min, '<', chance)
+        .and.where(ItemField.chance_max, '>', chance);
 
     const data = await query;
-    return data.map(ItemsService.serialize);
+    return data.map(ItemService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -68,11 +68,11 @@ export class ItemsService
   static async findRandom(chance: number, context?: string)
   {
     const query = DB.items()
-      .and.where(ItemsFields.chance_min, '<', chance)
-      .and.where(ItemsFields.chance_max, '>', chance);
+      .and.where(ItemField.chance_min, '<', chance)
+      .and.where(ItemField.chance_max, '>', chance);
 
     if(context)
-      query.and.where(ItemsFields.context, context);
+      query.and.where(ItemField.context, context);
 
     const [data] = await query
       .orderByRaw('RANDOM()')
@@ -81,7 +81,7 @@ export class ItemsService
     if(!data)
       return;
 
-    return ItemsService.serialize(data);
+    return ItemService.serialize(data);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -89,9 +89,9 @@ export class ItemsService
   static async findByCodes(codes: string[])
   {
     const data = await DB.items()
-      .whereIn(ItemsFields.code, codes);
+      .whereIn(ItemField.code, codes);
 
-    return data.map(ItemsService.serialize);
+    return data.map(ItemService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -99,14 +99,14 @@ export class ItemsService
   static serialize(item: ItemRecord): Item
   {
     return {
-      code: item[ItemsFields.code],
-      name: item[ItemsFields.name],
-      chanceMin: item[ItemsFields.chance_min],
-      chanceMax: item[ItemsFields.chance_max],
-      price: item[ItemsFields.price],
-      image: item[ItemsFields.image],
-      emote: item[ItemsFields.emote],
-      categoryId: item[ItemsFields.category_id],
+      code: item[ItemField.code],
+      name: item[ItemField.name],
+      chanceMin: item[ItemField.chance_min],
+      chanceMax: item[ItemField.chance_max],
+      price: item[ItemField.price],
+      image: item[ItemField.image],
+      emote: item[ItemField.emote],
+      categoryId: item[ItemField.category_id],
     };
   }
 };

@@ -1,7 +1,7 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
-import { BitsFields, BitsService } from './BitsService';
+import { BitField, BitService } from './BitService';
 
-export enum UsersBitsFields
+export enum UserBitField
 {
   user_id = 'user_id',
   bit_id = 'bit_id',
@@ -10,10 +10,10 @@ export enum UsersBitsFields
 
 export interface UserBitRecord extends TimestampedRecord
 {
-  [UsersBitsFields.user_id]: string;
-  [UsersBitsFields.bit_id]: string;
-  [UsersBitsFields.tag_ids]?: string;
-  [BitsFields.content]?: string;
+  [UserBitField.user_id]: string;
+  [UserBitField.bit_id]: string;
+  [UserBitField.tag_ids]?: string;
+  [BitField.content]?: string;
 }
 
 export interface UserBit
@@ -37,7 +37,7 @@ export interface DeletedUserBit
   bitId: string;
 }
 
-export class UsersBitsService
+export class UserBitService
 {
   static async find({
     userIds,
@@ -50,22 +50,22 @@ export class UsersBitsService
   })
   {
     const query = DB.usersBits()
-      .join(BitsService.table, UsersBitsFields.bit_id, BitsFields.id);
+      .join(BitService.table, UserBitField.bit_id, BitField.id);
 
     if(userIds)
-      query.whereIn(UsersBitsFields.user_id, userIds);
+      query.whereIn(UserBitField.user_id, userIds);
 
     if(bitIds)
-      query.and.whereIn(UsersBitsFields.bit_id, bitIds);
+      query.and.whereIn(UserBitField.bit_id, bitIds);
 
     if(search)
-      query.and.where(`${BitsService.table}.${BitsFields.content}`, 'LIKE', `%${search}%`);
+      query.and.where(`${BitService.table}.${BitField.content}`, 'LIKE', `%${search}%`);
 
     const data = await query;
     if(!data || data.length === 0)
       return [];
 
-    return data.map(UsersBitsService.serialize);
+    return data.map(UserBitService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -81,12 +81,12 @@ export class UsersBitsService
     {
       const data: UserBitRecord =
       {
-        [UsersBitsFields.user_id]: userId,
-        [UsersBitsFields.bit_id]: bitId,
+        [UserBitField.user_id]: userId,
+        [UserBitField.bit_id]: bitId,
       };
 
       if(tagIds && tagIds.length !== 0)
-        data[UsersBitsFields.tag_ids] = tagIds.join(',');
+        data[UserBitField.tag_ids] = tagIds.join(',');
 
       insertData.push(data);
     }
@@ -95,7 +95,7 @@ export class UsersBitsService
       .insert(insertData)
       .returning('*');
 
-    return data.map(UsersBitsService.serialize);
+    return data.map(UserBitService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -110,12 +110,12 @@ export class UsersBitsService
   {
     const data = await DB.usersBits()
       .delete()
-      .where({ [UsersBitsFields.user_id]: userId, [UsersBitsFields.bit_id]: bitId })
+      .where({ [UserBitField.user_id]: userId, [UserBitField.bit_id]: bitId })
       .returning('*');
 
     return data.map(deletedUserBit => ({
-      userId: deletedUserBit[UsersBitsFields.user_id],
-      bitId: deletedUserBit[UsersBitsFields.bit_id],
+      userId: deletedUserBit[UserBitField.user_id],
+      bitId: deletedUserBit[UserBitField.bit_id],
     }));
   }
 
@@ -132,14 +132,14 @@ export class UsersBitsService
   })
   {
     const data = await DB.usersBits()
-      .update({ [UsersBitsFields.tag_ids]: tagIds.join(',') })
+      .update({ [UserBitField.tag_ids]: tagIds.join(',') })
       .where({
-        [UsersBitsFields.user_id]: userId,
-        [UsersBitsFields.bit_id]: bitId,
+        [UserBitField.user_id]: userId,
+        [UserBitField.bit_id]: bitId,
       })
       .returning('*');
 
-    return data.map(UsersBitsService.serialize);
+    return data.map(UserBitService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -148,17 +148,17 @@ export class UsersBitsService
   {
     const serialized: UserBit =
     {
-      user: { id: userBitRecord[UsersBitsFields.user_id] },
-      bit: { id: userBitRecord[UsersBitsFields.bit_id] },
+      user: { id: userBitRecord[UserBitField.user_id] },
+      bit: { id: userBitRecord[UserBitField.bit_id] },
     };
 
     /* Set the `bit` property of the object if the `content` field has a value. */
-    const content = userBitRecord[BitsFields.content];
+    const content = userBitRecord[BitField.content];
     if(content)
       serialized.bit.content = content;
 
     /* Set the `tags` property of the object if the `tag_ids` field has a value. */
-    const tagIds = userBitRecord[UsersBitsFields.tag_ids];
+    const tagIds = userBitRecord[UserBitField.tag_ids];
     if(tagIds)
       serialized.tags = tagIds.split(',').map(id => ({ id }));
 

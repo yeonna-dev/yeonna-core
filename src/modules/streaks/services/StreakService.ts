@@ -1,6 +1,6 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
 
-export enum StreaksFields
+export enum StreakField
 {
   user_id = 'user_id',
   count = 'count',
@@ -12,12 +12,12 @@ export enum StreaksFields
 
 export interface StreakRecord extends TimestampedRecord
 {
-  [StreaksFields.user_id]: string;
-  [StreaksFields.count]: number;
-  [StreaksFields.longest]: number;
-  [StreaksFields.context]: string;
-  [StreaksFields.created_at]: string;
-  [StreaksFields.updated_at]: string;
+  [StreakField.user_id]: string;
+  [StreakField.count]: number;
+  [StreakField.longest]: number;
+  [StreakField.context]: string;
+  [StreakField.created_at]: string;
+  [StreakField.updated_at]: string;
 }
 
 export interface Streak
@@ -44,10 +44,10 @@ export class StreakService
   })
   {
     const query = DB.streaks()
-      .where(StreaksFields.user_id, userId);
+      .where(StreakField.user_id, userId);
 
     if(context)
-      query.and.where(StreaksFields.context, context);
+      query.and.where(StreakField.context, context);
 
     const streak = await query.first();
     if(!streak)
@@ -70,10 +70,10 @@ export class StreakService
   {
     const [createdStreak] = await DB.streaks()
       .insert({
-        [StreaksFields.user_id]: userId,
-        [StreaksFields.count]: count,
-        [StreaksFields.longest]: count,
-        [StreaksFields.context]: context,
+        [StreakField.user_id]: userId,
+        [StreakField.count]: count,
+        [StreakField.longest]: count,
+        [StreakField.context]: context,
       })
       .returning('*');
 
@@ -98,22 +98,22 @@ export class StreakService
   })
   {
     const updateData: {
-      [StreaksFields.count]: number,
-      [StreaksFields.updated_at]: any;
-      [StreaksFields.longest]?: number;
+      [StreakField.count]: number,
+      [StreakField.updated_at]: any;
+      [StreakField.longest]?: number;
     } = {
-      [StreaksFields.count]: count,
-      [StreaksFields.updated_at]: DB.knex.fn.now(),
+      [StreakField.count]: count,
+      [StreakField.updated_at]: DB.knex.fn.now(),
     };
 
     if(longest)
-      updateData[StreaksFields.longest] = longest;
+      updateData[StreakField.longest] = longest;
 
     const query = DB.streaks()
-      .where(StreaksFields.user_id, userId);
+      .where(StreakField.user_id, userId);
 
     if(context)
-      query.and.where(StreaksFields.context, context);
+      query.and.where(StreakField.context, context);
 
     const [updatedStreak] = await query
       .update(updateData)

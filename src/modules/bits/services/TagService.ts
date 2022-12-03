@@ -1,7 +1,7 @@
 import { DB, TimestampedRecord } from '../../../common/DB';
 import { nanoid } from '../../../common/nanoid';
 
-export enum TagsFields
+export enum TagField
 {
   id = 'id',
   name = 'name',
@@ -9,8 +9,8 @@ export enum TagsFields
 
 export interface TagRecord extends TimestampedRecord
 {
-  [TagsFields.id]: string;
-  [TagsFields.name]: string;
+  [TagField.id]: string;
+  [TagField.name]: string;
 }
 
 export interface Tag
@@ -19,7 +19,7 @@ export interface Tag
   name: string;
 }
 
-export class TagsService
+export class TagService
 {
   static tableName = 'tags';
 
@@ -37,17 +37,17 @@ export class TagsService
     if(ids)
     {
       const idsArray = Array.isArray(ids) ? ids : [ids];
-      query.whereIn(TagsFields.id, idsArray);
+      query.whereIn(TagField.id, idsArray);
     }
 
     if(search)
-      query.and.where(TagsFields.name, 'LIKE', `%${search}%`);
+      query.and.where(TagField.name, 'LIKE', `%${search}%`);
 
     if(names)
-      query.and.whereIn(TagsFields.name, names);
+      query.and.whereIn(TagField.name, names);
 
     const data = await query;
-    return data.map(TagsService.serialize);
+    return data.map(TagService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -59,15 +59,15 @@ export class TagsService
       throw new Error('No name/s provided');
 
     const tagsData = names.map(name => ({
-      [TagsFields.id]: nanoid(15),
-      [TagsFields.name]: name,
+      [TagField.id]: nanoid(15),
+      [TagField.name]: name,
     }));
 
     const data = await DB.tags()
       .insert(tagsData)
       .returning('*');
 
-    return data.map(TagsService.serialize);
+    return data.map(TagService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -80,10 +80,10 @@ export class TagsService
 
     const data = await DB.tags()
       .delete()
-      .whereIn(TagsFields.name, names)
+      .whereIn(TagField.name, names)
       .returning('*');
 
-    return data.map(TagsService.serialize);
+    return data.map(TagService.serialize);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -91,8 +91,8 @@ export class TagsService
   static serialize(tagRecord: TagRecord): Tag
   {
     return {
-      id: tagRecord[TagsFields.id],
-      name: tagRecord[TagsFields.name],
+      id: tagRecord[TagField.id],
+      name: tagRecord[TagField.name],
     };
   }
 };
