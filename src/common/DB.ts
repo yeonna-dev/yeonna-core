@@ -32,6 +32,8 @@ export class DB
 
   static discordRoleRequests = () => db('discord_role_requests');
 
+  static timeLogs = () => db('time_logs');
+
   static streaks = () => db('streaks');
 }
 
