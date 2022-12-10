@@ -30,5 +30,5 @@ DB.bits = () => db('bits');
 DB.usersBits = () => db('users_bits');
 DB.tags = () => db('tags');
 DB.discordRoleRequests = () => db('discord_role_requests');
-DB.timeTables = () => db('time_tables');
+DB.timeLogs = () => db('time_logs');
 DB.streaks = () => db('streaks');

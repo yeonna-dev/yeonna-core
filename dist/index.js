@@ -29,6 +29,7 @@ const discord = __importStar(require("./modules/discord/actions"));
 const items = __importStar(require("./modules/items/actions"));
 const obtainables = __importStar(require("./modules/obtainables/actions"));
 const streaks = __importStar(require("./modules/streaks/actions"));
+const timeLogs = __importStar(require("./modules/timeLogs/actions"));
 const users = __importStar(require("./modules/users/actions"));
 __exportStar(require("./common/errors"), exports);
 class Core {
@@ -40,3 +41,4 @@ Core.Items = items;
 Core.Bits = bits;
 Core.Discord = discord;
 Core.Streaks = streaks;
+Core.TimeLogs = timeLogs;
