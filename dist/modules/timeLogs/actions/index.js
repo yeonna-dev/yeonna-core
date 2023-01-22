@@ -11,5 +11,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./createTimeLogs"), exports);
-__exportStar(require("./getTimeLogs"), exports);
+__exportStar(require("./getTimeLogsByDate"), exports);
 __exportStar(require("./removeTimeLogs"), exports);

@@ -22,10 +22,19 @@ var TimeLogField;
 })(TimeLogField = exports.TimeLogField || (exports.TimeLogField = {}));
 ;
 class TimeLogService {
-    static get({ userId, context, }) {
+    static get({ userId, date, context, }) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = DB_1.DB.timeLogs()
                 .where(TimeLogField.user_id, userId);
+            if (date) {
+                let d;
+                if (date instanceof Date)
+                    d = date;
+                else
+                    d = new Date(date);
+                const dateOnly = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+                query.and.whereRaw('??::date = ?', [TimeLogField.datetime, dateOnly]);
+            }
             if (context)
                 query.and.where(TimeLogField.context, context);
             const timeLogs = yield query;

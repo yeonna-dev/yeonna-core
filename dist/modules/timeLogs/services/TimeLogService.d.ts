@@ -21,8 +21,9 @@ export interface TimeLog {
     context?: string;
 }
 export declare class TimeLogService {
-    static get({ userId, context, }: {
+    static get({ userId, date, context, }: {
         userId: string;
+        date?: Date | string;
         context?: string;
     }): Promise<TimeLog[]>;
     static create({ userId, context, timeLogs, }: {
