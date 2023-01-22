@@ -32,14 +32,28 @@ export class TimeLogService
 {
   static async get({
     userId,
+    date,
     context,
   }: {
     userId: string,
+    date?: Date | string,
     context?: string,
   })
   {
     const query = DB.timeLogs()
       .where(TimeLogField.user_id, userId);
+
+    if(date)
+    {
+      let d;
+      if(date instanceof Date)
+        d = date;
+      else
+        d = new Date(date);
+
+      const dateOnly = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      query.and.whereRaw('??::date = ?', [TimeLogField.datetime, dateOnly]);
+    }
 
     if(context)
       query.and.where(TimeLogField.context, context);

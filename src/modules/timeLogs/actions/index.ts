@@ -1,3 +1,4 @@
 export * from './createTimeLogs';
-export * from './getTimeLogs';
+export * from './getTimeLogsByDate';
 export * from './removeTimeLogs';
+

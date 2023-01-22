@@ -9,6 +9,7 @@ describe('Time Logs', function()
   const userIdentifier = '247955535620472844';
   const discordGuildId = '504135117296500746';
 
+  const specificDate = '2023-01-04';
   const timeLogs = [
     {
       activity: 'Foo',
@@ -18,16 +19,20 @@ describe('Time Logs', function()
       activity: 'Bar',
       datetime: new Date().toISOString(),
     },
+    {
+      activity: 'Activity in date',
+      datetime: new Date(specificDate).toISOString(),
+    },
   ];
 
   let timeLogIds: string[] = [];
 
-  it('should create time logs for a Discord user', async () =>
+  it('should create time logs for a Discord user in a specific date', async () =>
   {
     let createdTimeLogs = await Core.TimeLogs.create({
       userIdentifier,
       discordGuildId,
-      timeLogs
+      timeLogs,
     });
 
     timeLogIds = createdTimeLogs?.map(({ id }) => id) || [];
@@ -40,14 +45,20 @@ describe('Time Logs', function()
     );
   });
 
-  it('should get the time logs of a Discord user', async () =>
+  it('should get the time logs of a Discord user in a specific date', async () =>
   {
-    const timeLogs = await Core.TimeLogs.get({
+    const timeLogs = await Core.TimeLogs.getByDate({
       userIdentifier,
       discordGuildId,
+      date: new Date(specificDate).toISOString(),
     });
 
+    const [timeLog] = timeLogs || [];
+    const timeLogDate = new Date(timeLog.datetime);
+    const timeLogDatePart = timeLogDate.toISOString().substring(0, 10);
+
     assert.strictEqual(!!timeLogs, true);
+    assert.strictEqual(timeLogDatePart, specificDate);
   });
 
   it('should delete the time logs of a Discord user', async () =>
